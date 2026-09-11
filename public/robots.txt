@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://sigmachiwashu.example.com/sitemap.xml
+Sitemap: https://washusigmachi.org/sitemap.xml
