@@ -1,0 +1,22 @@
+.philanthropy-band {
+  background: var(--white);
+  border-top: 1px solid rgba(11, 37, 69, 0.08);
+  border-bottom: 1px solid rgba(11, 37, 69, 0.08);
+}
+
+.philanthropy-band__inner {
+  padding: 96px 0;
+  max-width: 720px;
+  text-align: center;
+  margin: 0 auto;
+}
+
+.philanthropy-band__body {
+  color: var(--gray);
+  font-size: 1.05rem;
+  margin-bottom: 28px;
+}
+
+.philanthropy-band .cta-button {
+  margin: 0 auto;
+}

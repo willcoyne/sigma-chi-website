@@ -1,0 +1,21 @@
+.quote-block {
+  margin: 0;
+  padding: 8px 0 8px 32px;
+  border-left: 3px solid var(--gold);
+}
+
+.quote-block p {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(1.3rem, 2.6vw, 1.7rem);
+  color: var(--navy);
+  margin: 0 0 12px;
+  line-height: 1.4;
+}
+
+.quote-block cite {
+  font-style: normal;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--gray);
+}

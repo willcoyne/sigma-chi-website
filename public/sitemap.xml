@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- TODO: replace https://sigmachiwashu.example.com/ with the real domain before deploying -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://sigmachiwashu.example.com/</loc>
+  </url>
+  <url>
+    <loc>https://sigmachiwashu.example.com/history</loc>
+  </url>
+  <url>
+    <loc>https://sigmachiwashu.example.com/values</loc>
+  </url>
+  <url>
+    <loc>https://sigmachiwashu.example.com/colony</loc>
+  </url>
+  <url>
+    <loc>https://sigmachiwashu.example.com/philanthropy</loc>
+  </url>
+  <url>
+    <loc>https://sigmachiwashu.example.com/contact</loc>
+  </url>
+</urlset>

@@ -1,0 +1,68 @@
+.colony-explainer {
+  background: var(--white);
+}
+
+.colony-explainer__inner {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.colony-explainer__inner p {
+  color: var(--gray);
+  font-size: 1.05rem;
+}
+
+.colony-status__inner {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.colony-status__inner .status-badge {
+  margin-bottom: 28px;
+}
+
+.colony-leadership {
+  background: var(--white);
+}
+
+.colony-leadership__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.colony-leadership__card {
+  background: var(--cream);
+  border-radius: var(--radius-md);
+  padding: 32px 28px;
+  height: 100%;
+}
+
+.colony-leadership__card h3 {
+  margin-top: 6px;
+}
+
+.colony-leadership__card p:last-child {
+  color: var(--gray);
+  margin-bottom: 0;
+}
+
+.colony-cta {
+  text-align: center;
+}
+
+.colony-cta__inner {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.colony-cta p {
+  color: var(--gray);
+  margin-bottom: 24px;
+}
+
+@media (max-width: 700px) {
+  .colony-leadership__grid {
+    grid-template-columns: 1fr;
+  }
+}

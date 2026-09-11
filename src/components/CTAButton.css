@@ -1,0 +1,45 @@
+.cta-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 30px;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  transition: background-color 0.2s ease-out, color 0.2s ease-out, border-color 0.2s ease-out, transform 0.2s ease-out;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-button--filled {
+  background: var(--gold);
+  color: var(--navy-dark);
+}
+.cta-button--filled:hover {
+  background: #b6911f;
+  transform: translateY(-1px);
+}
+
+.cta-button--outline {
+  background: transparent;
+  border-color: var(--cream);
+  color: var(--cream);
+}
+.cta-button--outline:hover {
+  background: rgba(250, 247, 240, 0.12);
+  transform: translateY(-1px);
+}
+
+.cta-button--outline-dark {
+  background: transparent;
+  border-color: var(--navy);
+  color: var(--navy);
+}
+.cta-button--outline-dark:hover {
+  background: rgba(11, 37, 69, 0.06);
+}

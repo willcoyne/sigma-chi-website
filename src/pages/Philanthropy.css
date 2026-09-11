@@ -1,0 +1,50 @@
+.philanthropy-stats {
+  position: relative;
+  background: var(--navy);
+  padding: 24px 0 80px;
+}
+
+.philanthropy-stats__divider-top {
+  position: relative;
+  top: -1px;
+}
+
+.philanthropy-stats__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+
+.philanthropy-detail {
+  background: var(--white);
+}
+
+.philanthropy-detail__inner {
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.philanthropy-detail__inner p {
+  color: var(--gray);
+  font-size: 1.05rem;
+}
+
+.philanthropy-local__inner {
+  max-width: 640px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.philanthropy-local__inner p {
+  color: var(--gray);
+  font-size: 1.05rem;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 900px) {
+  .philanthropy-stats__grid {
+    grid-template-columns: 1fr;
+    row-gap: 40px;
+  }
+}

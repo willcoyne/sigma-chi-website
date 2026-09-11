@@ -1,0 +1,42 @@
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-left: 2px solid rgba(11, 37, 69, 0.15);
+  max-width: 720px;
+}
+
+.timeline__item {
+  position: relative;
+  padding: 0 0 48px 36px;
+}
+
+.timeline__item:last-child {
+  padding-bottom: 0;
+}
+
+.timeline__marker {
+  position: absolute;
+  left: -7px;
+  top: 6px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--gold);
+  border: 2px solid var(--cream);
+  box-shadow: 0 0 0 2px var(--navy);
+}
+
+.timeline__year {
+  font-family: var(--font-display-sc);
+  color: var(--gold-dark);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  margin: 0 0 4px;
+  font-size: 0.95rem;
+}
+
+.timeline__body {
+  color: var(--gray);
+  margin: 0;
+}
