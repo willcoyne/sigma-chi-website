@@ -37,10 +37,9 @@ jobs:
       - name: Build
         run: npm run build
 
-      # Pages has no SPA rewrite rule, so a deep link like /history would 404.
-      # Serving index.html as the 404 page hands those URLs to the client router.
-      - name: Add SPA fallback
-        run: cp dist/index.html dist/404.html
+      # The SPA fallback (dist/404.html) and the per-route index.html files
+      # that make deep links answer 200 instead of 404 are both emitted by
+      # scripts/prerender-routes.mjs, which `npm run build` runs.
 
       - name: Upload build artifact
         uses: actions/upload-pages-artifact@v3
