@@ -15,10 +15,12 @@
 
 export const LEGAL_LAST_UPDATED = "September 12, 2026";
 
-// Optional direct contact address. Deliberately empty: the colony has no public
-// organisational mailbox yet, and publishing a personal address invites scraping.
-// Set this to a real address when one exists and every legal page picks it up.
-export const LEGAL_CONTACT_EMAIL: string = "";
+// Direct contact address for privacy, accessibility and general legal enquiries.
+// This is the colony's shared organisational mailbox, not an individual's — keep
+// it that way, since publishing a personal address exposes one member to
+// scraping and leaves the route dead when they graduate. Every legal page reads
+// this through legalContactRoute(), so changing it here changes all of them.
+export const LEGAL_CONTACT_EMAIL: string = "washusigmachichapter@gmail.com";
 
 /**
  * A third party that can receive visitor data from this site, either today or

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import ShieldCrest from "./ShieldCrest";
 import { colony, university } from "../data/content";
+import { LEGAL_CONTACT_EMAIL } from "../data/legal";
 import "./Footer.css";
 
 export default function Footer() {
@@ -27,6 +28,7 @@ export default function Footer() {
           <a href={`https://instagram.com/${colony.instagram.replace("@", "")}`} target="_blank" rel="noreferrer">
             {colony.instagram} on Instagram
           </a>
+          <a href={`mailto:${LEGAL_CONTACT_EMAIL}`}>{LEGAL_CONTACT_EMAIL}</a>
           <span className="washu-hairline" aria-hidden="true" />
           <p className="footer__campus">{university.campus}, St. Louis, Missouri</p>
         </div>

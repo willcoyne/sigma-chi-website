@@ -36,3 +36,26 @@
     grid-template-columns: 1fr;
   }
 }
+
+/*
+ * Direct email alternative to the form. Set as a plain mailto rather than an
+ * obfuscated or scripted address: obfuscation barely slows scrapers down and it
+ * breaks the link for screen readers and for anyone copying it by keyboard.
+ */
+.contact-follow__email {
+  margin-bottom: var(--space-sm);
+  font-size: 1.1rem;
+}
+
+.contact-follow__email a {
+  color: var(--navy);
+  font-weight: 600;
+  border-bottom: 2px solid var(--gold);
+  padding-bottom: 1px;
+  transition: color 0.25s var(--ease-premium), border-color 0.25s var(--ease-premium);
+}
+
+.contact-follow__email a:hover {
+  color: var(--gold-dark);
+  border-bottom-color: var(--gold-dark);
+}

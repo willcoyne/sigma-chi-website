@@ -4,6 +4,7 @@ import Reveal from "../components/Reveal";
 import CTAButton from "../components/CTAButton";
 import {
   LEGAL_LAST_UPDATED,
+  LEGAL_CONTACT_EMAIL,
   DATA_RECIPIENTS,
   FORM_FIELDS_COLLECTED,
   legalContactRoute,
@@ -47,8 +48,18 @@ export default function Privacy() {
             </p>
             <p>
               The site is a recruitment and information page run by students. There are no accounts, no
-              logins, no shopping, and no payments. The only way to send us personal information through
-              this site is to fill out the contact form.
+              logins, no shopping, and no payments. The contact form is the only part of this site that
+              collects anything about you.
+            </p>
+            <p>
+              You can also email the colony directly at{" "}
+              <a className="legal__link" href={`mailto:${LEGAL_CONTACT_EMAIL}`}>
+                {LEGAL_CONTACT_EMAIL}
+              </a>
+              . That is worth knowing for a different reason: an email you send goes straight to the
+              colony's mailbox and is never handled by Formspree, the service described below. It is
+              received in Gmail, so Google handles it as the mail provider, and it stays in that inbox
+              until someone deletes it.
             </p>
           </Reveal>
         </div>

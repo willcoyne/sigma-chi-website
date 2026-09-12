@@ -3,6 +3,7 @@ import Reveal from "../components/Reveal";
 import ContactForm from "../components/ContactForm";
 import CTAButton from "../components/CTAButton";
 import { colony, university } from "../data/content";
+import { LEGAL_CONTACT_EMAIL } from "../data/legal";
 import { useDocumentMeta } from "../hooks/useDocumentMeta";
 import "./Contact.css";
 
@@ -49,7 +50,11 @@ export default function Contact() {
             <span className="washu-hairline" aria-hidden="true" />
             <p className="contact-follow__campus">{university.name} &middot; {university.campus}</p>
             <p className="contact-follow__ig-label">
-              Follow the colony's progress on Instagram at {colony.instagram}
+              Prefer not to use the form? Reach the colony directly by email, or follow along
+              on Instagram at {colony.instagram}.
+            </p>
+            <p className="contact-follow__email">
+              <a href={`mailto:${LEGAL_CONTACT_EMAIL}`}>{LEGAL_CONTACT_EMAIL}</a>
             </p>
             <CTAButton href="https://instagram.com/sigmachiwashu" variant="outline-dark">
               Follow on Instagram
