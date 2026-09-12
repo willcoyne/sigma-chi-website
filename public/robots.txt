@@ -1,3 +1,7 @@
+# Everything on this site is public recruitment information, including the
+# /privacy, /terms and /accessibility pages. Those are public disclosures and
+# are deliberately left crawlable — an unindexed privacy policy is worth less.
+# There is nothing here to disallow.
 User-agent: *
 Allow: /
 

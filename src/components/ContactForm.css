@@ -81,3 +81,62 @@
   color: var(--gray);
   margin: 0;
 }
+
+.contact-form__note {
+  font-size: 0.85rem;
+  color: var(--gray);
+  margin: 0;
+}
+
+.contact-form__required {
+  color: var(--washu-red);
+  font-weight: 700;
+}
+
+.contact-form__error--field {
+  font-size: 0.85rem;
+}
+
+.contact-form input[aria-invalid="true"],
+.contact-form select[aria-invalid="true"],
+.contact-form textarea[aria-invalid="true"] {
+  border-color: var(--washu-red);
+}
+
+/* Honeypot wrapper: off-screen rather than display:none, because some bots skip
+   fields that are display:none or hidden. Taken out of flow so the form's flex
+   gap doesn't leave a blank row where it sits. */
+.contact-form__gotcha {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.contact-form__privacy {
+  font-size: 0.85rem;
+  color: var(--gray);
+  margin: 0;
+}
+
+.contact-form__privacy a {
+  color: var(--navy);
+  text-decoration: underline;
+}
+
+.contact-form__privacy a:hover {
+  color: var(--gold-dark);
+}
+
+.contact-form__submit[disabled] {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.contact-form--success:focus {
+  outline: 2px solid var(--gold);
+  outline-offset: 4px;
+}

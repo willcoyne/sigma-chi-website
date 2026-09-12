@@ -4,9 +4,15 @@ import Reveal from "../components/Reveal";
 import StatCounter from "../components/StatCounter";
 import SectionDivider from "../components/SectionDivider";
 import { nationalFacts } from "../data/content";
+import { useDocumentMeta } from "../hooks/useDocumentMeta";
 import "./Philanthropy.css";
 
 export default function Philanthropy() {
+  useDocumentMeta(
+    "Philanthropy",
+    "The Huntsman Cancer Foundation has been Sigma Chi's sole national philanthropic partner since December 2012. The WashU colony is joining that work.",
+  );
+
   return (
     <>
       <HeroBanner

@@ -79,8 +79,76 @@
   max-width: 480px;
 }
 
+/* Legal block — trademark, non-discrimination, and policy links.
+   Deliberately styled apart from .footer__links so the footer does not
+   read as one undifferentiated list of destinations. */
+.footer__legal {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(250, 247, 240, 0.14);
+}
+
+.footer__legal-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 18px;
+  margin-bottom: 12px;
+}
+
+.footer__legal-links a {
+  font-family: var(--font-display-sc);
+  font-weight: 600;
+  font-size: 0.82rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  /* #faf7f0 on #071931 — contrast 16.4:1 */
+  color: var(--cream);
+  text-decoration: underline;
+  text-decoration-color: rgba(250, 247, 240, 0.4);
+  text-underline-offset: 4px;
+  transition: color 0.2s var(--ease-premium), text-decoration-color 0.2s var(--ease-premium);
+}
+
+.footer__legal-links a:hover,
+.footer__legal-links a:focus-visible {
+  /* #c9a227 on #071931 — contrast 7.2:1 */
+  color: var(--gold);
+  text-decoration-color: var(--gold);
+}
+
+.footer__legal-note {
+  max-width: 72ch;
+  margin: 0 0 8px;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  /* cream at 62% over #071931 resolves to #9ea3a7 — contrast 6.9:1 */
+  color: rgba(250, 247, 240, 0.62);
+}
+
+.footer__legal-note:last-child {
+  margin-bottom: 0;
+}
+
 @media (max-width: 768px) {
   .footer__inner {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 420px) {
+  .footer__bottom {
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+
+  .footer__legal-links {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .footer__legal-note {
+    font-size: 0.8rem;
+    overflow-wrap: break-word;
   }
 }

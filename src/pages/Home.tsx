@@ -7,9 +7,15 @@ import StatusBadge from "../components/StatusBadge";
 import PhilanthropyBand from "../components/PhilanthropyBand";
 import SectionDivider from "../components/SectionDivider";
 import { threeGreatAims, colony, university } from "../data/content";
+import { useDocumentMeta, HOME_DOCUMENT_TITLE } from "../hooks/useDocumentMeta";
 import "./Home.css";
 
 export default function Home() {
+  useDocumentMeta(
+    HOME_DOCUMENT_TITLE,
+    "Sigma Chi at Washington University in St. Louis — the Beta Colony. Friendship, Justice, Learning. In Hoc Signo Vinces. Now recruiting founding fathers.",
+  );
+
   return (
     <>
       <HeroBanner

@@ -1,0 +1,32 @@
+/* Page-specific overrides for /accessibility. Shared legal typography is in Legal.css. */
+
+.a11y-measures .legal__list li,
+.a11y-limits .legal__list li {
+  margin-bottom: 1em;
+}
+
+.a11y-measures .legal__list strong {
+  color: var(--navy);
+  font-weight: 600;
+}
+
+.a11y-measures code,
+.a11y-limits code {
+  font-family: ui-monospace, "SFMono-Regular", "Consolas", "Liberation Mono", monospace;
+  font-size: 0.88em;
+  background: rgba(11, 37, 69, 0.06);
+  border-radius: var(--radius-sm);
+  padding: 1px 5px;
+  color: var(--navy);
+  white-space: nowrap;
+}
+
+.a11y-feedback h3 {
+  margin-top: 36px;
+}
+
+/* The feedback section above is cream, which matches the page background, so
+   give the closing call to action a white field of its own. */
+.a11y-cta {
+  background: var(--white);
+}

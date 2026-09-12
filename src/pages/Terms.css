@@ -1,0 +1,20 @@
+/* Page-specific overrides for /terms. Shared legal typography is in Legal.css. */
+
+.terms-unofficial .legal__callout p {
+  font-family: var(--font-body);
+  font-weight: 600;
+  color: var(--navy);
+  font-size: 1.02rem;
+}
+
+.terms-ip .legal__list li {
+  margin-bottom: 0.9em;
+}
+
+.terms-law h2 {
+  margin-top: 40px;
+}
+
+.terms-law h2:first-of-type {
+  margin-top: 0;
+}

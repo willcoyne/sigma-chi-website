@@ -1,3 +1,9 @@
+# Netlify is an ALTERNATE host for this site. GitHub Pages is the primary one
+# (see .github/workflows and public/CNAME), and GitHub Pages cannot set custom
+# HTTP response headers at all. Netlify can, so this file carries the full
+# security header set — including the ones a <meta> tag in index.html is
+# incapable of delivering. SECURITY-HEADERS.md explains which is which.
+
 [build]
   command = "npm run build"
   publish = "dist"
@@ -6,3 +12,40 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+# Applied to every response. `for = "/*"` is Netlify's path glob; `values` is the
+# literal header name -> header value map it writes onto the response.
+[[headers]]
+  for = "/*"
+
+  [headers.values]
+    # Same policy as the <meta http-equiv="Content-Security-Policy"> in
+    # index.html, PLUS frame-ancestors. Keep the two in sync when either changes.
+    #
+    # frame-ancestors 'self' is the only directive that differs, because it is
+    # ignored when a policy is delivered by meta tag — it works as a real header
+    # only. It says: no other site may embed this one in an iframe. That is the
+    # modern replacement for X-Frame-Options (also set below, for old browsers).
+    Content-Security-Policy = "default-src 'self'; script-src 'self' https://plausible.io; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://plausible.io https://formspree.io; form-action 'self' https://formspree.io; frame-src 'self' https://behold.so https://*.behold.so https://snapwidget.com https://*.snapwidget.com; frame-ancestors 'self'; base-uri 'self'; object-src 'none'"
+
+    # Tell browsers to reach this site over HTTPS only for the next year, on the
+    # apex domain and every subdomain, and make it eligible for the preload list.
+    # Header-only: there is no meta-tag equivalent. On GitHub Pages this instead
+    # comes from Settings -> Pages -> "Enforce HTTPS".
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+
+    # Legacy clickjacking defence for browsers predating CSP frame-ancestors.
+    # Header-only — as a meta tag it does nothing.
+    X-Frame-Options = "SAMEORIGIN"
+
+    # Never let a browser second-guess our Content-Type and execute, say, an
+    # uploaded .txt as JavaScript. Header-only.
+    X-Content-Type-Options = "nosniff"
+
+    # Full URL as Referer for same-origin requests, bare origin cross-origin,
+    # nothing on an HTTPS -> HTTP downgrade. Also set as a meta tag in index.html.
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+    # Switch off browser features this site never uses, so injected or embedded
+    # content cannot ask for them either. Header-only.
+    Permissions-Policy = "geolocation=(), microphone=(), camera=()"

@@ -3,9 +3,15 @@ import CTAButton from "../components/CTAButton";
 import Reveal from "../components/Reveal";
 import Timeline from "../components/Timeline";
 import { founders, timeline, colony, nationalFacts } from "../data/content";
+import { useDocumentMeta } from "../hooks/useDocumentMeta";
 import "./History.css";
 
 export default function History() {
+  useDocumentMeta(
+    "Our History",
+    "Sigma Chi began with seven students at Miami University in 1855. Follow that story through to the founding class now building a colony at WashU.",
+  );
+
   return (
     <>
       <HeroBanner

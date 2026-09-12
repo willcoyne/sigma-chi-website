@@ -3,9 +3,15 @@ import Reveal from "../components/Reveal";
 import ValueCard from "../components/ValueCard";
 import ShieldCrest from "../components/ShieldCrest";
 import { threeGreatAims, nationalFacts, colony } from "../data/content";
+import { useDocumentMeta } from "../hooks/useDocumentMeta";
 import "./Values.css";
 
 export default function Values() {
+  useDocumentMeta(
+    "Values & Creed",
+    "Friendship, Justice and Learning — the Three Great Aims behind the motto In Hoc Signo Vinces, plus the shield, the white cross and the Sweetheart song.",
+  );
+
   return (
     <>
       <HeroBanner

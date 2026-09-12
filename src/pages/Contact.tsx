@@ -3,9 +3,15 @@ import Reveal from "../components/Reveal";
 import ContactForm from "../components/ContactForm";
 import CTAButton from "../components/CTAButton";
 import { colony, university } from "../data/content";
+import { useDocumentMeta } from "../hooks/useDocumentMeta";
 import "./Contact.css";
 
 export default function Contact() {
+  useDocumentMeta(
+    "Join Us",
+    "Interested in Sigma Chi's founding class at Washington University in St. Louis? Send the colony a message, or follow the build on Instagram.",
+  );
+
   return (
     <>
       <HeroBanner

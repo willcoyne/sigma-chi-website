@@ -2,20 +2,38 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://washusigmachi.org/</loc>
+    <lastmod>2026-09-12</lastmod>
   </url>
   <url>
     <loc>https://washusigmachi.org/history/</loc>
+    <lastmod>2026-09-12</lastmod>
   </url>
   <url>
     <loc>https://washusigmachi.org/values/</loc>
+    <lastmod>2026-09-12</lastmod>
   </url>
   <url>
     <loc>https://washusigmachi.org/colony/</loc>
+    <lastmod>2026-09-12</lastmod>
   </url>
   <url>
     <loc>https://washusigmachi.org/philanthropy/</loc>
+    <lastmod>2026-09-12</lastmod>
   </url>
   <url>
     <loc>https://washusigmachi.org/contact/</loc>
+    <lastmod>2026-09-12</lastmod>
+  </url>
+  <url>
+    <loc>https://washusigmachi.org/privacy/</loc>
+    <lastmod>2026-09-12</lastmod>
+  </url>
+  <url>
+    <loc>https://washusigmachi.org/terms/</loc>
+    <lastmod>2026-09-12</lastmod>
+  </url>
+  <url>
+    <loc>https://washusigmachi.org/accessibility/</loc>
+    <lastmod>2026-09-12</lastmod>
   </url>
 </urlset>

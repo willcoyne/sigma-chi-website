@@ -39,6 +39,27 @@ export default function Footer() {
           Washington University in St. Louis.
         </p>
       </div>
+
+      <div className="container footer__legal">
+        <nav className="footer__legal-links" aria-label="Legal">
+          <Link to="/privacy">Privacy Policy</Link>
+          <Link to="/terms">Terms of Use</Link>
+          <Link to="/accessibility">Accessibility</Link>
+        </nav>
+
+        <p className="footer__legal-note">
+          Sigma Chi, the White Cross, and related names and insignia are trademarks of Sigma Chi Fraternity.
+          &ldquo;Washington University in St. Louis&rdquo; and &ldquo;WashU&rdquo; are trademarks of Washington
+          University. The shield mark used on this site was drawn for the colony and is not a reproduction of the
+          official Sigma Chi coat of arms.
+        </p>
+
+        <p className="footer__legal-note">
+          Membership selection does not discriminate on the basis of race, color, religion, national origin, ancestry,
+          disability, sexual orientation, gender identity, or veteran status. Hazing is prohibited here in every form:
+          it is contrary to Sigma Chi policy and to Missouri law.
+        </p>
+      </div>
     </footer>
   );
 }

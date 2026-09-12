@@ -36,3 +36,37 @@
   border: 0;
   border-radius: calc(var(--radius-md) - 4px);
 }
+
+/*
+ * Consent gate shown in place of the third-party iframe until the visitor
+ * asks for it. Styled as a card on the navy band so it reads as a deliberate
+ * panel rather than a loading failure.
+ */
+.instagram-embed__gate {
+  background: rgba(250, 247, 240, 0.06);
+  border: 1px solid rgba(250, 247, 240, 0.22);
+  border-radius: var(--radius-md);
+  padding: 28px 24px;
+  margin: 0 auto;
+  max-width: 480px;
+  text-align: left;
+}
+
+.instagram-embed__gate-text {
+  color: var(--cream);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.instagram-embed__gate-text--fine {
+  color: rgba(250, 247, 240, 0.72);
+  font-size: 0.85rem;
+  margin-bottom: 24px;
+}
+
+.instagram-embed__gate-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}

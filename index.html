@@ -2,6 +2,92 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+
+    <!--
+      SECURITY HEADERS, PART 1 OF 3 — the subset GitHub Pages can actually deliver.
+
+      GitHub Pages serves static files and gives us no way to set custom HTTP
+      response headers, so the only security policy we can ship from this repo
+      to the primary host is what a <meta> tag can carry. See SECURITY-HEADERS.md
+      for the full picture and for netlify.toml / vercel.json, which set the real
+      headers on hosts that support them.
+
+      This tag must stay at the top of <head>: a CSP delivered by meta only
+      governs resources the parser reaches AFTER it.
+
+      What is deliberately NOT here, because the browser ignores it in meta form
+      and adding it would only create a false sense of protection:
+        - X-Frame-Options .............. ignored as a meta tag. Full stop. Clickjacking
+                                         protection needs a real header (netlify/vercel)
+                                         or the frame-ancestors directive below.
+        - CSP frame-ancestors .......... explicitly ignored when the policy arrives via
+                                         meta (CSP spec). It lives in the header-based
+                                         copy of this policy only.
+        - Strict-Transport-Security .... ignored as a meta tag. On GitHub Pages, HSTS
+                                         comes from the repository's Settings -> Pages
+                                         -> "Enforce HTTPS" checkbox, not from any file
+                                         in this repo.
+        - X-Content-Type-Options ....... header-only; no meta equivalent exists.
+        - Permissions-Policy ........... header-only; no meta equivalent exists.
+
+      Directive-by-directive rationale (verified against a real `vite build`
+      output in dist/, not assumed):
+        default-src 'self'  Everything not named below must come from this origin.
+        script-src          Vite emits exactly one external <script type="module">
+                            and no inline script, so 'self' covers the app. plausible.io
+                            is listed because src/lib/analytics.ts injects
+                            https://plausible.io/js/script.js at runtime *if*
+                            VITE_PLAUSIBLE_DOMAIN is set. It is not set today, so that
+                            request never happens; the allowance is here so enabling
+                            analytics later is a config change, not a CSP change.
+                            Note there is no 'unsafe-inline' and no 'unsafe-eval'.
+        style-src 'self'    No 'unsafe-inline' is needed. Vite extracts all CSS to an
+                            external stylesheet and emits no inline <style> block. The
+                            inline style *attributes* that React and framer-motion
+                            produce (e.g. style={{...}} in ShieldCrest/SectionDivider,
+                            and the transform/opacity framer-motion animates) are set
+                            through the CSSOM - node.style.setProperty - which CSP does
+                            not police. CSP only checks a style attribute that is parsed
+                            from markup or written with setAttribute("style", ...) /
+                            cssText, and the built bundle contains neither. There is one
+                            dormant exception: framer-motion's <AnimatePresence
+                            mode="popLayout"> creates a <style> element and calls
+                            sheet.insertRule. This site uses mode="wait", so that code
+                            never runs. If someone switches a transition to popLayout
+                            and the layout breaks, that is the cause - fix it by passing
+                            a nonce through MotionConfig, not by adding 'unsafe-inline'.
+        font-src 'self'     All webfonts are self-hosted via @fontsource and build into
+                            /assets/*.woff2. No fonts.googleapis.com, no CDN.
+        img-src             'self' for /favicon.svg and any future local imagery; data:
+                            because Vite inlines assets under 4 KB as data: URIs.
+        connect-src         'self', plausible.io for its /api/event beacon, and
+                            formspree.io because ContactForm.tsx fetch()es
+                            https://formspree.io/f/... .
+        form-action         Where a <form> is allowed to submit. Same reasoning as
+                            connect-src: the contact form's destination is Formspree.
+        frame-src           'self' plus the two Instagram-embed hosts named in
+                            InstagramEmbed.tsx. No iframe is rendered today (the
+                            component falls back to a plain link unless
+                            VITE_INSTAGRAM_EMBED_URL is set); listing them now means
+                            turning the embed on later does not silently get blocked.
+        base-uri 'self'     Stops injected markup from repointing every relative URL
+                            on the page at an attacker's origin.
+        object-src 'none'   No <object>/<embed>/<applet>; nothing here needs them.
+    -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' https://plausible.io; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://plausible.io https://formspree.io; form-action 'self' https://formspree.io; frame-src 'self' https://behold.so https://*.behold.so https://snapwidget.com https://*.snapwidget.com; base-uri 'self'; object-src 'none'"
+    />
+
+    <!--
+      Send the full URL as Referer only to same-origin requests; cross-origin
+      requests get the bare origin, and HTTPS -> HTTP downgrades get nothing.
+      Unlike the headers listed above, this one IS honoured as a meta tag, so it
+      works on GitHub Pages. The netlify/vercel configs also set it as a real
+      Referrer-Policy header.
+    -->
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Sigma Chi at Washington University in St. Louis — the Beta Colony. Friendship, Justice, Learning. In Hoc Signo Vinces." />
@@ -9,7 +95,6 @@
     <title>Sigma Chi | Washington University in St. Louis — Beta Colony</title>
 
     <!-- Open Graph / Facebook -->
-    <!-- TODO: replace with the real domain before deploying -->
     <meta property="og:url" content="https://washusigmachi.org/" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Sigma Chi at Washington University in St. Louis" />
@@ -18,7 +103,15 @@
     <!-- NOTE: og:image intentionally omitted — no licensed logo/photo asset is available yet. Add one before deploying. -->
 
     <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image" />
+    <!--
+      "summary" rather than "summary_large_image" on purpose: the large-image card
+      requires twitter:image, and we have no licensed image asset yet (see the note
+      below). A summary_large_image card with no image degrades to a bare link with
+      no preview at all, whereas "summary" renders correctly without one. Change this
+      back to "summary_large_image" at the same time as adding og:image /
+      twitter:image, not before.
+    -->
+    <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="Sigma Chi | Washington University in St. Louis — Beta Colony" />
     <meta name="twitter:description" content="Sigma Chi at Washington University in St. Louis — the Beta Colony. Friendship, Justice, Learning. In Hoc Signo Vinces." />
     <!-- NOTE: twitter:image intentionally omitted — no licensed logo/photo asset is available yet. Add one before deploying. -->

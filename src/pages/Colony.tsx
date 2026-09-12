@@ -5,9 +5,15 @@ import StatusBadge from "../components/StatusBadge";
 import QuoteBlock from "../components/QuoteBlock";
 import InstagramEmbed from "../components/InstagramEmbed";
 import { colony, university } from "../data/content";
+import { useDocumentMeta } from "../hooks/useDocumentMeta";
 import "./Colony.css";
 
 export default function Colony() {
+  useDocumentMeta(
+    "The Colony Today",
+    "What being a colony means, and where ours stands: a founding class recruiting at WashU, in Good Standing with the Interfraternity Council.",
+  );
+
   return (
     <>
       <HeroBanner

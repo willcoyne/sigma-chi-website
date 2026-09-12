@@ -1,0 +1,66 @@
+/* Page-specific overrides for /privacy. Shared legal typography is in Legal.css. */
+
+.privacy-collect__key {
+  display: block;
+  font-family: ui-monospace, "SFMono-Regular", "Consolas", "Liberation Mono", monospace;
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: var(--gray);
+  margin-top: 2px;
+}
+
+.privacy-recipients__list {
+  display: grid;
+  gap: 20px;
+  margin: 0 0 1.5em;
+}
+
+.privacy-recipients__card {
+  background: var(--cream);
+  border-left: 3px solid rgba(107, 107, 107, 0.35);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  padding: 24px 26px 20px;
+}
+
+.privacy-recipients__card--active {
+  border-left-color: var(--gold);
+}
+
+.privacy-recipients__status {
+  margin-bottom: 10px;
+}
+
+.privacy-recipients__card h3 {
+  margin-top: 0;
+  margin-bottom: 4px;
+  font-size: 1.2rem;
+}
+
+.privacy-recipients__role {
+  font-family: var(--font-body);
+  font-weight: 600;
+  color: var(--navy);
+  margin-bottom: 10px;
+  font-size: 0.98rem;
+}
+
+.privacy-recipients__card p {
+  font-size: 0.98rem;
+}
+
+.privacy-recipients__links {
+  margin-bottom: 0;
+  font-weight: 600;
+}
+
+.privacy-not h3 {
+  margin-top: 36px;
+}
+
+.privacy-other h2 {
+  margin-top: 40px;
+}
+
+.privacy-other h2:first-of-type {
+  margin-top: 0;
+}
