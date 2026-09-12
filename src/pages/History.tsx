@@ -2,6 +2,12 @@ import HeroBanner from "../components/HeroBanner";
 import CTAButton from "../components/CTAButton";
 import Reveal from "../components/Reveal";
 import Timeline from "../components/Timeline";
+import IndexRow from "../components/IndexRow";
+import MaskedText from "../components/motion/MaskedText";
+import ScrollRail from "../components/motion/ScrollRail";
+import ScrollWordReveal from "../components/motion/ScrollWordReveal";
+import VelocityMarquee from "../components/motion/VelocityMarquee";
+import Magnetic from "../components/motion/Magnetic";
 import { founders, timeline, colony, nationalFacts } from "../data/content";
 import { useDocumentMeta } from "../hooks/useDocumentMeta";
 import "./History.css";
@@ -22,60 +28,91 @@ export default function History() {
       />
 
       <section className="section history-intro">
-        <div className="container">
-          <Reveal className="history-intro__head">
-            <p className="eyebrow">June 28, 1855</p>
-            <h2>Seven Students, One Idea</h2>
-            <p>
-              Sigma Chi began at {nationalFacts.foundedLocation}, when seven students chose to break away
-              from an existing society and build something of their own — a fraternity founded on
-              friendship, justice, and learning rather than convenience. Every chapter and colony that has
-              followed, including the one now forming at WashU, traces back to that decision.
-            </p>
+        <div className="container section-split section-split--rail">
+          <ScrollRail />
+          <Reveal className="section-split__head">
+            <p className="eyebrow">{nationalFacts.founded}</p>
+            <MaskedText text="Seven Students, One Idea" />
+            <p className="section-split__note">{nationalFacts.foundedLocation}</p>
           </Reveal>
-          <Reveal delay={0.1} className="history-founders">
-            <h3 className="history-founders__label">The Seven Founders</h3>
-            <ol className="history-founders__grid">
-              {founders.map((name, i) => (
-                <li key={name} className="history-founders__item">
-                  <span className="history-founders__index">{String(i + 1).padStart(2, "0")}</span>
-                  <span className="history-founders__name">{name}</span>
-                </li>
-              ))}
-            </ol>
-          </Reveal>
+          <div className="section-split__body">
+            <Reveal>
+              <p className="lede">
+                Seven students chose to break away from an existing society and build something of
+                their own — a fraternity founded on friendship, justice and learning rather than
+                convenience.
+              </p>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <p>
+                Every chapter and colony that has followed, including the one now forming at WashU,
+                traces back to that decision. The fraternity they started has outlived all seven of
+                them by more than a century, and the standard they set is still the one a colony has
+                to meet before it earns a charter.
+              </p>
+            </Reveal>
+          </div>
         </div>
       </section>
+
+      <section className="section history-founders">
+        <div className="container section-split">
+          <div className="section-split__head">
+            <Reveal>
+              <p className="eyebrow">The Constantine Seven</p>
+              <MaskedText text="The Founders" />
+              <p className="section-split__note">Miami University, 1855</p>
+            </Reveal>
+          </div>
+          <ol className="index-list section-split__body">
+            {founders.map((name, i) => (
+              <IndexRow
+                key={name}
+                as="li"
+                index={i}
+                ordinal={String(i + 1).padStart(2, "0")}
+                title={name}
+              />
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      <VelocityMarquee
+        items={["Oxford, Ohio", "June 28 1855", "Seven Founders", nationalFacts.motto]}
+        tone="navy"
+      />
 
       <section className="section history-timeline">
-        <div className="container">
-          <Reveal className="history-timeline__head">
+        <div className="container section-split">
+          <Reveal className="section-split__head">
             <p className="eyebrow">From Oxford, Ohio to St. Louis</p>
-            <h2>How We Got Here</h2>
+            <MaskedText text="How We Got Here" />
           </Reveal>
-          <Timeline items={timeline} />
+          <div className="section-split__body">
+            <Timeline items={timeline} />
+          </div>
         </div>
       </section>
 
-      <section className="section history-callout">
-        <div className="container">
-          <Reveal>
-            <div className="history-callout__card">
-              <h3>A New Colony, Not a Revival</h3>
-              <p>{colony.note}</p>
-            </div>
-          </Reveal>
-        </div>
-      </section>
+      <ScrollWordReveal
+        kicker="A New Colony"
+        statement="This is not a revival. No borrowed history, no inherited roster — a founding class starting Sigma Chi at WashU for the first time."
+        footnote={colony.note}
+        tone="cream"
+      />
 
-      <section className="section history-cta">
+      <section className="section bleed-band history-cta">
         <div className="container history-cta__inner">
           <Reveal>
-            <h2>The Next Chapter Starts Now</h2>
+            <p className="eyebrow">What Happens Next</p>
+            <MaskedText text="The Next Chapter Starts Now" />
             <p>Meet the founding fathers building Sigma Chi's future at WashU.</p>
-            <CTAButton to="/colony" variant="outline">
-              Meet the Colony
-            </CTAButton>
+            <Magnetic>
+              <CTAButton to="/colony" variant="outline">
+                Meet the Colony
+              </CTAButton>
+            </Magnetic>
           </Reveal>
         </div>
       </section>

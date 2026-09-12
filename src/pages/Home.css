@@ -1,28 +1,3 @@
-/*
- * Asymmetric editorial split: the section heading holds the narrow left column
- * while the numbered aims run down the wide right one.
- */
-.aims-teaser__layout {
-  display: grid;
-  grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
-  gap: var(--space-md) var(--space-lg);
-  align-items: start;
-}
-
-.aims-teaser__head {
-  position: sticky;
-  top: calc(var(--nav-height) + var(--space-md));
-}
-
-.aims-teaser__head h2 {
-  margin-bottom: 0;
-}
-
-/* Closes the list with a rule so the last row is not left hanging. */
-.aims-teaser__grid {
-  border-bottom: 1px solid rgba(11, 37, 69, 0.14);
-}
-
 .stat-strip {
   position: relative;
   background: var(--navy);
@@ -40,35 +15,31 @@
   gap: var(--space-md);
 }
 
+.colony-banner {
+  background: var(--white);
+}
+
 .colony-banner__inner {
-  max-width: none;
-  margin: 0;
-  text-align: left;
+  max-width: 66ch;
 }
 
 .colony-banner__inner .status-badge {
   margin-bottom: var(--space-sm);
 }
 
-.colony-banner__body {
-  color: var(--gray);
-  font-size: clamp(1.05rem, 1.4vw, 1.2rem);
-  line-height: 1.6;
-  max-width: 60ch;
+.colony-banner__inner .lede {
   margin-bottom: var(--space-sm);
 }
 
+.colony-banner__body {
+  color: var(--gray);
+  font-size: 1.05rem;
+  line-height: 1.6;
+  max-width: var(--measure);
+  margin-bottom: var(--space-sm);
+}
 
 @media (max-width: 900px) {
-  .aims-teaser__layout {
-    grid-template-columns: 1fr;
-    gap: var(--space-sm);
-  }
-
-  .aims-teaser__head {
-    position: static;
-  }
-
   .stat-strip__grid {
     grid-template-columns: repeat(2, 1fr);
     row-gap: var(--space-md);

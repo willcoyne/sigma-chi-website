@@ -42,6 +42,7 @@
 }
 
 .nav__link {
+  position: relative;
   display: inline-flex;
   align-items: center;
   /* 44px pointer target floor (WCAG 2.5.8 / Apple HIG). */
@@ -50,8 +51,7 @@
   font-size: 0.95rem;
   font-weight: 600;
   color: rgba(250, 247, 240, 0.85);
-  border-bottom: 2px solid transparent;
-  transition: color 0.2s ease-out, border-color 0.2s ease-out;
+  transition: color 0.2s ease-out;
 }
 
 .nav__link:hover {
@@ -60,7 +60,33 @@
 
 .nav__link--active {
   color: var(--gold);
-  border-color: var(--gold);
+}
+
+/* The single shared indicator that slides between tabs. Inset horizontally so
+   the rule tracks the label rather than the padded hit area. */
+.nav__underline {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 8px;
+  height: 2px;
+  background: var(--gold);
+  border-radius: 1px;
+}
+
+/*
+ * Document reading progress, sitting on the header's bottom edge. Scaled from
+ * the left rather than animating width, so it stays on the compositor.
+ */
+.nav__progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: left;
 }
 
 .nav__toggle {
@@ -88,6 +114,7 @@
   width: 24px;
   height: 2px;
   background: var(--cream);
+  border-radius: 1px;
 }
 
 @media (max-width: 900px) {

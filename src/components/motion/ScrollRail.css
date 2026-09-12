@@ -1,0 +1,21 @@
+.scroll-rail {
+  position: relative;
+  width: 1px;
+  align-self: stretch;
+  min-height: 100%;
+  background: rgba(11, 37, 69, 0.14);
+}
+
+.scroll-rail span {
+  position: absolute;
+  inset: 0;
+  display: block;
+  background: var(--gold);
+  transform-origin: top;
+}
+
+/* On a dark band the base hairline has to lift off the navy instead of sinking
+   into it. */
+.scroll-rail--inverse {
+  background: rgba(250, 247, 240, 0.2);
+}

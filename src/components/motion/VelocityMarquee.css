@@ -1,0 +1,63 @@
+.marquee {
+  overflow: hidden;
+  white-space: nowrap;
+  padding: var(--space-sm) 0;
+  border-top: 1px solid rgba(11, 37, 69, 0.14);
+  border-bottom: 1px solid rgba(11, 37, 69, 0.14);
+  /* The band is decorative texture behind the reading column; it should never
+     grab the eye harder than a heading does. */
+  user-select: none;
+}
+
+.marquee--navy {
+  background: var(--navy);
+  border-color: rgba(201, 162, 39, 0.3);
+}
+
+.marquee--gold {
+  background: var(--gold);
+  border-color: rgba(11, 37, 69, 0.2);
+}
+
+.marquee__track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+
+.marquee__run {
+  display: flex;
+  flex: 0 0 auto;
+}
+
+.marquee__item {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-display-sc);
+  font-weight: 600;
+  font-size: clamp(1.5rem, 3.4vw, 2.6rem);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.1;
+  color: var(--navy);
+}
+
+.marquee--navy .marquee__item {
+  color: var(--cream);
+}
+
+.marquee--gold .marquee__item {
+  color: var(--navy);
+}
+
+.marquee__sep {
+  margin: 0 0.55em;
+  font-size: 0.42em;
+  color: var(--gold);
+  transform: translateY(-0.25em);
+}
+
+.marquee--gold .marquee__sep {
+  color: var(--navy);
+  opacity: 0.5;
+}

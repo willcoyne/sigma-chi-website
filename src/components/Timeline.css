@@ -1,42 +1,94 @@
 .timeline {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2px minmax(0, 1fr);
+  gap: 0 var(--space-md);
+  max-width: 780px;
+}
+
+/* Unlit track. The fill above it is what the scroll position inks in. */
+.timeline__spine {
+  position: relative;
+  background: rgba(11, 37, 69, 0.13);
+}
+
+.timeline__spine-fill {
+  position: absolute;
+  inset: 0;
+  display: block;
+  background: var(--gold);
+  transform-origin: top;
+}
+
+.timeline__list {
   list-style: none;
   margin: 0;
   padding: 0;
-  border-left: 2px solid rgba(11, 37, 69, 0.15);
-  max-width: 720px;
 }
 
 .timeline__item {
   position: relative;
-  padding: 0 0 48px 36px;
+  padding: 0 0 var(--space-lg);
 }
 
 .timeline__item:last-child {
   padding-bottom: 0;
 }
 
+/*
+ * Pulled back over the spine. Left is half the marker's width plus the gap and
+ * the spine's own width, so it sits centred on the line.
+ */
 .timeline__marker {
   position: absolute;
-  left: -7px;
-  top: 6px;
-  width: 12px;
-  height: 12px;
+  left: calc(-1 * var(--space-md) - 8px);
+  top: 8px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   background: var(--gold);
-  border: 2px solid var(--cream);
-  box-shadow: 0 0 0 2px var(--navy);
+  box-shadow: 0 0 0 4px var(--white);
+}
+
+/* The timeline sits on a white section on /history; on cream the halo has to
+   match whatever is behind it. */
+.timeline--on-cream .timeline__marker {
+  box-shadow: 0 0 0 4px var(--cream);
 }
 
 .timeline__year {
   font-family: var(--font-display-sc);
   color: var(--gold-dark);
   font-weight: 600;
-  letter-spacing: 0.08em;
-  margin: 0 0 4px;
-  font-size: 0.95rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin: 0 0 var(--space-2xs);
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.timeline__item h3 {
+  margin: 0 0 var(--space-2xs);
 }
 
 .timeline__body {
   color: var(--gray);
+  max-width: 58ch;
   margin: 0;
+  font-size: 1.05rem;
+}
+
+@media (max-width: 700px) {
+  .timeline {
+    grid-template-columns: 2px minmax(0, 1fr);
+    gap: 0 var(--space-sm);
+  }
+
+  .timeline__marker {
+    left: calc(-1 * var(--space-sm) - 8px);
+  }
+
+  .timeline__item {
+    padding-bottom: var(--space-md);
+  }
 }

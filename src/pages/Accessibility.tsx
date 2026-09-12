@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import HeroBanner from "../components/HeroBanner";
 import Reveal from "../components/Reveal";
 import CTAButton from "../components/CTAButton";
+import ScrollRail from "../components/motion/ScrollRail";
 import { LEGAL_LAST_UPDATED, legalContactRoute } from "../data/legal";
 import "./Legal.css";
 import "./Accessibility.css";
@@ -31,6 +32,7 @@ export default function Accessibility() {
 
       <section className="section legal a11y-intro">
         <div className="container legal__inner legal__body">
+          <ScrollRail />
           <Reveal>
             <p className="legal__updated">Last updated: {LEGAL_LAST_UPDATED}</p>
             <h2>Our commitment</h2>
@@ -51,6 +53,7 @@ export default function Accessibility() {
 
       <section className="section legal legal--cream a11y-measures">
         <div className="container legal__inner legal__body">
+          <ScrollRail />
           <Reveal>
             <p className="eyebrow">What's In Place</p>
             <h2>Measures built into the site</h2>
@@ -118,6 +121,7 @@ export default function Accessibility() {
 
       <section className="section legal a11y-limits">
         <div className="container legal__inner legal__body">
+          <ScrollRail />
           <Reveal>
             <p className="eyebrow">Known Limitations</p>
             <h2>Where we fall short</h2>
@@ -161,6 +165,7 @@ export default function Accessibility() {
 
       <section className="section legal legal--cream a11y-feedback">
         <div className="container legal__inner legal__body">
+          <ScrollRail />
           <Reveal>
             <p className="eyebrow">Feedback</p>
             <h2>Tell us what isn't working</h2>

@@ -1,4 +1,4 @@
-import "./ValueCard.css";
+import IndexRow from "./IndexRow";
 
 interface ValueCardProps {
   title: string;
@@ -6,12 +6,15 @@ interface ValueCardProps {
   index: number;
 }
 
+/**
+ * One of the Three Great Aims, rendered as an editorial index row. Kept as its
+ * own component because the aims are the only numbered list on the site whose
+ * ordinal is derived from its position in the creed rather than the page.
+ */
 export default function ValueCard({ title, body, index }: ValueCardProps) {
   return (
-    <div className="value-card">
-      <span className="value-card__index">{String(index).padStart(2, "0")}</span>
-      <h3>{title}</h3>
+    <IndexRow ordinal={String(index).padStart(2, "0")} title={title} index={index - 1}>
       <p>{body}</p>
-    </div>
+    </IndexRow>
   );
 }

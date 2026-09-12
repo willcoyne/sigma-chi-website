@@ -86,14 +86,15 @@
   max-width: 20ch;
 }
 
-/* Gold rule between headline and standfirst — the editorial hinge. */
-.hero h1::after {
-  content: "";
+/* Gold rule between headline and standfirst — the editorial hinge. A real
+   element rather than a pseudo-element so it can be drawn on entrance. */
+.hero__rule {
   display: block;
   width: 96px;
   height: 3px;
-  margin-top: var(--space-sm);
+  margin-bottom: var(--space-sm);
   background: var(--gold);
+  transform-origin: left;
 }
 
 .hero__subtitle {

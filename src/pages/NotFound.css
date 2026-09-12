@@ -1,29 +1,17 @@
 .not-found {
   background: var(--white);
-  text-align: center;
 }
 
 .not-found__inner {
-  max-width: 600px;
-  margin: 0 auto;
+  max-width: 58ch;
 }
 
-.not-found p {
-  color: var(--gray);
-  font-size: 1.05rem;
-  margin-bottom: 28px;
+.not-found__inner .lede {
+  margin-bottom: var(--space-md);
 }
 
 .not-found__actions {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 16px;
-}
-
-@media (max-width: 520px) {
-  .not-found__actions {
-    flex-direction: column;
-    align-items: stretch;
-  }
+  gap: var(--space-xs);
 }

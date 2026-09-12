@@ -2,6 +2,10 @@ import HeroBanner from "../components/HeroBanner";
 import Reveal from "../components/Reveal";
 import ContactForm from "../components/ContactForm";
 import CTAButton from "../components/CTAButton";
+import MaskedText from "../components/motion/MaskedText";
+import ScrollRail from "../components/motion/ScrollRail";
+import VelocityMarquee from "../components/motion/VelocityMarquee";
+import Magnetic from "../components/motion/Magnetic";
 import { colony, university } from "../data/content";
 import { LEGAL_CONTACT_EMAIL } from "../data/legal";
 import { useDocumentMeta } from "../hooks/useDocumentMeta";
@@ -24,41 +28,58 @@ export default function Contact() {
 
       <section className="section contact-main">
         <div className="container contact-main__grid">
-          <Reveal className="contact-main__copy">
-            <p className="eyebrow">Why Now</p>
-            <h2>Shape the Colony From Day One</h2>
-            <p>
-              Founding fathers don't inherit a culture — they build one. Joining Sigma Chi's colony at WashU
-              means having a direct hand in how friendship, justice, and learning actually get lived out on
-              this campus, from the first members recruited to the traditions that get started along the
-              way.
-            </p>
-            <p>
-              There's no roster to fit into and no precedent to follow. Just a small founding class, backed
-              by Sigma Chi's national organization, doing the early work of building something that lasts.
-            </p>
-          </Reveal>
+          <ScrollRail />
+          <div className="contact-main__copy">
+            <Reveal>
+              <p className="eyebrow">Why Now</p>
+              <MaskedText text="Shape the Colony From Day One" />
+              <p className="lede">
+                Founding fathers don't inherit a culture — they build one.
+              </p>
+              <p>
+                Joining Sigma Chi's colony at WashU means having a direct hand in how friendship,
+                justice, and learning actually get lived out on this campus, from the first members
+                recruited to the traditions that get started along the way.
+              </p>
+              <p>
+                There's no roster to fit into and no precedent to follow. Just a small founding
+                class, backed by Sigma Chi's national organization, doing the early work of building
+                something that lasts.
+              </p>
+            </Reveal>
+          </div>
           <Reveal delay={0.1} className="contact-main__form">
             <ContactForm />
           </Reveal>
         </div>
       </section>
 
+      <VelocityMarquee
+        items={["Now Recruiting", "Founding Class", "Spring 2026"]}
+        tone="gold"
+        baseVelocity={1.6}
+      />
+
       <section className="section contact-follow">
         <div className="container contact-follow__inner">
           <Reveal>
             <span className="washu-hairline" aria-hidden="true" />
-            <p className="contact-follow__campus">{university.name} &middot; {university.campus}</p>
+            <p className="contact-follow__campus">
+              {university.name} &middot; {university.campus}
+            </p>
+            <MaskedText text="Or Just Say Hello" />
             <p className="contact-follow__ig-label">
-              Prefer not to use the form? Reach the colony directly by email, or follow along
-              on Instagram at {colony.instagram}.
+              Prefer not to use the form? Reach the colony directly by email, or follow along on
+              Instagram at {colony.instagram}.
             </p>
             <p className="contact-follow__email">
               <a href={`mailto:${LEGAL_CONTACT_EMAIL}`}>{LEGAL_CONTACT_EMAIL}</a>
             </p>
-            <CTAButton href="https://instagram.com/sigmachiwashu" variant="outline-dark">
-              Follow on Instagram
-            </CTAButton>
+            <Magnetic>
+              <CTAButton href="https://instagram.com/sigmachiwashu" variant="outline-dark">
+                Follow on Instagram
+              </CTAButton>
+            </Magnetic>
           </Reveal>
         </div>
       </section>

@@ -1,0 +1,83 @@
+/*
+ * Motion-driven variant of the .index-row primitive in theme.css. The static
+ * border-top is replaced by a hairline pseudo-element plus a gold rule that
+ * wipes across it on hover, so the two rules can animate independently.
+ */
+.index-row--motion {
+  position: relative;
+  border-top: 0;
+  list-style: none;
+}
+
+.index-row--motion::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  background: rgba(11, 37, 69, 0.14);
+}
+
+.index-row__rule {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  background: var(--gold);
+  transform-origin: left;
+  /* Sits directly on top of the hairline above. */
+  z-index: 1;
+}
+
+.index-row__body {
+  grid-column: 2;
+  min-width: 0;
+}
+
+.index-row__headline {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.index-row__headline h3,
+.index-row__headline h4 {
+  margin: 0 0 var(--space-2xs);
+}
+
+.index-row__meta {
+  flex: 0 0 auto;
+  font-family: var(--font-display-sc);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+.index-row__body p {
+  max-width: 58ch;
+  margin-bottom: 0;
+  color: var(--gray);
+  font-size: 1.05rem;
+}
+
+/* Closes a run of rows so the final one is not left hanging. */
+.index-list {
+  border-bottom: 1px solid rgba(11, 37, 69, 0.14);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (max-width: 700px) {
+  .index-row__body {
+    grid-column: 1;
+  }
+
+  .index-row__headline {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2xs);
+  }
+}

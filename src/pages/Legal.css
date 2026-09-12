@@ -172,6 +172,16 @@
 }
 
 @media (max-width: 700px) {
+  /* The rail is a margin ornament; on a phone the margin is gone. */
+  .legal__inner {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .legal__inner > .scroll-rail {
+    display: none;
+  }
+
   .legal__table thead {
     font-size: 0.75rem;
   }
@@ -191,8 +201,19 @@
  * site, so they get the strongest reading treatment: a heavier standfirst, real
  * vertical rhythm between sections, and hairline rules marking each heading.
  */
+/*
+ * The reading column, with the scroll-progress hairline as a real first column
+ * rather than a decoration layered over the text. Each legal section fills its
+ * own rail, so the rule doubles as "how much of this clause is left".
+ *
+ * The max-width carries the rail and its gutter on top of the measure, so the
+ * prose itself still sets to exactly --measure.
+ */
 .legal__inner {
-  max-width: var(--measure);
+  display: grid;
+  grid-template-columns: 1px minmax(0, 1fr);
+  gap: var(--space-md);
+  max-width: calc(var(--measure) + 1px + var(--space-md));
   margin-inline: auto;
 }
 

@@ -1,0 +1,27 @@
+.masked-text__run {
+  display: block;
+}
+
+/*
+ * The mask. Its height comes from the inherited line-height, and the display
+ * headings here set that below 1 — so without padding, overflow: hidden crops
+ * ascenders at the top and descenders (g, y, p) flat at the bottom. Padding is
+ * added on both edges (overflow clips at the border box, so padding stays
+ * visible) and pulled back out of the layout with negative margins.
+ */
+.masked-text__clip {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding-top: 0.1em;
+  margin-top: -0.1em;
+  padding-bottom: 0.18em;
+  margin-bottom: -0.18em;
+}
+
+/* No will-change here on purpose: a headline can be dozens of words, each
+   would become its own compositor layer, and Motion already sets it for the
+   duration of the animation. */
+.masked-text__word {
+  display: inline-block;
+}

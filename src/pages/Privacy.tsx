@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import HeroBanner from "../components/HeroBanner";
 import Reveal from "../components/Reveal";
 import CTAButton from "../components/CTAButton";
+import ScrollRail from "../components/motion/ScrollRail";
 import {
   LEGAL_LAST_UPDATED,
   LEGAL_CONTACT_EMAIL,
@@ -37,6 +38,7 @@ export default function Privacy() {
 
       <section className="section legal privacy-intro">
         <div className="container legal__inner legal__body">
+          <ScrollRail />
           <Reveal>
             <p className="legal__updated">Last updated: {LEGAL_LAST_UPDATED}</p>
             <h2>What this policy covers</h2>
@@ -67,6 +69,7 @@ export default function Privacy() {
 
       <section className="section legal legal--cream privacy-collect">
         <div className="container legal__inner legal__body">
+          <ScrollRail />
           <Reveal>
             <p className="eyebrow">What We Collect</p>
             <h2>Every field on the contact form</h2>
@@ -118,6 +121,7 @@ export default function Privacy() {
 
       <section className="section legal privacy-recipients">
         <div className="container legal__inner legal__body">
+          <ScrollRail />
           <Reveal>
             <p className="eyebrow">Who Receives It</p>
             <h2>Where a submission goes</h2>
@@ -179,6 +183,7 @@ export default function Privacy() {
 
       <section className="section legal legal--cream privacy-not">
         <div className="container legal__inner legal__body">
+          <ScrollRail />
           <Reveal>
             <p className="eyebrow">What We Don't Do</p>
             <h2>Things this site does not do</h2>
@@ -229,6 +234,7 @@ export default function Privacy() {
 
       <section className="section legal privacy-retention">
         <div className="container legal__inner legal__body">
+          <ScrollRail />
           <Reveal>
             <p className="eyebrow">Retention</p>
             <h2>How long submissions are kept</h2>
@@ -248,6 +254,7 @@ export default function Privacy() {
 
       <section className="section legal legal--cream privacy-rights">
         <div className="container legal__inner legal__body">
+          <ScrollRail />
           <Reveal>
             <p className="eyebrow">Your Choices</p>
             <h2>Access, correction and deletion</h2>
@@ -273,6 +280,7 @@ export default function Privacy() {
 
       <section className="section legal privacy-other">
         <div className="container legal__inner legal__body">
+          <ScrollRail />
           <Reveal>
             <h2>Age</h2>
             <p>

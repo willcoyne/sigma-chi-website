@@ -1,0 +1,11 @@
+.magnetic {
+  display: inline-block;
+  will-change: transform;
+}
+
+/* Nothing to promote when the effect is off. */
+@media (prefers-reduced-motion: reduce) {
+  .magnetic {
+    will-change: auto;
+  }
+}

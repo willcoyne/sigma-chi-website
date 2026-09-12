@@ -1,0 +1,126 @@
+/*
+ * The section is deliberately taller than the viewport. That surplus height is
+ * the scroll budget the words are revealed across; the stage inside it sticks
+ * so the reader appears to be holding still while the sentence resolves.
+ */
+.word-reveal {
+  position: relative;
+  min-height: 210vh;
+  overflow-x: clip;
+}
+
+.word-reveal--navy {
+  background: var(--navy);
+}
+
+.word-reveal--cream {
+  background: var(--cream);
+  border-top: 1px solid rgba(11, 37, 69, 0.12);
+  border-bottom: 1px solid rgba(11, 37, 69, 0.12);
+}
+
+.word-reveal__stage {
+  position: sticky;
+  top: var(--nav-height);
+  display: flex;
+  align-items: center;
+  min-height: calc(100vh - var(--nav-height));
+  padding: var(--space-lg) 0;
+}
+
+.word-reveal__layout {
+  display: grid;
+  grid-template-columns: 1px minmax(0, 1fr);
+  gap: var(--space-md);
+  align-items: start;
+  width: 100%;
+}
+
+/* Scroll position through the statement, as a hairline that fills downward. */
+.word-reveal__rail {
+  position: relative;
+  align-self: stretch;
+  min-height: 120px;
+  background: rgba(201, 162, 39, 0.25);
+}
+
+.word-reveal--cream .word-reveal__rail {
+  background: rgba(11, 37, 69, 0.15);
+}
+
+.word-reveal__rail span {
+  position: absolute;
+  inset: 0;
+  display: block;
+  background: var(--gold);
+  transform-origin: top;
+}
+
+.word-reveal__kicker {
+  margin-bottom: var(--space-sm);
+}
+
+.word-reveal--navy .word-reveal__kicker {
+  color: var(--gold);
+}
+
+.word-reveal__statement {
+  margin: 0;
+  max-width: 22ch;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(2.1rem, 5.2vw, 4.2rem);
+  line-height: 1.06;
+  letter-spacing: -0.026em;
+  text-wrap: balance;
+  color: var(--cream);
+}
+
+.word-reveal--cream .word-reveal__statement {
+  color: var(--navy);
+}
+
+.word-reveal__footnote {
+  margin: var(--space-md) 0 0;
+  max-width: 46ch;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: rgba(250, 247, 240, 0.62);
+}
+
+.word-reveal--cream .word-reveal__footnote {
+  color: var(--gray);
+}
+
+/*
+ * Reduced motion: nothing is pinned and nothing is dimmed, so the section is
+ * just a statement in a band and takes only the height it needs.
+ */
+.word-reveal--static {
+  min-height: 0;
+}
+
+.word-reveal--static .word-reveal__stage {
+  position: static;
+  min-height: 0;
+  padding: var(--space-xl) 0;
+}
+
+@media (max-width: 700px) {
+  .word-reveal {
+    min-height: 180vh;
+  }
+
+  .word-reveal__layout {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .word-reveal__rail {
+    display: none;
+  }
+
+  .word-reveal__statement {
+    max-width: none;
+  }
+}

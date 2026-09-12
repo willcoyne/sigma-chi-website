@@ -175,6 +175,87 @@ button {
 }
 
 /*
+ * The section workhorse, shared by every content page: a narrow heading column
+ * that stays pinned while a wide body column scrolls past it. Sections then
+ * scan identically from page to page, and the reader always has the current
+ * heading on screen.
+ */
+.section-split {
+  display: grid;
+  grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+  gap: var(--space-md) var(--space-lg);
+  align-items: start;
+}
+
+/* Adds the scroll-progress hairline as a true first column. */
+.section-split--rail {
+  grid-template-columns: 1px minmax(0, 4fr) minmax(0, 8fr);
+  gap: var(--space-md) var(--space-md);
+}
+
+.section-split__head {
+  position: sticky;
+  top: calc(var(--nav-height) + var(--space-md));
+}
+
+.section-split__head h2 {
+  margin-bottom: var(--space-xs);
+}
+
+.section-split__head > p:last-child {
+  margin-bottom: 0;
+}
+
+/* Small print under a pinned heading — a date line, a source, a status. */
+.section-split__note {
+  font-family: var(--font-display-sc);
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+
+.section-split__body > p {
+  max-width: var(--measure);
+  color: var(--gray);
+  font-size: 1.05rem;
+}
+
+.section-split__body > p:last-child {
+  margin-bottom: 0;
+}
+
+/* A lead paragraph set in the display face, to open a section at scale. */
+.lede {
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 2.1vw, 1.75rem);
+  line-height: 1.4;
+  letter-spacing: -0.012em;
+  color: var(--navy);
+  max-width: 44ch;
+}
+
+.bleed-band .lede {
+  color: var(--cream);
+}
+
+@media (max-width: 900px) {
+  .section-split,
+  .section-split--rail {
+    grid-template-columns: 1fr;
+    gap: var(--space-sm);
+  }
+
+  .section-split__head {
+    position: static;
+  }
+
+  .section-split--rail > .scroll-rail {
+    display: none;
+  }
+}
+
+/*
  * Numbered index row — the editorial replacement for a grid of cards.
  * A hairline rule, an oversized ordinal, then the content.
  */

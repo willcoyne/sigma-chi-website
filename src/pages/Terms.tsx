@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import HeroBanner from "../components/HeroBanner";
 import Reveal from "../components/Reveal";
 import CTAButton from "../components/CTAButton";
+import ScrollRail from "../components/motion/ScrollRail";
 import { LEGAL_LAST_UPDATED, legalContactRoute } from "../data/legal";
 import "./Legal.css";
 import "./Terms.css";
@@ -31,6 +32,7 @@ export default function Terms() {
 
       <section className="section legal terms-intro">
         <div className="container legal__inner legal__body">
+          <ScrollRail />
           <Reveal>
             <p className="legal__updated">Last updated: {LEGAL_LAST_UPDATED}</p>
             <h2>About this site</h2>
@@ -54,6 +56,7 @@ export default function Terms() {
 
       <section className="section legal legal--cream terms-unofficial">
         <div className="container legal__inner legal__body">
+          <ScrollRail />
           <Reveal>
             <p className="eyebrow">Status</p>
             <h2>This is an unofficial colony site</h2>
@@ -80,6 +83,7 @@ export default function Terms() {
 
       <section className="section legal terms-ip">
         <div className="container legal__inner legal__body">
+          <ScrollRail />
           <Reveal>
             <p className="eyebrow">Ownership</p>
             <h2>Content and marks</h2>
@@ -119,6 +123,7 @@ export default function Terms() {
 
       <section className="section legal legal--cream terms-links">
         <div className="container legal__inner legal__body">
+          <ScrollRail />
           <Reveal>
             <p className="eyebrow">Third Parties</p>
             <h2>Links and outside services</h2>
@@ -144,6 +149,7 @@ export default function Terms() {
 
       <section className="section legal terms-money">
         <div className="container legal__inner legal__body">
+          <ScrollRail />
           <Reveal>
             <p className="eyebrow">No Solicitation</p>
             <h2>This site does not ask for money</h2>
@@ -169,6 +175,7 @@ export default function Terms() {
 
       <section className="section legal legal--cream terms-form">
         <div className="container legal__inner legal__body">
+          <ScrollRail />
           <Reveal>
             <p className="eyebrow">The Contact Form</p>
             <h2>Sending a message is not an application</h2>
@@ -190,6 +197,7 @@ export default function Terms() {
 
       <section className="section legal terms-law">
         <div className="container legal__inner legal__body">
+          <ScrollRail />
           <Reveal>
             <h2>Governing law</h2>
             <p>

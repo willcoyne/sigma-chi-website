@@ -3,18 +3,19 @@ import { motion, useScroll, useTransform, useSpring, useReducedMotion } from "mo
 import type { ReactNode } from "react";
 import ShieldCrest from "./ShieldCrest";
 import SectionDivider from "./SectionDivider";
+import MaskedText from "./motion/MaskedText";
+import { EASE_PREMIUM } from "../lib/motion";
 import "./HeroBanner.css";
 
 interface HeroBannerProps {
   eyebrow?: ReactNode;
-  title: ReactNode;
+  /** Plain string: the headline is split per word for the masked reveal. */
+  title: string;
   subtitle?: ReactNode;
   children?: ReactNode;
   showShield?: boolean;
   size?: "large" | "small";
 }
-
-const EASE_PREMIUM = [0.22, 1, 0.36, 1] as const;
 
 export default function HeroBanner({
   eyebrow,
@@ -44,16 +45,20 @@ export default function HeroBanner({
 
   const shieldY = useTransform(smooth, [0, 1], [0, 140]);
   const shieldScale = useTransform(smooth, [0, 1], [1, 1.12]);
+  const shieldRotate = useTransform(smooth, [0, 1], [0, 8]);
   const archY = useTransform(smooth, [0, 1], [0, 70]);
   const contentY = useTransform(smooth, [0, 1], [0, -40]);
   const contentOpacity = useTransform(smooth, [0, 0.75], [1, 0]);
+  // The rules behind the type spread apart as the hero is scrolled off, so the
+  // arcade opens up rather than simply sliding.
+  const archScale = useTransform(smooth, [0, 1], [1, 1.15]);
 
   // Reduced motion: no parallax, no fade-on-scroll, no entrance transforms.
   // Everything below collapses to a static layout.
   const parallax = prefersReducedMotion
     ? {}
-    : { style: { y: shieldY, scale: shieldScale } };
-  const archParallax = prefersReducedMotion ? {} : { style: { y: archY } };
+    : { style: { y: shieldY, scale: shieldScale, rotate: shieldRotate } };
+  const archParallax = prefersReducedMotion ? {} : { style: { y: archY, scaleX: archScale } };
   const contentParallax = prefersReducedMotion
     ? {}
     : { style: { y: contentY, opacity: contentOpacity } };
@@ -88,14 +93,26 @@ export default function HeroBanner({
             {eyebrow}
           </motion.p>
         )}
-        <motion.h1 {...rise(0.22)}>{title}</motion.h1>
+
+        <MaskedText text={title} as="h1" immediate delay={0.24} stagger={0.055} />
+
+        {/* The editorial hinge between headline and standfirst, drawn left to
+            right once the last word of the headline has landed. */}
+        <motion.span
+          className="hero__rule"
+          aria-hidden="true"
+          initial={prefersReducedMotion ? false : { scaleX: 0 }}
+          animate={prefersReducedMotion ? false : { scaleX: 1 }}
+          transition={{ duration: 0.7, delay: 0.55, ease: EASE_PREMIUM }}
+        />
+
         {subtitle && (
-          <motion.p className="hero__subtitle" {...rise(0.34)}>
+          <motion.p className="hero__subtitle" {...rise(0.62)}>
             {subtitle}
           </motion.p>
         )}
         {children && (
-          <motion.div className="hero__cta-row" {...rise(0.44)}>
+          <motion.div className="hero__cta-row" {...rise(0.72)}>
             {children}
           </motion.div>
         )}

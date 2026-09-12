@@ -2,38 +2,62 @@
   background: var(--white);
 }
 
+/*
+ * Rail, argument, form. The copy column is pinned so the reason to get in touch
+ * stays on screen while the form is being filled in.
+ */
 .contact-main__grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 56px;
+  grid-template-columns: 1px minmax(0, 5fr) minmax(0, 7fr);
+  gap: var(--space-md) var(--space-lg);
   align-items: start;
 }
 
-.contact-main__copy p {
+.contact-main__copy {
+  position: sticky;
+  top: calc(var(--nav-height) + var(--space-md));
+}
+
+.contact-main__copy .lede {
+  margin-bottom: var(--space-sm);
+}
+
+.contact-main__copy p:not(.lede):not(.eyebrow) {
   color: var(--gray);
   font-size: 1.05rem;
+  max-width: 46ch;
 }
 
 .contact-follow__inner {
-  max-width: 49ch;
-  margin: 0 auto;
-  text-align: left;
+  max-width: 56ch;
 }
 
 .contact-follow__campus {
-  margin-top: 16px;
+  margin-top: var(--space-xs);
+  margin-bottom: var(--space-sm);
+  font-family: var(--font-display-sc);
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
   color: var(--navy);
-  font-weight: 600;
 }
 
 .contact-follow__ig-label {
   color: var(--gray);
-  margin-bottom: 20px;
+  margin-bottom: var(--space-xs);
 }
 
 @media (max-width: 900px) {
   .contact-main__grid {
     grid-template-columns: 1fr;
+  }
+
+  .contact-main__grid > .scroll-rail {
+    display: none;
+  }
+
+  .contact-main__copy {
+    position: static;
   }
 }
 
