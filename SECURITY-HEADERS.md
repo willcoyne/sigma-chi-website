@@ -71,7 +71,7 @@ Identical in all three files except for one directive:
 ```
 default-src 'self';
 script-src 'self' https://plausible.io;
-style-src 'self';
+style-src 'self' 'unsafe-inline';
 font-src 'self';
 img-src 'self' data:;
 connect-src 'self' https://plausible.io https://formspree.io;
@@ -94,28 +94,45 @@ Why each third-party origin is allowed:
   `src/components/InstagramEmbed.tsx`, allowed in `frame-src` so the embed works if
   `VITE_INSTAGRAM_EMBED_URL` is ever set. No iframe renders today.
 
-Note what is *absent*: no `'unsafe-inline'`, no `'unsafe-eval'`, and no wildcard
-origins.
+Note what is *absent* from `script-src`: no `'unsafe-inline'`, no `'unsafe-eval'`,
+and no wildcard origins. `style-src` does carry `'unsafe-inline'` — see below.
 
-## Why `style-src` does not need `'unsafe-inline'`
+## Why `style-src` needs `'unsafe-inline'`
 
-This is the directive most likely to be "fixed" by someone in a hurry, so here is
-the reasoning, verified against a real `vite build` rather than assumed:
+Verified in a headless Chromium run against the dev server, not reasoned about.
 
-- Vite extracts every co-located `.css` file into one external stylesheet and emits
-  **no** inline `<style>` block and **no** inline `<script>` in `dist/index.html`.
-  The prerender step copies that same shell to each route, so it holds everywhere.
-- React and framer-motion do produce inline *style attributes* (`style={{ ... }}`,
-  and the transforms framer-motion animates). CSP checks a `style` attribute when it
-  is parsed from markup or written with `setAttribute("style", ...)` / `cssText`.
-  React and framer-motion instead write through the CSSOM
-  (`node.style.setProperty(...)`), which CSP does not police. The built bundle
-  contains no `setAttribute("style")` and no `cssText`.
-- One dormant exception: framer-motion's `<AnimatePresence mode="popLayout">` builds
-  a `<style>` element and calls `sheet.insertRule`. This site uses `mode="wait"`, so
-  that code path never executes. If someone switches a transition to `popLayout` and
-  layout animations break, that is the cause - the fix is to pass a nonce through
-  `MotionConfig`, **not** to add `'unsafe-inline'`.
+An earlier version of this file argued the opposite: that Vite emits no inline
+`<style>` block, that React and Motion write styles through the CSSOM
+(`node.style.setProperty`), and that CSP therefore does not police them. The
+first claim is true. The rest is wrong. With `style-src 'self'` the browser
+logs, on every page:
+
+```
+Applying inline style violates the following Content Security Policy directive
+'style-src 'self''. Either the 'unsafe-inline' keyword, a hash (...), or a
+nonce (...) is required to enable inline execution. The action has been blocked.
+```
+
+React and Motion apply animation state as inline `style` attributes, and those
+are blocked. The visible result is that every entrance animation, the hero
+parallax and the arch dividers stop working.
+
+The options were:
+
+| Option | Viable here? |
+|---|---|
+| `'unsafe-inline'` on `style-src` | Yes — what we do |
+| Per-response `nonce` via `MotionConfig` | No — needs a server to generate a nonce per response; GitHub Pages serves static files only |
+| Hashes for each style | No — Motion generates style values at runtime, so the set is unbounded |
+| Drop the animation library | Rejected — a real design cost for a small hardening gain |
+
+`'unsafe-inline'` on `style-src` is a far weaker concession than on
+`script-src`. It permits CSS injection (defacement, and some exfiltration of
+attribute values through selectors) but not script execution. `script-src`
+keeps no `'unsafe-inline'` and no `'unsafe-eval'`.
+
+If this site ever moves to a host that can set headers per response, switch to
+a nonce and drop the keyword.
 
 ## Changing the policy
 

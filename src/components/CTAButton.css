@@ -4,6 +4,8 @@
   justify-content: center;
   gap: 8px;
   padding: 14px 30px;
+  /* Pointer/touch target floor (WCAG 2.5.8, and Apple HIG's 44pt rule). */
+  min-height: 44px;
   font-family: var(--font-body);
   font-weight: 700;
   font-size: 15px;
@@ -11,7 +13,12 @@
   border-radius: var(--radius-sm);
   border: 1.5px solid transparent;
   cursor: pointer;
-  transition: background-color 0.2s ease-out, color 0.2s ease-out, border-color 0.2s ease-out, transform 0.2s ease-out;
+  transition:
+    background-color 0.25s cubic-bezier(0.25, 0.1, 0.25, 1),
+    color 0.25s cubic-bezier(0.25, 0.1, 0.25, 1),
+    border-color 0.25s cubic-bezier(0.25, 0.1, 0.25, 1),
+    box-shadow 0.25s cubic-bezier(0.25, 0.1, 0.25, 1),
+    transform 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
   position: relative;
   overflow: hidden;
 }
@@ -42,4 +49,28 @@
 }
 .cta-button--outline-dark:hover {
   background: rgba(11, 37, 69, 0.06);
+}
+
+.cta-button--filled:hover {
+  box-shadow: 0 6px 20px rgba(201, 162, 39, 0.32);
+}
+
+/* Disabled submit (form in flight). Keep it legible, not ghosted out. */
+.cta-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+  transform: none;
+  box-shadow: none;
+}
+
+.cta-button:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta-button,
+  .cta-button:hover {
+    transform: none;
+  }
 }

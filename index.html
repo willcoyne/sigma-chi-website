@@ -41,21 +41,21 @@
                             request never happens; the allowance is here so enabling
                             analytics later is a config change, not a CSP change.
                             Note there is no 'unsafe-inline' and no 'unsafe-eval'.
-        style-src 'self'    No 'unsafe-inline' is needed. Vite extracts all CSS to an
-                            external stylesheet and emits no inline <style> block. The
-                            inline style *attributes* that React and framer-motion
-                            produce (e.g. style={{...}} in ShieldCrest/SectionDivider,
-                            and the transform/opacity framer-motion animates) are set
-                            through the CSSOM - node.style.setProperty - which CSP does
-                            not police. CSP only checks a style attribute that is parsed
-                            from markup or written with setAttribute("style", ...) /
-                            cssText, and the built bundle contains neither. There is one
-                            dormant exception: framer-motion's <AnimatePresence
-                            mode="popLayout"> creates a <style> element and calls
-                            sheet.insertRule. This site uses mode="wait", so that code
-                            never runs. If someone switches a transition to popLayout
-                            and the layout breaks, that is the cause - fix it by passing
-                            a nonce through MotionConfig, not by adding 'unsafe-inline'.
+        style-src           'unsafe-inline' IS required here. Verified in a real browser,
+                            not reasoned about: Vite does extract all CSS to an external
+                            stylesheet and emits no inline <style> block, but React and
+                            Motion apply animation state as inline style *attributes*
+                            (style={{...}} in ShieldCrest/SectionDivider, and the
+                            opacity/transform Motion animates). Under style-src 'self'
+                            Chromium refuses them with "Applying inline style violates the
+                            following Content Security Policy directive ... The action has
+                            been blocked", and every animation on the site dies. An earlier
+                            revision of this file claimed these writes go through the CSSOM
+                            and escape CSP; that is wrong, and a screenshot run caught it.
+                            The stricter alternative is a per-response nonce, which needs a
+                            server GitHub Pages does not provide. script-src deliberately
+                            keeps no 'unsafe-inline' - that is the directive that matters
+                            for XSS, and it stays locked down.
         font-src 'self'     All webfonts are self-hosted via @fontsource and build into
                             /assets/*.woff2. No fonts.googleapis.com, no CDN.
         img-src             'self' for /favicon.svg and any future local imagery; data:
@@ -76,7 +76,7 @@
     -->
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self' https://plausible.io; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://plausible.io https://formspree.io; form-action 'self' https://formspree.io; frame-src 'self' https://behold.so https://*.behold.so https://snapwidget.com https://*.snapwidget.com; base-uri 'self'; object-src 'none'"
+      content="default-src 'self'; script-src 'self' https://plausible.io; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://plausible.io https://formspree.io; form-action 'self' https://formspree.io; frame-src 'self' https://behold.so https://*.behold.so https://snapwidget.com https://*.snapwidget.com; base-uri 'self'; object-src 'none'"
     />
 
     <!--

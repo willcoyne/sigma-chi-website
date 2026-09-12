@@ -20,9 +20,9 @@
 }
 
 .philanthropy-detail__inner {
-  max-width: 720px;
+  max-width: 63ch;
   margin: 0 auto;
-  text-align: center;
+  text-align: left;
 }
 
 .philanthropy-detail__inner p {
@@ -31,9 +31,9 @@
 }
 
 .philanthropy-local__inner {
-  max-width: 640px;
+  max-width: 56ch;
   margin: 0 auto;
-  text-align: center;
+  text-align: left;
 }
 
 .philanthropy-local__inner p {

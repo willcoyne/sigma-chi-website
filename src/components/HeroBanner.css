@@ -1,27 +1,45 @@
+/*
+ * Editorial hero: type-led and left-aligned, with the crest demoted to a large
+ * offset watermark rather than a centred badge. The old centred-stack version
+ * gave the headline nowhere to grow; ragged-left lets it run to display sizes.
+ */
+/*
+ * --nav-height must match .nav__inner in NavBar.css. The sticky nav occupies
+ * flow space, so without pulling the hero up underneath it the transparent nav
+ * sits on the cream page background — and every cream nav label becomes
+ * invisible against it. The hero compensates with matching extra top padding,
+ * so this stays self-contained instead of putting a negative margin on <main>.
+ */
 .hero {
   position: relative;
-  background: radial-gradient(circle at 20% 0%, #133463 0%, var(--navy) 45%, var(--navy-dark) 100%);
+  margin-top: calc(var(--nav-height) * -1);
+  background: radial-gradient(circle at 12% -10%, #15396c 0%, var(--navy) 45%, var(--navy-dark) 100%);
   color: var(--cream);
-  padding: 160px 0 96px;
-  text-align: center;
+  padding: calc(var(--space-2xl) + var(--nav-height)) 0 var(--space-xl);
   overflow: hidden;
 }
 
 .hero--small {
-  padding: 128px 0 72px;
+  padding: calc(var(--space-xl) + 40px + var(--nav-height)) 0 var(--space-lg);
 }
 
+/*
+ * Vertical rules evoking the Danforth arcades, weighted to the left so they
+ * read as a margin rule rather than wallpaper.
+ */
 .hero__arch-bg {
   position: absolute;
   inset: 0;
-  opacity: 0.5;
+  opacity: 0.55;
   background-image: repeating-linear-gradient(
     90deg,
-    rgba(201, 162, 39, 0.06) 0px,
-    rgba(201, 162, 39, 0.06) 1px,
+    rgba(201, 162, 39, 0.07) 0px,
+    rgba(201, 162, 39, 0.07) 1px,
     transparent 1px,
-    transparent 80px
+    transparent 96px
   );
+  -webkit-mask-image: linear-gradient(90deg, #000 0%, transparent 62%);
+  mask-image: linear-gradient(90deg, #000 0%, transparent 62%);
   pointer-events: none;
 }
 
@@ -30,39 +48,87 @@
   z-index: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
+  text-align: left;
+}
+
+/*
+ * The crest sits behind the type at the right edge. Decorative here, so it is
+ * allowed to bleed off-canvas; ShieldCrest keeps its own aria-label.
+ */
+.hero__shield-wrap {
+  position: absolute;
+  top: 50%;
+  right: clamp(-60px, -2vw, 0px);
+  transform: translateY(-50%);
+  z-index: 0;
+  opacity: 0.14;
+  pointer-events: none;
 }
 
 .hero__shield {
-  margin: 0 auto 20px;
+  width: clamp(180px, 26vw, 340px);
+  height: auto;
 }
 
 .hero__eyebrow {
   color: var(--gold);
+  margin-bottom: var(--space-sm);
 }
 
 .hero h1 {
   color: var(--cream);
-  max-width: 780px;
+  max-width: 16ch;
+  margin-bottom: var(--space-sm);
+}
+
+.hero--small h1 {
+  max-width: 20ch;
+}
+
+/* Gold rule between headline and standfirst — the editorial hinge. */
+.hero h1::after {
+  content: "";
+  display: block;
+  width: 96px;
+  height: 3px;
+  margin-top: var(--space-sm);
+  background: var(--gold);
 }
 
 .hero__subtitle {
-  max-width: 620px;
-  font-size: 1.15rem;
-  color: rgba(250, 247, 240, 0.82);
-  margin-top: 4px;
+  max-width: 54ch;
+  font-size: clamp(1.05rem, 1.5vw, 1.3rem);
+  line-height: 1.55;
+  color: rgba(250, 247, 240, 0.86);
+  margin-top: 0;
 }
 
 .hero__cta-row {
   display: flex;
-  gap: 16px;
+  gap: var(--space-xs);
   flex-wrap: wrap;
-  justify-content: center;
-  margin-top: 16px;
+  justify-content: flex-start;
+  margin-top: var(--space-sm);
 }
 
 .hero__divider {
   position: absolute;
   bottom: -1px;
   left: 0;
+}
+
+@media (max-width: 700px) {
+  .hero {
+    padding: calc(var(--space-xl) + 24px + var(--nav-height)) 0 var(--space-lg);
+  }
+
+  .hero__shield-wrap {
+    right: -80px;
+    opacity: 0.09;
+  }
+
+  .hero h1 {
+    max-width: none;
+  }
 }

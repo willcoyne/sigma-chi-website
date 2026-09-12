@@ -1,19 +1,32 @@
-.aims-teaser__head {
-  text-align: center;
-  max-width: 640px;
-  margin: 0 auto 48px;
+/*
+ * Asymmetric editorial split: the section heading holds the narrow left column
+ * while the numbered aims run down the wide right one.
+ */
+.aims-teaser__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+  gap: var(--space-md) var(--space-lg);
+  align-items: start;
 }
 
+.aims-teaser__head {
+  position: sticky;
+  top: calc(var(--nav-height) + var(--space-md));
+}
+
+.aims-teaser__head h2 {
+  margin-bottom: 0;
+}
+
+/* Closes the list with a rule so the last row is not left hanging. */
 .aims-teaser__grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 28px;
+  border-bottom: 1px solid rgba(11, 37, 69, 0.14);
 }
 
 .stat-strip {
   position: relative;
   background: var(--navy);
-  padding: 24px 0 80px;
+  padding: var(--space-sm) 0 var(--space-xl);
 }
 
 .stat-strip__divider-top {
@@ -24,31 +37,40 @@
 .stat-strip__grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 32px;
+  gap: var(--space-md);
 }
 
 .colony-banner__inner {
-  max-width: 680px;
-  margin: 0 auto;
-  text-align: center;
+  max-width: none;
+  margin: 0;
+  text-align: left;
 }
 
 .colony-banner__inner .status-badge {
-  margin-bottom: 20px;
+  margin-bottom: var(--space-sm);
 }
 
 .colony-banner__body {
   color: var(--gray);
-  font-size: 1.05rem;
-  margin-bottom: 24px;
+  font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+  line-height: 1.6;
+  max-width: 60ch;
+  margin-bottom: var(--space-sm);
 }
 
+
 @media (max-width: 900px) {
-  .aims-teaser__grid {
+  .aims-teaser__layout {
     grid-template-columns: 1fr;
+    gap: var(--space-sm);
   }
+
+  .aims-teaser__head {
+    position: static;
+  }
+
   .stat-strip__grid {
     grid-template-columns: repeat(2, 1fr);
-    row-gap: 40px;
+    row-gap: var(--space-md);
   }
 }

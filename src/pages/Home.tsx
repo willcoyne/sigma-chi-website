@@ -32,14 +32,14 @@ export default function Home() {
       </HeroBanner>
 
       <section className="section aims-teaser">
-        <div className="container">
+        <div className="container aims-teaser__layout">
           <Reveal className="aims-teaser__head">
             <p className="eyebrow">The Three Great Aims</p>
             <h2>What We Stand For</h2>
           </Reveal>
           <div className="aims-teaser__grid">
             {threeGreatAims.map((aim, i) => (
-              <Reveal key={aim.key} delay={i * 0.1}>
+              <Reveal key={aim.key} delay={i * 0.08}>
                 <ValueCard title={aim.title} body={aim.body} index={i + 1} />
               </Reveal>
             ))}

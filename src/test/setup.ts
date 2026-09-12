@@ -12,7 +12,7 @@ afterEach(() => {
 });
 
 // jsdom doesn't implement these browser APIs, but the app relies on them
-// (ScrollToTop calls window.scrollTo; framer-motion's `whileInView`/Reveal
+// (ScrollToTop calls window.scrollTo; Motion's `whileInView`/Reveal
 // components use IntersectionObserver/ResizeObserver). Stub them so
 // rendering the real app tree doesn't crash or spam "not implemented" logs.
 window.scrollTo = () => {};

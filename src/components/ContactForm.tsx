@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { Link } from "react-router-dom";
+import CTAButton from "./CTAButton";
 import "./ContactForm.css";
 
 // Real submission backend: this form posts to Formspree (https://formspree.io) using
@@ -329,16 +330,15 @@ export default function ContactForm() {
         Your message is emailed to the colony through Formspree, a third-party form service —
         see our <Link to="/privacy">Privacy Policy</Link>.
       </p>
-      {/* CTAButton takes no `disabled` prop, so the submit control is a local button
-          using the same cta-button classes. Swap it back once CTAButton supports it. */}
-      <button
+      <CTAButton
         type="submit"
-        className="cta-button cta-button--filled contact-form__submit"
+        variant="filled"
         disabled={submitting}
-        aria-busy={submitting}
+        busy={submitting}
+        className="contact-form__submit"
       >
         {submitting ? "Sending…" : "Send Message"}
-      </button>
+      </CTAButton>
     </form>
   );
 }

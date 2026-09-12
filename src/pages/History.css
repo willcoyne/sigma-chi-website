@@ -1,7 +1,7 @@
 .history-intro__head {
-  max-width: 720px;
-  margin: 0 auto 48px;
-  text-align: center;
+  max-width: 63ch;
+  margin: 0 auto var(--space-md);
+  text-align: left;
 }
 
 .history-intro__head p {
@@ -10,12 +10,12 @@
 }
 
 .history-founders {
-  max-width: 860px;
+  max-width: 75ch;
   margin: 0 auto;
 }
 
 .history-founders__label {
-  text-align: center;
+  text-align: left;
   font-family: var(--font-display-sc);
   font-size: 1.1rem;
   letter-spacing: 0.04em;
@@ -25,7 +25,7 @@
 
 .history-founders__grid {
   list-style: none;
-  margin: 0;
+  margin: 0 auto;
   padding: 0;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -59,13 +59,13 @@
 }
 
 .history-timeline__head {
-  max-width: 640px;
-  margin: 0 auto 48px;
-  text-align: center;
+  max-width: 56ch;
+  margin: 0 auto var(--space-md);
+  text-align: left;
 }
 
 .history-callout__card {
-  max-width: 760px;
+  max-width: 66ch;
   margin: 0 auto;
   background: var(--cream);
   border: 1px solid rgba(11, 37, 69, 0.15);
@@ -87,11 +87,11 @@
 .history-cta {
   background: var(--navy);
   color: var(--white);
-  text-align: center;
+  text-align: left;
 }
 
 .history-cta__inner {
-  max-width: 620px;
+  max-width: 54ch;
   margin: 0 auto;
 }
 

@@ -15,9 +15,9 @@
 }
 
 .contact-follow__inner {
-  max-width: 560px;
+  max-width: 49ch;
   margin: 0 auto;
-  text-align: center;
+  text-align: left;
 }
 
 .contact-follow__campus {

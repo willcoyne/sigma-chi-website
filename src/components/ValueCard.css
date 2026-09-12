@@ -1,31 +1,64 @@
+/*
+ * Editorial index row rather than a card. The ordinal sits in its own column
+ * against a hairline rule, so the three aims read as a numbered list in a
+ * magazine contents page instead of three boxes in a grid.
+ */
 .value-card {
-  background: var(--white);
-  border-top: 3px solid var(--gold);
-  border-radius: var(--radius-md);
-  padding: 32px 28px;
-  box-shadow: var(--shadow-card);
-  transition: transform 0.25s ease-out, box-shadow 0.25s ease-out;
-  height: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+  gap: var(--space-sm) var(--space-md);
+  align-items: baseline;
+  padding: var(--space-md) 0;
+  border-top: 1px solid rgba(11, 37, 69, 0.14);
+  transition: border-color 0.3s var(--ease-premium);
 }
 
 .value-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-card-hover);
+  border-top-color: var(--gold);
 }
 
 .value-card__index {
-  font-family: var(--font-display);
-  font-size: 2.25rem;
+  grid-row: 1 / span 2;
+  font-family: var(--font-display-sc);
+  font-size: clamp(1.75rem, 3.2vw, 2.75rem);
   font-weight: 600;
+  line-height: 1;
+  color: var(--gold-dark);
+  font-variant-numeric: tabular-nums;
+  transition: color 0.3s var(--ease-premium);
+}
+
+.value-card:hover .value-card__index {
   color: var(--gold);
-  opacity: 0.6;
 }
 
 .value-card h3 {
-  margin-top: 8px;
+  grid-column: 2;
+  margin: 0 0 var(--space-2xs);
 }
 
 .value-card p {
+  grid-column: 2;
+  max-width: 56ch;
   color: var(--gray);
   margin-bottom: 0;
+  font-size: 1.05rem;
+}
+
+@media (max-width: 700px) {
+  .value-card {
+    grid-template-columns: 1fr;
+    gap: var(--space-2xs);
+    padding: var(--space-sm) 0;
+  }
+
+  .value-card__index {
+    grid-row: auto;
+    grid-column: 1;
+  }
+
+  .value-card h3,
+  .value-card p {
+    grid-column: 1;
+  }
 }

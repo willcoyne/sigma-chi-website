@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import type { ReactNode } from "react";
 
 interface RevealProps {
@@ -11,7 +11,7 @@ interface RevealProps {
 /**
  * Standard scroll-reveal wrapper: fade + rise into view, once, with an
  * optional stagger delay for grids of cards. Respects reduced-motion via
- * framer-motion's automatic feature detection through the parent config.
+ * Motion's automatic feature detection through the parent config.
  */
 export default function Reveal({ children, delay = 0, y = 24, className = "" }: RevealProps) {
   return (

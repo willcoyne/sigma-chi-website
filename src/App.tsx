@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import { MotionConfig, AnimatePresence } from "framer-motion";
+import { MotionConfig, AnimatePresence } from "motion/react";
 import { useEffect, useRef } from "react";
 import NavBar from "./components/NavBar";
 import Footer from "./components/Footer";
