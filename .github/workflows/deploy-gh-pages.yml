@@ -34,20 +34,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Build-time configuration lives in .env.production, NOT in an `env:`
+      # block here. An empty repository variable still arrives as a set-but-
+      # empty environment variable, and that silently overrides .env.production
+      # — which is exactly how the contact form ended up posting nowhere.
       - name: Build
         run: npm run build
-        env:
-          # These are repository *variables*, not secrets: Vite inlines every
-          # VITE_* value into the public client bundle, so there is nothing to
-          # keep hidden. Set them under
-          # Settings > Secrets and variables > Actions > Variables.
-          #
-          # While VITE_FORMSPREE_ENDPOINT is unset the contact form runs in
-          # local-only demo mode and discards submissions without sending them
-          # anywhere. See the comment in src/components/ContactForm.tsx.
-          VITE_FORMSPREE_ENDPOINT: ${{ vars.VITE_FORMSPREE_ENDPOINT }}
-          VITE_PLAUSIBLE_DOMAIN: ${{ vars.VITE_PLAUSIBLE_DOMAIN }}
-          VITE_INSTAGRAM_EMBED_URL: ${{ vars.VITE_INSTAGRAM_EMBED_URL }}
 
       # The SPA fallback (dist/404.html) and the per-route index.html files
       # that make deep links answer 200 instead of 404 are both emitted by
