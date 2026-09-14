@@ -25,3 +25,8 @@ dist-ssr
 
 # Local Claude Code settings
 .claude/settings.local.json
+
+# Full-resolution photo originals. The web-sized copies in src/assets/ are what
+# ships; these are kept locally so they can be re-exported. See assets-src/README.md.
+assets-src/*
+!assets-src/README.md

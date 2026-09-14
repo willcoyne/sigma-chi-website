@@ -19,6 +19,37 @@
   font-size: clamp(1.35rem, 2.4vw, 1.9rem);
 }
 
+/*
+ * Officer titles are the one piece of metadata a prospective member actually
+ * scans for, so they get the gold treatment rather than the muted grey the
+ * meta slot uses elsewhere.
+ */
+.colony-leadership .index-row__meta {
+  color: var(--gold-dark);
+  font-size: 0.8rem;
+}
+
+/*
+ * The Grand Praetor sits outside the colony, so the block is set apart from
+ * the officer roster rather than continuing its numbering.
+ */
+.colony-oversight {
+  margin-top: var(--space-md);
+  padding: var(--space-sm) 0 0 var(--space-sm);
+  border-left: 2px solid rgba(11, 37, 69, 0.14);
+}
+
+.colony-oversight h3 {
+  margin-bottom: var(--space-2xs);
+}
+
+.colony-oversight p:last-child {
+  max-width: 56ch;
+  margin-bottom: 0;
+  color: var(--gray);
+  font-size: 1.02rem;
+}
+
 .colony-cta__inner {
   max-width: 58ch;
 }

@@ -1,0 +1,44 @@
+.photo-band {
+  margin: 0;
+}
+
+/*
+ * The clipping frame. Its height is set from the photo's aspect ratio rather
+ * than by the image itself, because the image inside is deliberately taller
+ * than the frame so it has room to drift.
+ */
+.photo-band__frame {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: var(--navy);
+}
+
+.photo-band__img {
+  position: absolute;
+  inset: -6% 0;
+  width: 100%;
+  /* 112% covers the 6% of travel at each end of the parallax. */
+  height: 112%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.photo-band__caption {
+  max-width: var(--container-max);
+  margin: var(--space-xs) auto 0;
+  padding: 0 24px;
+  font-family: var(--font-display-sc);
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+
+/*
+ * Deliberately no taller aspect ratio on mobile. The source is 16:9 and the
+ * subjects span its full width, so a narrower frame with object-fit: cover
+ * would crop the sides and cut the people at each end out of the photo.
+ * Letting it stay 16:9 keeps everyone in shot, just smaller.
+ */

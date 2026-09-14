@@ -126,14 +126,47 @@ export const colony = {
   ifcStatus: "Good Standing with WashU's Interfraternity Council",
   grandPraetor: "Robert Westrich",
   expansionCoordinator: "Ethan Ortiz-Ulibarri",
-  foundingMember: "Benjamin Duke",
   coordinatorQuote:
     "Community service, focus more on academics, and more on philanthropy — the entire goal is to make it better.",
   instagram: "@sigmachiwashu",
   instagramBio: "Men join fraternities, leaders of men join Sigma Chi. Est. 1855.",
   note:
-    "This is a newly forming colony, not a revival of the former Tau Tau chapter. No previous Tau Tau alumni are part of this founding class, and no colony-specific officer roster, chapter size, or event calendar is public yet — the colony is still being built.",
+    "This is a newly forming colony, not a revival of the former Tau Tau chapter. No previous Tau Tau alumni are part of this founding class, and no chapter size or event calendar is public yet — the colony is still being built.",
 };
+
+// Colony officers, supplied directly by the colony (not from public sources).
+// Sigma Chi uses Latin officer titles, so each carries a plain-English gloss —
+// "Consul" means nothing to a prospective member or their parents.
+export interface Officer {
+  name: string;
+  title: string;
+  gloss: string;
+  body: string;
+}
+
+export const officers: Officer[] = [
+  {
+    name: "Ben Duke",
+    title: "Consul",
+    gloss: "President",
+    body:
+      "Consul is Sigma Chi's title for the chapter president. Ben Duke leads the founding class and is the colony's senior officer as it works toward a charter.",
+  },
+  {
+    name: "Marco Repoulis",
+    title: "Pro Consul",
+    gloss: "Vice President",
+    body:
+      "Pro Consul is the vice president, supporting the Consul and standing in when needed. Marco Repoulis holds the role for the founding class.",
+  },
+  {
+    name: "Will Kamp",
+    title: "Recruitment Chair",
+    gloss: "Recruitment",
+    body:
+      "Will Kamp runs recruitment for the founding class — the first person most prospective members hear from after getting in touch.",
+  },
+];
 
 export const university = {
   name: "Washington University in St. Louis",

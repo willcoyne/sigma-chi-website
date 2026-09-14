@@ -5,11 +5,14 @@ import StatusBadge from "../components/StatusBadge";
 import QuoteBlock from "../components/QuoteBlock";
 import InstagramEmbed from "../components/InstagramEmbed";
 import IndexRow from "../components/IndexRow";
+import PhotoBand from "../components/PhotoBand";
 import MaskedText from "../components/motion/MaskedText";
 import ScrollRail from "../components/motion/ScrollRail";
 import ScrollWordReveal from "../components/motion/ScrollWordReveal";
 import Magnetic from "../components/motion/Magnetic";
-import { colony, university } from "../data/content";
+import { colony, officers, university } from "../data/content";
+import photoWide from "../assets/colony-founding-class.jpg";
+import photoNarrow from "../assets/colony-founding-class-900.jpg";
 import { useDocumentMeta } from "../hooks/useDocumentMeta";
 import "./Colony.css";
 
@@ -18,19 +21,6 @@ export default function Colony() {
     "The Colony Today",
     "What being a colony means, and where ours stands: a founding class recruiting at WashU, in Good Standing with the Interfraternity Council.",
   );
-
-  const leadership = [
-    {
-      name: colony.grandPraetor,
-      meta: "National Oversight",
-      body: `As Grand Praetor, ${colony.grandPraetor} provides Sigma Chi's national oversight for the WashU colony as it works toward a future charter.`,
-    },
-    {
-      name: colony.foundingMember,
-      meta: "Founding Father",
-      body: `${colony.foundingMember} is among the founding fathers building this colony's first class — the group that future brothers will look back on as the ones who started it all.`,
-    },
-  ];
 
   return (
     <>
@@ -86,24 +76,46 @@ export default function Colony() {
         </div>
       </section>
 
+      <PhotoBand
+        src={photoWide}
+        srcSet={`${photoNarrow} 900w, ${photoWide} 1800w`}
+        width={1800}
+        height={1012}
+        alt="Around twenty people from Sigma Chi's WashU colony standing together for a group photo indoors."
+        caption="The colony at Washington University in St. Louis"
+      />
+
       <section className="section colony-leadership">
         <div className="container section-split">
           <Reveal className="section-split__head">
             <p className="eyebrow">Who's Involved</p>
             <MaskedText text="The People Behind It" />
+            <p className="section-split__note">Founding class officers</p>
           </Reveal>
-          <div className="index-list section-split__body">
-            {leadership.map((person, i) => (
-              <IndexRow
-                key={person.name}
-                index={i}
-                ordinal={String(i + 1).padStart(2, "0")}
-                title={person.name}
-                meta={person.meta}
-              >
-                <p>{person.body}</p>
-              </IndexRow>
-            ))}
+          <div className="section-split__body">
+            <div className="index-list">
+              {officers.map((officer, i) => (
+                <IndexRow
+                  key={officer.name}
+                  index={i}
+                  ordinal={String(i + 1).padStart(2, "0")}
+                  title={officer.name}
+                  meta={officer.title}
+                >
+                  <p>{officer.body}</p>
+                </IndexRow>
+              ))}
+            </div>
+
+            <Reveal delay={0.1} className="colony-oversight">
+              <p className="eyebrow">National Oversight</p>
+              <h3>{colony.grandPraetor}</h3>
+              <p>
+                As Grand Praetor, {colony.grandPraetor} provides Sigma Chi's national oversight for
+                the WashU colony as it works toward a future charter. The role sits outside the
+                colony rather than within it.
+              </p>
+            </Reveal>
           </div>
         </div>
       </section>
