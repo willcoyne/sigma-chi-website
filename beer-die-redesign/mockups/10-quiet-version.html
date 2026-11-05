@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Beer Die Quiet Version</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Cormorant+SC:wght@600&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+/* Concept 10 · Quiet Version. Today's home page, with the game folded into
+   three small places: the nav crest turns into a die that tumbles as the
+   reading-progress mark, section dividers become the table's gold center
+   line, and the page ends on a small table where the die lands crest up.
+   Driven by native CSS scroll-driven animations; where those are missing, a
+   few lines of JS scrub the same keyframes through a negative delay. */
+:root {
+  --navy: #0b2545;
+  --navy-dark: #071931;
+  --navy-lift: #15396c;
+  --gold: #c9a227;
+  --gold-dark: #8a6d1b;
+  --ply: #a8874a;
+  --cream: #faf7f0;
+  --ink: #1a1a1a;
+  --gray: #6b6b6b;
+  --white: #ffffff;
+  --font-display: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --font-sc: "Cormorant SC", Georgia, "Times New Roman", serif;
+  --font-body: "Source Sans 3", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --nav-h: 84px;
+  --gut-l: max(24px, env(safe-area-inset-left, 0px));
+  --gut-r: max(24px, env(safe-area-inset-right, 0px));
+}
+* { box-sizing: border-box; }
+html { background: var(--cream); }
+body { margin: 0; background: var(--cream); color: var(--ink); font-family: var(--font-body); font-size: 18px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 110; background: var(--navy-dark); }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 600; color: var(--navy); margin: 0 0 .5em; line-height: 1.06; letter-spacing: -0.015em; text-wrap: balance; }
+h2 { font-size: clamp(2.1rem, 4.4vw, 3.4rem); }
+p { margin: 0 0 1em; }
+a { color: inherit; text-decoration: none; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+.wrap { max-width: 1200px; margin: 0 auto; padding-left: var(--gut-l); padding-right: var(--gut-r); }
+.eyebrow { font-family: var(--font-sc); font-weight: 600; font-size: .8rem; letter-spacing: .22em; text-transform: uppercase; color: var(--gold-dark); margin: 0 0 16px; }
+
+/* ---------- Nav (the live site's, plus the die) ---------- */
+.nav { position: fixed; top: env(safe-area-inset-top, 0px); left: 0; right: 0; z-index: 100; transition: background-color .3s ease-out, box-shadow .3s ease-out; }
+.nav--solid { background: rgba(11, 37, 69, .86); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); box-shadow: 0 1px 0 rgba(201, 162, 39, .55); }
+.nav__inner { display: flex; align-items: center; justify-content: space-between; height: var(--nav-h); }
+.brand { display: flex; align-items: center; gap: 12px; font-family: var(--font-display); font-weight: 700; font-size: 1.3rem; color: var(--cream); }
+.brand em { font-style: normal; color: var(--gold); }
+.nav__links { display: flex; gap: 4px; }
+.nav__links a { display: inline-flex; align-items: center; min-height: 44px; padding: 10px 14px; font-size: .95rem; font-weight: 600; color: rgba(250, 247, 240, .85); }
+.nav__links a:hover { color: var(--cream); }
+.nav__links a[aria-current] { color: var(--gold); }
+.nav__toggle { display: none; min-width: 44px; min-height: 44px; background: none; border: 1px solid rgba(250, 247, 240, .3); border-radius: 4px; color: var(--cream); font: 600 .85rem var(--font-body); letter-spacing: .06em; cursor: pointer; }
+.nav__progress { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--gold); transform-origin: 0 50%; }
+@media (max-width: 980px) {
+  :root { --nav-h: 68px; }
+  .nav__toggle { display: inline-flex; align-items: center; justify-content: center; padding: 0 12px; }
+  .nav__links { display: none; position: absolute; top: var(--nav-h); left: 0; right: 0; flex-direction: column; padding: 8px var(--gut-r) 16px var(--gut-l); background: rgba(7, 25, 49, .97); }
+  .nav__links--open { display: flex; }
+}
+
+/* The nav mark: the shield at rest, a 30px die once the page moves. */
+.navdie { position: relative; width: 36px; height: 43px; flex: none; }
+.navdie__shield { position: absolute; inset: 0; width: 100%; height: 100%; }
+.navdie__fade { position: absolute; left: 3px; top: 6px; width: 30px; height: 30px; perspective: 160px; }
+.navdie__cube { --s: 30px; position: absolute; inset: 0; transform-style: preserve-3d; }
+
+/* ---------- Die (shared by the nav and the landing table) ---------- */
+.face, .core { position: absolute; inset: 0; backface-visibility: hidden; }
+.face { border-radius: 16%; background: radial-gradient(circle at 30% 25%, var(--navy-lift), var(--navy) 58%, var(--navy-dark)); box-shadow: inset 0 0 0 1px rgba(201, 162, 39, .7), inset 0 0 calc(var(--s) * .14) rgba(0, 0, 0, .4); }
+.core { background: var(--navy-dark); }
+.face svg { display: block; width: 100%; height: 100%; }
+.f1 { transform: translateZ(calc(var(--s) / 2)); }
+.f6 { transform: rotateY(180deg) translateZ(calc(var(--s) / 2)); }
+.f3 { transform: rotateY(90deg) translateZ(calc(var(--s) / 2)); }
+.f4 { transform: rotateY(-90deg) translateZ(calc(var(--s) / 2)); }
+.f2 { transform: rotateX(90deg) translateZ(calc(var(--s) / 2)); }
+.f5 { transform: rotateX(-90deg) translateZ(calc(var(--s) / 2)); }
+.c1 { transform: translateZ(calc(var(--s) * .47)); }
+.c6 { transform: rotateY(180deg) translateZ(calc(var(--s) * .47)); }
+.c3 { transform: rotateY(90deg) translateZ(calc(var(--s) * .47)); }
+.c4 { transform: rotateY(-90deg) translateZ(calc(var(--s) * .47)); }
+.c2 { transform: rotateX(90deg) translateZ(calc(var(--s) * .47)); }
+.c5 { transform: rotateX(-90deg) translateZ(calc(var(--s) * .47)); }
+.pip { fill: var(--gold); stroke: var(--gold-dark); stroke-width: 1; }
+
+/* ---------- Buttons ---------- */
+.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 14px 30px; font: 700 15px var(--font-body); letter-spacing: .04em; border-radius: 4px; border: 1.5px solid transparent; transition: background-color .25s, transform .25s; }
+.btn--gold { background: var(--gold); color: var(--navy-dark); }
+.btn--gold:hover { background: #b6911f; transform: translateY(-1px); }
+.btn--ghost { border-color: var(--cream); color: var(--cream); }
+.btn--ghost:hover { background: rgba(250, 247, 240, .12); }
+.btn--navy { border-color: var(--navy); color: var(--navy); }
+
+/* ---------- Hero: unchanged from the live site ---------- */
+.hero { position: relative; overflow: hidden; background: radial-gradient(circle at 12% -10%, var(--navy-lift) 0%, var(--navy) 45%, var(--navy-dark) 100%); color: var(--cream); padding-block: calc(152px + var(--nav-h)) 104px; }
+.hero__arch { position: absolute; inset: 0; opacity: .55; pointer-events: none; background-image: repeating-linear-gradient(90deg, rgba(201, 162, 39, .07) 0 1px, transparent 1px 96px); -webkit-mask-image: linear-gradient(90deg, #000 0%, transparent 62%); mask-image: linear-gradient(90deg, #000 0%, transparent 62%); }
+.hero__shield { position: absolute; top: 50%; right: clamp(-60px, -2vw, 0px); width: clamp(180px, 26vw, 340px); height: auto; transform: translateY(-50%); opacity: .14; pointer-events: none; }
+.hero__inner { position: relative; z-index: 1; }
+.hero .eyebrow { color: var(--gold); margin-bottom: 24px; }
+.hero h1 { color: var(--cream); font-weight: 700; font-size: clamp(3rem, 7.5vw, 5.75rem); line-height: .98; letter-spacing: -0.028em; max-width: 16ch; margin-bottom: 24px; }
+.hero__rule { display: block; width: 96px; height: 3px; background: var(--gold); margin-bottom: 24px; }
+.hero__sub { max-width: 54ch; font-size: clamp(1.05rem, 1.5vw, 1.3rem); line-height: 1.55; color: rgba(250, 247, 240, .86); margin: 0; }
+.hero__ctas { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 24px; }
+@media (max-width: 700px) {
+  .hero { padding-block: calc(128px + var(--nav-h)) 64px; }
+  .hero__shield { right: -80px; opacity: .09; }
+}
+
+/* ---------- The line: section dividers drawn like the table's center stripe ---------- */
+.line { padding-block: 0; }
+.line__track { position: relative; height: 15px; }
+.line__track::before, .line__track::after { content: ""; position: absolute; top: 0; width: 2px; height: 15px; background: var(--gold); }
+.line__track::before { left: 0; }
+.line__track::after { right: 0; }
+.line__draw { position: absolute; left: 0; right: 0; top: 6px; height: 3px; background: var(--gold); transform-origin: 50% 50%; }
+
+/* ---------- Content sections ---------- */
+.aims { padding-block: 0 104px; background: var(--cream); }
+.aims .line { margin-bottom: 88px; padding-top: 88px; }
+.split { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 40px 64px; align-items: start; }
+.split__head { position: sticky; top: calc(var(--nav-h) + 40px); }
+.note { font-family: var(--font-display); font-style: italic; font-size: 1.25rem; color: var(--gold-dark); }
+.row { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr); gap: 0 24px; padding-block: 32px; border-top: 1px solid rgba(11, 37, 69, .14); }
+.row:last-child { border-bottom: 1px solid rgba(11, 37, 69, .14); }
+.row__n { font-family: var(--font-display); font-size: 2.6rem; line-height: 1; color: var(--gold-dark); font-variant-numeric: tabular-nums; }
+.row h3 { font-size: clamp(1.45rem, 2.5vw, 1.95rem); margin-bottom: 8px; }
+.row p { color: #3d3d3d; margin: 0; max-width: 60ch; }
+.stats { background: var(--navy); color: var(--cream); padding-block: 72px; }
+.stats__grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 40px; }
+.stat__n { font-family: var(--font-display); font-weight: 700; font-size: clamp(2.6rem, 5vw, 4rem); line-height: 1; color: var(--gold); font-variant-numeric: tabular-nums; }
+.stat__l { margin-top: 10px; font-size: .95rem; color: rgba(250, 247, 240, .78); }
+.band { background: var(--gold); color: var(--navy-dark); padding-block: 18px; overflow: hidden; }
+.band p { margin: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 28px; font-family: var(--font-display); font-style: italic; font-weight: 600; font-size: clamp(1.3rem, 2.4vw, 1.8rem); }
+.colony { background: var(--white); padding-block: 0 104px; }
+.colony .line { padding-top: 88px; margin-bottom: 72px; }
+.colony__inner { max-width: 66ch; }
+.badge { display: inline-block; margin-bottom: 24px; padding: 6px 14px; border: 1px solid rgba(11, 37, 69, .25); border-radius: 999px; font-size: .85rem; font-weight: 600; color: var(--navy); }
+.lede { font-size: 1.3rem; line-height: 1.5; color: var(--ink); }
+.muted { color: var(--gray); }
+
+/* ---------- The landing: a small table at the end of the page ---------- */
+.throw { background: var(--cream); padding-block: 0 120px; }
+.throw .line { padding-top: 88px; margin-bottom: 72px; }
+.throw__grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 48px 64px; align-items: center; }
+.throw__copy p { max-width: 44ch; }
+.mini { position: relative; margin: 0; max-width: 620px; width: 100%; justify-self: end; }
+.mini svg { display: block; width: 100%; height: auto; }
+.mini figcaption { margin-top: 12px; font-size: .85rem; color: var(--gray); }
+.mini__spot { --s: clamp(38px, 8vw, 66px); position: absolute; left: 69%; top: 50%; width: var(--s); height: var(--s); margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2); perspective: 520px; }
+.mini__shadow { position: absolute; inset: -18%; border-radius: 30%; background: radial-gradient(closest-side, rgba(0, 0, 0, .55), rgba(0, 0, 0, 0)); transform: translate(6%, 10%); opacity: .55; }
+.mini__die { position: absolute; inset: 0; transform-style: preserve-3d; }
+@media (max-width: 900px) {
+  .split, .throw__grid { grid-template-columns: 1fr; }
+  .split__head { position: static; }
+  .stats__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mini { justify-self: stretch; }
+}
+
+.footer { background: var(--navy-dark); color: rgba(250, 247, 240, .72); padding-block: 56px calc(88px + env(safe-area-inset-bottom, 0px)); font-size: .9rem; }
+.footer strong { display: block; font-family: var(--font-display); font-size: 1.3rem; color: var(--cream); }
+.footer p { max-width: 70ch; }
+
+/* ---------- Concept label ---------- */
+.chip { position: fixed; z-index: 120; left: max(16px, calc(env(safe-area-inset-left, 0px) + 12px)); bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); display: flex; align-items: center; gap: 10px; padding: 8px 14px; border-radius: 999px; background: rgba(7, 25, 49, .92); border: 1px solid rgba(201, 162, 39, .5); color: var(--cream); font: 600 .78rem var(--font-body); letter-spacing: .04em; box-shadow: 0 8px 24px rgba(0, 0, 0, .25); }
+.chip b { color: var(--gold); font-weight: 700; }
+.chip__bar { width: 54px; height: 3px; background: rgba(250, 247, 240, .2); border-radius: 2px; overflow: hidden; }
+.chip__bar i { display: block; height: 100%; background: var(--gold); transform-origin: 0 50%; }
+
+/* ---------- Motion ----------
+   One set of keyframes. By default each animation is paused and scrubbed by a
+   negative delay from a scroll variable that the fallback script writes; where
+   the browser has scroll-driven animations, the @supports block hands the same
+   keyframes to a scroll or view timeline and the script does nothing. */
+@keyframes tumble { from { transform: rotateX(0deg) rotateY(0deg); } to { transform: rotateX(720deg) rotateY(360deg); } }
+@keyframes shield-out { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(.6); } }
+@keyframes cube-in { from { opacity: 0; transform: scale(.6); } to { opacity: 1; transform: scale(1); } }
+@keyframes grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes drop {
+  0% { transform: translate3d(-150%, -170%, 0) scale3d(2.3, 2.3, 2.3) rotateX(540deg) rotateY(-300deg); }
+  76% { transform: translate3d(0, 0, 0) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg); }
+  86% { transform: translate3d(0, 0, 0) scale3d(1.14, 1.14, 1.14) rotateX(0deg) rotateY(0deg); }
+  100% { transform: translate3d(0, 0, 0) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg); }
+}
+@keyframes shade {
+  0% { transform: translate(-110%, -120%) scale(2); opacity: 0; }
+  76% { transform: translate(6%, 10%) scale(1); opacity: .55; }
+  86% { transform: translate(10%, 16%) scale(1.2); opacity: .35; }
+  100% { transform: translate(6%, 10%) scale(1); opacity: .55; }
+}
+
+.navdie__shield { animation: shield-out 1s linear both paused; animation-delay: calc(var(--p4, 0) * -1s); }
+.navdie__fade { animation: cube-in 1s linear both paused; animation-delay: calc(var(--p4, 0) * -1s); }
+.navdie__cube { animation: tumble 1s linear both paused; animation-delay: calc(var(--p, 0) * -1s); }
+.nav__progress, .chip__bar i { animation: grow 1s linear both paused; animation-delay: calc(var(--p, 0) * -1s); }
+.line__draw { animation: grow 1s linear both paused; animation-delay: calc(var(--v, 0) * -1s); }
+.mini__die { animation: drop 1s linear both paused; animation-delay: calc(var(--v, 0) * -1s); }
+.mini__shadow { animation: shade 1s linear both paused; animation-delay: calc(var(--v, 0) * -1s); }
+
+@supports (animation-timeline: scroll()) {
+  .navdie__shield, .navdie__fade, .navdie__cube, .nav__progress, .chip__bar i, .line__draw, .mini__die, .mini__shadow {
+    animation-duration: auto;
+    animation-delay: 0s;
+    animation-play-state: running;
+  }
+  .navdie__shield, .navdie__fade, .navdie__cube, .nav__progress, .chip__bar i { animation-timeline: scroll(root block); }
+  .navdie__shield, .navdie__fade { animation-range: 0% 4%; }
+  .line { view-timeline: --line block; }
+  .line__draw { animation-timeline: --line; animation-range: cover 10% cover 42%; }
+  .mini { view-timeline: --mini block; }
+  .mini__die, .mini__shadow { animation-timeline: --mini; animation-range: cover 12% cover 48%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navdie__cube, .line__draw, .mini__die, .mini__shadow { animation: none !important; }
+}
+</style>
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <div class="wrap nav__inner">
+    <a class="brand" href="#top" aria-label="Sigma Chi WashU, home">
+      <span class="navdie" aria-hidden="true">
+        <svg class="navdie__shield" viewBox="0 0 120 142"><use href="#crest"></use></svg>
+        <span class="navdie__fade"><span class="navdie__cube" data-die></span></span>
+      </span>
+      <span>Sigma Chi <em>WashU</em></span>
+    </a>
+    <button class="nav__toggle" id="menuBtn" aria-expanded="false" aria-controls="navLinks">Menu</button>
+    <nav class="nav__links" id="navLinks" aria-label="Main">
+      <a href="#top" aria-current="page">Home</a>
+      <a href="#aims">Our History</a>
+      <a href="#aims">Values &amp; Creed</a>
+      <a href="#colony">The Colony Today</a>
+      <a href="#colony">Philanthropy</a>
+      <a href="#join">Join Us</a>
+    </nav>
+  </div>
+  <span class="nav__progress" aria-hidden="true"></span>
+</header>
+
+<!-- One shared crest drawing, referenced by every copy on the page. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <g id="crest">
+      <path d="M60 4 L112 20 V68 C112 108 89 130 60 142 C31 130 8 108 8 68 V20 Z" fill="#0b2545" stroke="#c9a227" stroke-width="3"/>
+      <path d="M60 10 L105 24 V68 C105 104 85 124 60 135 C35 124 15 104 15 68 V24 Z" fill="none" stroke="#faf7f0" stroke-width="1.5" opacity=".9"/>
+      <rect x="52" y="34" width="16" height="68" fill="#faf7f0"/>
+      <rect x="28" y="56" width="64" height="16" fill="#faf7f0"/>
+      <text x="60" y="122" text-anchor="middle" font-family="Cormorant SC, Georgia, serif" font-weight="600" font-size="16" fill="#c9a227">&#931;&#935;</text>
+    </g>
+  </defs>
+</svg>
+
+<main id="top">
+  <section class="hero">
+    <div class="hero__arch" aria-hidden="true"></div>
+    <svg class="hero__shield" viewBox="0 0 120 142" aria-hidden="true"><use href="#crest"></use></svg>
+    <div class="wrap hero__inner">
+      <p class="eyebrow">Washington University in St. Louis · Beta Colony</p>
+      <h1>Leaders of Men. Est. 1855.</h1>
+      <span class="hero__rule" aria-hidden="true"></span>
+      <p class="hero__sub">"In Hoc Signo Vinces" — In this sign you will conquer. Sigma Chi is returning to Washington University in St. Louis, building a new colony on friendship, justice, and learning.</p>
+      <div class="hero__ctas">
+        <a class="btn btn--gold" href="#join">Join Our Founding Class</a>
+        <a class="btn btn--ghost" href="#aims">Our Story</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="aims" id="aims">
+    <div class="wrap line" data-scrub="0.1 0.42" aria-hidden="true"><div class="line__track"><i class="line__draw"></i></div></div>
+    <div class="wrap split">
+      <div class="split__head">
+        <p class="eyebrow">The Three Great Aims</p>
+        <h2>What We Stand For</h2>
+        <p class="note">In Hoc Signo Vinces</p>
+      </div>
+      <div>
+        <div class="row"><span class="row__n">01</span><div><h3>Friendship</h3><p>A bond built on genuine loyalty rather than convenience — the belief that brothers are stronger, and better men, together than alone.</p></div></div>
+        <div class="row"><span class="row__n">02</span><div><h3>Justice</h3><p>A commitment to fairness and integrity in how members treat one another and the wider community — doing right even when no one is watching.</p></div></div>
+        <div class="row"><span class="row__n">03</span><div><h3>Learning</h3><p>A dedication to scholarship and growth, in and out of the classroom, as a lifelong pursuit rather than a college requirement.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="stats" aria-label="Sigma Chi by the numbers">
+    <div class="wrap stats__grid">
+      <div><div class="stat__n">1855</div><div class="stat__l">Founded Nationally</div></div>
+      <div><div class="stat__n">7</div><div class="stat__l">Founding Fathers, 1855</div></div>
+      <div><div class="stat__n">2024</div><div class="stat__l">Return to WashU Approved</div></div>
+      <div><div class="stat__n">240+</div><div class="stat__l">Chapters &amp; Colonies Nationally</div></div>
+    </div>
+  </section>
+
+  <div class="band" aria-hidden="true"><div class="wrap"><p><span>In Hoc Signo Vinces</span><span>Friendship</span><span>Justice</span><span>Learning</span></p></div></div>
+
+  <section class="colony" id="colony">
+    <div class="wrap line" data-scrub="0.1 0.42" aria-hidden="true"><div class="line__track"><i class="line__draw"></i></div></div>
+    <div class="wrap">
+      <div class="colony__inner">
+        <span class="badge">Good Standing with WashU's Interfraternity Council</span>
+        <h2>We're Building Something New</h2>
+        <p class="lede">In spring 2026, a new class of founding fathers began forming Sigma Chi's colony at WashU — with no connection to the fraternity's former Tau Tau chapter.</p>
+        <p class="muted">This is a clean start, focused, in the words of our expansion coordinator, on "community service, more academics, and more philanthropy."</p>
+        <a class="btn btn--navy" href="#top">Meet the Colony</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="throw" id="join">
+    <div class="wrap line" data-scrub="0.1 0.42" aria-hidden="true"><div class="line__track"><i class="line__draw"></i></div></div>
+    <div class="wrap throw__grid">
+      <div class="throw__copy">
+        <p class="eyebrow">Spring 2026 founding class</p>
+        <h2>Your turn to throw.</h2>
+        <p>Sigma Chi is returning to Washington University in St. Louis, building a new colony on friendship, justice, and learning.</p>
+        <a class="btn btn--gold" href="#join">Join Our Founding Class</a>
+      </div>
+      <figure class="mini" data-scrub="0.12 0.48">
+        <svg viewBox="0 0 800 400" aria-hidden="true">
+          <defs>
+            <radialGradient id="miniTop" cx="22%" cy="8%" r="110%"><stop offset="0" stop-color="#15396c"/><stop offset=".45" stop-color="#0b2545"/><stop offset="1" stop-color="#071931"/></radialGradient>
+            <pattern id="miniStripe" width="800" height="16" patternUnits="userSpaceOnUse"><rect width="800" height="1" fill="#c9a227" opacity=".09"/></pattern>
+          </defs>
+          <rect x="4" y="4" width="792" height="392" rx="6" fill="#a8874a"/>
+          <rect x="12" y="12" width="776" height="376" rx="3" fill="url(#miniTop)"/>
+          <rect x="12" y="12" width="776" height="376" fill="url(#miniStripe)"/>
+          <rect x="34" y="34" width="732" height="332" fill="none" stroke="#c9a227" stroke-width="2.5"/>
+          <rect x="398" y="34" width="4" height="332" fill="#c9a227"/>
+          <text x="214" y="228" text-anchor="middle" font-family="Cormorant SC, Georgia, serif" font-weight="600" font-size="96" fill="#8a6d1b" opacity=".6">&#931;&#935;</text>
+          <g>
+            <g transform="translate(74 74)"><circle r="27" fill="#faf7f0" stroke="#c9a227" stroke-width="3"/><circle r="20" fill="#e6e0d1"/></g>
+            <g transform="translate(74 326)"><circle r="27" fill="#faf7f0" stroke="#c9a227" stroke-width="3"/><circle r="20" fill="#e6e0d1"/></g>
+            <g transform="translate(726 74)"><circle r="27" fill="#faf7f0" stroke="#c9a227" stroke-width="3"/><circle r="20" fill="#e6e0d1"/></g>
+            <g transform="translate(726 326)"><circle r="27" fill="#faf7f0" stroke="#c9a227" stroke-width="3"/><circle r="20" fill="#e6e0d1"/></g>
+          </g>
+        </svg>
+        <div class="mini__spot" aria-hidden="true">
+          <div class="mini__shadow"></div>
+          <div class="mini__die" data-die></div>
+        </div>
+        <figcaption>The table, from above: 4 × 8 ft, painted navy, gold center line, a cup at each corner.</figcaption>
+      </figure>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <strong>Sigma Chi Fraternity</strong>
+    <p>Washington University in St. Louis · Beta Colony</p>
+    <p>Unofficial colony site. Not an official publication of Sigma Chi Fraternity (International Headquarters) or Washington University in St. Louis. This page is a design concept for the colony's own website, not the live site.</p>
+  </div>
+</footer>
+
+<div class="chip" aria-hidden="true"><b>10 / 10</b> Quiet Version <span class="chip__bar"><i></i></span></div>
+
+<script>
+(() => {
+  // Die faces: 1 is the crest, opposite faces sum to seven.
+  const PIPS = {
+    2: [[28, 28], [72, 72]],
+    3: [[28, 28], [50, 50], [72, 72]],
+    4: [[28, 28], [72, 28], [28, 72], [72, 72]],
+    5: [[28, 28], [72, 28], [50, 50], [28, 72], [72, 72]],
+    6: [[28, 26], [72, 26], [28, 50], [72, 50], [28, 74], [72, 74]],
+  };
+  const faceSVG = (n) => n === 1
+    ? '<svg viewBox="0 0 100 100" aria-hidden="true"><g transform="translate(19.6 13.5) scale(.51)"><use href="#crest"></use></g></svg>'
+    : '<svg viewBox="0 0 100 100" aria-hidden="true">' + PIPS[n].map(([x, y]) => `<circle class="pip" cx="${x}" cy="${y}" r="8.5"/>`).join("") + "</svg>";
+  document.querySelectorAll("[data-die]").forEach((el) => {
+    el.innerHTML = [1, 2, 3, 4, 5, 6].map((n) => `<div class="core c${n}"></div>`).join("")
+      + [1, 2, 3, 4, 5, 6].map((n) => `<div class="face f${n}">${faceSVG(n)}</div>`).join("");
+  });
+
+  const root = document.documentElement;
+  const nav = document.getElementById("nav");
+  const native = CSS.supports("animation-timeline: scroll()");
+  const scrubs = [...document.querySelectorAll("[data-scrub]")];
+  const clamp = (v) => Math.min(1, Math.max(0, v));
+
+  // With native scroll timelines this only handles the solid nav. Without
+  // them it writes the progress variables the paused animations scrub on.
+  function update() {
+    nav.classList.toggle("nav--solid", scrollY > 60);
+    if (native) return;
+    const max = root.scrollHeight - innerHeight;
+    const p = max > 0 ? clamp(scrollY / max) : 0;
+    root.style.setProperty("--p", p.toFixed(4));
+    root.style.setProperty("--p4", clamp(p / 0.04).toFixed(4));
+    for (const el of scrubs) {
+      const [a, b] = el.dataset.scrub.split(" ").map(Number);
+      const r = el.getBoundingClientRect();
+      const cover = (innerHeight - r.top) / (innerHeight + r.height);
+      el.style.setProperty("--v", clamp((cover - a) / (b - a)).toFixed(4));
+    }
+  }
+  let queued = false;
+  const onScroll = () => {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(() => { queued = false; update(); });
+  };
+  addEventListener("scroll", onScroll, { passive: true });
+  addEventListener("resize", onScroll);
+  update();
+
+  const menuBtn = document.getElementById("menuBtn"), links = document.getElementById("navLinks");
+  menuBtn.addEventListener("click", () => {
+    const open = links.classList.toggle("nav__links--open");
+    menuBtn.setAttribute("aria-expanded", String(open));
+  });
+  links.addEventListener("click", () => { links.classList.remove("nav__links--open"); menuBtn.setAttribute("aria-expanded", "false"); });
+})();
+</script>
+</body>
+</html>

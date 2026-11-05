@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Beer Die Six Faces</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Cormorant+SC:wght@600&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+/* Concept 05 · Six Faces. The crest watermark becomes face one of a large
+   pinned die. Each scroll chapter turns the die to its next face and swaps in
+   the matching section; the table rises behind it out of focus, and the last
+   chapter throws the die onto it, crest up. Progress comes from Motion's
+   scroll(); chapter entrances use Motion's animate(). */
+:root {
+  --navy: #0b2545;
+  --navy-dark: #071931;
+  --navy-lift: #15396c;
+  --navy-deep: #040f1f;
+  --gold: #c9a227;
+  --gold-dark: #8a6d1b;
+  --ply: #a8874a;
+  --cream: #faf7f0;
+  --ink: #1a1a1a;
+  --gray: #6b6b6b;
+  --white: #ffffff;
+  --font-display: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --font-sc: "Cormorant SC", Georgia, "Times New Roman", serif;
+  --font-body: "Source Sans 3", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --nav-h: 84px;
+  --gut-l: max(24px, env(safe-area-inset-left, 0px));
+  --gut-r: max(24px, env(safe-area-inset-right, 0px));
+}
+* { box-sizing: border-box; }
+html { background: var(--navy-dark); }
+body { margin: 0; background: var(--navy-dark); color: var(--ink); font-family: var(--font-body); font-size: 18px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 110; background: var(--navy-dark); }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 600; color: var(--navy); margin: 0 0 .5em; line-height: 1.06; letter-spacing: -0.015em; text-wrap: balance; }
+p { margin: 0 0 1em; }
+a { color: inherit; text-decoration: none; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+.wrap { max-width: 1200px; margin: 0 auto; padding-left: var(--gut-l); padding-right: var(--gut-r); }
+.eyebrow { font-family: var(--font-sc); font-weight: 600; font-size: .8rem; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); margin: 0 0 16px; }
+.skip { position: absolute; left: 16px; top: -60px; z-index: 200; background: var(--gold); color: var(--navy-dark); padding: 10px 16px; font-weight: 700; }
+.skip:focus { top: calc(env(safe-area-inset-top, 0px) + 12px); }
+
+/* ---------- Nav (matches the live site) ---------- */
+.nav { position: fixed; top: env(safe-area-inset-top, 0px); left: 0; right: 0; z-index: 100; }
+.nav__inner { display: flex; align-items: center; justify-content: space-between; height: var(--nav-h); }
+.brand { display: flex; align-items: center; gap: 12px; font-family: var(--font-display); font-weight: 700; font-size: 1.3rem; color: var(--cream); }
+.brand svg { width: 36px; height: auto; }
+.brand em { font-style: normal; color: var(--gold); }
+.nav__links { display: flex; gap: 4px; }
+.nav__links a { display: inline-flex; align-items: center; min-height: 44px; padding: 10px 14px; font-size: .95rem; font-weight: 600; color: rgba(250, 247, 240, .85); }
+.nav__links a:hover { color: var(--cream); }
+.nav__links a[aria-current] { color: var(--gold); }
+.nav__toggle { display: none; min-width: 44px; min-height: 44px; background: none; border: 1px solid rgba(250, 247, 240, .3); border-radius: 4px; color: var(--cream); font: 600 .85rem var(--font-body); letter-spacing: .06em; cursor: pointer; }
+@media (max-width: 980px) {
+  :root { --nav-h: 68px; }
+  .nav__toggle { display: inline-flex; align-items: center; justify-content: center; padding: 0 12px; }
+  .nav__links { display: none; position: absolute; top: var(--nav-h); left: 0; right: 0; flex-direction: column; padding: 8px var(--gut-r) 16px var(--gut-l); background: rgba(7, 25, 49, .97); }
+  .nav__links--open { display: flex; }
+}
+
+/* ---------- Buttons ---------- */
+.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 14px 30px; font: 700 15px var(--font-body); letter-spacing: .04em; border-radius: 4px; border: 1.5px solid transparent; transition: background-color .25s, transform .25s; }
+.btn--gold { background: var(--gold); color: var(--navy-dark); }
+.btn--gold:hover { background: #b6911f; transform: translateY(-1px); }
+.btn--ghost { border-color: var(--cream); color: var(--cream); }
+.btn--ghost:hover { background: rgba(250, 247, 240, .12); }
+
+/* ---------- Stage ---------- */
+.stage { position: relative; height: 800vh; }
+.pin { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; background: radial-gradient(circle at 12% -10%, var(--navy-lift) 0%, var(--navy) 45%, var(--navy-dark) 100%); }
+.pin::before { content: ""; position: absolute; inset: 0; opacity: .55; background-image: repeating-linear-gradient(90deg, rgba(201, 162, 39, .07) 0 1px, transparent 1px 96px); -webkit-mask-image: linear-gradient(90deg, #000 0%, transparent 62%); mask-image: linear-gradient(90deg, #000 0%, transparent 62%); }
+
+/* The table, out of focus behind the die until the throw racks focus to it. */
+.ground { position: absolute; inset: 0; opacity: 0; will-change: filter, opacity; }
+.scene { position: absolute; inset: 0; perspective: 1300px; perspective-origin: 50% 30%; }
+.table { position: absolute; left: 0; top: 0; transform-style: preserve-3d; }
+.table__top { position: absolute; inset: 0; background: repeating-linear-gradient(90deg, rgba(201, 162, 39, .075) 0 1px, transparent 1px 29px), radial-gradient(130% 70% at 25% 10%, var(--navy-lift) 0%, var(--navy) 45%, var(--navy-dark) 100%); box-shadow: 0 0 0 1px rgba(201, 162, 39, .3); }
+.table__top::before { content: ""; position: absolute; inset: 4.5%; border: 2px solid var(--gold); border-radius: 2px; }
+.table__top::after { content: ""; position: absolute; left: 4.5%; right: 4.5%; top: calc(50% - 1.5px); height: 3px; background: var(--gold); }
+.table__sx { position: absolute; left: 0; right: 0; bottom: 22%; text-align: center; font-family: var(--font-sc); font-weight: 600; color: var(--gold-dark); opacity: .55; line-height: 1; }
+.edge { position: absolute; left: 0; top: 100%; width: 100%; transform-origin: 50% 0; transform: rotateX(-90deg); background: linear-gradient(180deg, var(--ply), #6f5626); }
+.cup { position: absolute; transform-origin: 50% 100%; }
+.cup svg, .mark > svg { display: block; width: 100%; height: 100%; }
+.land { position: absolute; width: 2px; height: 2px; }
+
+/* ---------- The die ---------- */
+.diewrap { position: absolute; left: 0; top: 0; width: var(--s); height: var(--s); perspective: 1100px; visibility: hidden; will-change: transform; }
+.tilt, .die { position: absolute; inset: 0; transform-style: preserve-3d; }
+.die__face, .die__core { position: absolute; inset: 0; backface-visibility: hidden; }
+.die__face { border-radius: 16%; background: radial-gradient(circle at 30% 25%, var(--navy-lift), var(--navy) 58%, var(--navy-dark)); box-shadow: inset 0 0 0 1.5px rgba(201, 162, 39, .6), inset 0 0 calc(var(--s) * .14) rgba(0, 0, 0, .4); }
+.die__core { background: var(--navy-dark); }
+.die__face svg { display: block; width: 100%; height: 100%; }
+.f1 { transform: translateZ(calc(var(--s) / 2)); }
+.f6 { transform: rotateY(180deg) translateZ(calc(var(--s) / 2)); }
+.f3 { transform: rotateY(90deg) translateZ(calc(var(--s) / 2)); }
+.f4 { transform: rotateY(-90deg) translateZ(calc(var(--s) / 2)); }
+.f2 { transform: rotateX(90deg) translateZ(calc(var(--s) / 2)); }
+.f5 { transform: rotateX(-90deg) translateZ(calc(var(--s) / 2)); }
+.c1 { transform: translateZ(calc(var(--s) * .47)); }
+.c6 { transform: rotateY(180deg) translateZ(calc(var(--s) * .47)); }
+.c3 { transform: rotateY(90deg) translateZ(calc(var(--s) * .47)); }
+.c4 { transform: rotateY(-90deg) translateZ(calc(var(--s) * .47)); }
+.c2 { transform: rotateX(90deg) translateZ(calc(var(--s) * .47)); }
+.c5 { transform: rotateX(-90deg) translateZ(calc(var(--s) * .47)); }
+.pip { fill: var(--gold); stroke: var(--gold-dark); stroke-width: 1; }
+.shadow { position: absolute; left: 0; top: 0; border-radius: 50%; background: radial-gradient(closest-side, rgba(0, 0, 0, .65), rgba(0, 0, 0, 0)); opacity: 0; }
+
+.mark { position: absolute; left: 0; top: 0; pointer-events: none; will-change: transform; }
+.mark > * { position: absolute; inset: 0; width: 100%; height: 100%; }
+.mark__face { opacity: 0; }
+
+/* ---------- Chapter panels ---------- */
+.panels { position: absolute; inset: var(--nav-h) 0 0 0; pointer-events: none; }
+.panels > .wrap { position: relative; height: 100%; }
+.panel { position: absolute; left: var(--gut-l); top: 50%; transform: translateY(-50%); width: min(34rem, 44vw); color: var(--cream); opacity: 0; visibility: hidden; transition: opacity .35s ease-out, visibility 0s .35s; }
+.panel.is-on { opacity: 1; visibility: visible; pointer-events: auto; transition: opacity .35s ease-out; }
+.panel--hero { width: min(44rem, 52vw); }
+.panel h1 { color: var(--cream); font-weight: 700; font-size: clamp(3rem, 7.5vw, 5.75rem); line-height: .98; letter-spacing: -0.028em; max-width: 16ch; margin-bottom: 24px; }
+.panel h2 { color: var(--cream); font-size: clamp(2.1rem, 4.4vw, 3.4rem); line-height: 1.04; letter-spacing: -0.022em; }
+.panel .eyebrow { margin-bottom: 20px; }
+.rule { display: block; width: 96px; height: 3px; background: var(--gold); margin-bottom: 24px; }
+.sub { max-width: 54ch; font-size: clamp(1.05rem, 1.5vw, 1.3rem); line-height: 1.55; color: rgba(250, 247, 240, .86); }
+.ctas { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 24px; }
+.motto { font-family: var(--font-display); font-style: italic; font-weight: 500; font-size: clamp(2.6rem, 5.6vw, 4.6rem); line-height: 1; color: var(--gold); margin: 0 0 16px; }
+.body { color: rgba(250, 247, 240, .8); font-size: 1.02rem; max-width: 50ch; }
+.aim { display: grid; grid-template-columns: 3rem minmax(0, 1fr); gap: 0 16px; padding-block: 14px; border-top: 1px solid rgba(250, 247, 240, .16); }
+.aim:last-child { border-bottom: 1px solid rgba(250, 247, 240, .16); }
+.aim b { font-family: var(--font-display); font-size: 1.9rem; font-weight: 600; line-height: 1; color: var(--gold); font-variant-numeric: tabular-nums; }
+.aim h3 { color: var(--cream); font-size: 1.5rem; margin: 0 0 4px; }
+.aim p { margin: 0; font-size: .95rem; line-height: 1.5; color: rgba(250, 247, 240, .76); }
+.stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 32px; margin-top: 8px; }
+.stat__n { font-family: var(--font-display); font-weight: 700; font-size: clamp(2.6rem, 4.6vw, 3.8rem); line-height: 1; color: var(--gold); font-variant-numeric: tabular-nums; }
+.stat__l { margin-top: 8px; font-size: .95rem; color: rgba(250, 247, 240, .78); }
+.badge { display: inline-block; margin-bottom: 20px; padding: 6px 14px; border: 1px solid rgba(201, 162, 39, .5); border-radius: 999px; font-size: .85rem; font-weight: 600; color: var(--cream); }
+.lede { font-size: 1.2rem; line-height: 1.5; color: rgba(250, 247, 240, .9); }
+
+/* Face rail: the chapter number is literally the face showing. */
+.rail { opacity: 0; position: absolute; right: var(--gut-r); top: 50%; transform: translateY(-50%); display: grid; gap: 10px; }
+.rail svg { display: block; width: 26px; height: 26px; }
+.rail rect { fill: none; stroke: rgba(250, 247, 240, .35); stroke-width: 5; }
+.rail circle { fill: rgba(250, 247, 240, .35); }
+.rail .on rect { stroke: var(--gold); }
+.rail .on circle { fill: var(--gold); }
+.scrim { display: none; }
+
+@media (max-width: 760px) {
+  .panel, .panel--hero { left: var(--gut-l); right: var(--gut-r); width: auto; top: auto; bottom: 76px; transform: none; }
+  .panel--hero { top: 32px; bottom: auto; }
+  .panel h1 { max-width: none; }
+  .panel h2 { font-size: 2rem; }
+  .motto { font-size: 2.5rem; }
+  .aim { padding-block: 10px; }
+  .aim h3 { font-size: 1.25rem; }
+  .aim p { font-size: .85rem; line-height: 1.4; }
+  .panel .eyebrow { margin-bottom: 12px; }
+  .stats { gap: 18px; }
+  .stat__n { font-size: 2.4rem; }
+  .lede { font-size: 1.05rem; }
+  .rail { display: none; }
+  .scrim { display: block; position: absolute; left: 0; right: 0; bottom: 0; height: 64%; background: linear-gradient(180deg, rgba(7, 25, 49, 0) 0%, rgba(7, 25, 49, .82) 30%, rgba(7, 25, 49, .95) 100%); opacity: 0; pointer-events: none; }
+}
+
+.footer { background: var(--navy-dark); color: rgba(250, 247, 240, .72); padding-block: 56px calc(88px + env(safe-area-inset-bottom, 0px)); font-size: .9rem; border-top: 1px solid rgba(201, 162, 39, .35); }
+.footer strong { display: block; font-family: var(--font-display); font-size: 1.3rem; color: var(--cream); }
+.footer p { max-width: 70ch; }
+
+/* ---------- Concept label ---------- */
+.chip { position: fixed; z-index: 120; left: max(16px, calc(env(safe-area-inset-left, 0px) + 12px)); bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); display: flex; align-items: center; gap: 10px; padding: 8px 14px; border-radius: 999px; background: rgba(7, 25, 49, .92); border: 1px solid rgba(201, 162, 39, .5); color: var(--cream); font: 600 .78rem var(--font-body); letter-spacing: .04em; box-shadow: 0 8px 24px rgba(0, 0, 0, .25); }
+.chip b { color: var(--gold); font-weight: 700; }
+.chip__bar { width: 54px; height: 3px; background: rgba(250, 247, 240, .2); border-radius: 2px; overflow: hidden; }
+.chip__bar i { display: block; height: 100%; background: var(--gold); transform-origin: 0 50%; transform: scaleX(0); }
+</style>
+</head>
+<body>
+<a class="skip" href="#foot">Skip past the die</a>
+
+<header class="nav" id="nav">
+  <div class="wrap nav__inner">
+    <a class="brand" href="#top" aria-label="Sigma Chi WashU, home">
+      <svg viewBox="0 0 120 142" aria-hidden="true"><use href="#crest"></use></svg>
+      <span>Sigma Chi <em>WashU</em></span>
+    </a>
+    <button class="nav__toggle" id="menuBtn" aria-expanded="false" aria-controls="navLinks">Menu</button>
+    <nav class="nav__links" id="navLinks" aria-label="Main">
+      <a href="#top" aria-current="page">Home</a>
+      <a href="#top">Our History</a>
+      <a href="#top">Values &amp; Creed</a>
+      <a href="#top">The Colony Today</a>
+      <a href="#top">Philanthropy</a>
+      <a href="#top">Join Us</a>
+    </nav>
+  </div>
+</header>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <g id="crest">
+      <path d="M60 4 L112 20 V68 C112 108 89 130 60 142 C31 130 8 108 8 68 V20 Z" fill="#0b2545" stroke="#c9a227" stroke-width="3"/>
+      <path d="M60 10 L105 24 V68 C105 104 85 124 60 135 C35 124 15 104 15 68 V24 Z" fill="none" stroke="#faf7f0" stroke-width="1.5" opacity=".9"/>
+      <rect x="52" y="34" width="16" height="68" fill="#faf7f0"/>
+      <rect x="28" y="56" width="64" height="16" fill="#faf7f0"/>
+      <text x="60" y="122" text-anchor="middle" font-family="Cormorant SC, Georgia, serif" font-weight="600" font-size="16" fill="#c9a227">&#931;&#935;</text>
+    </g>
+  </defs>
+</svg>
+
+<main id="top">
+  <section class="stage" id="stage" aria-label="Six chapters, one for each face of the die">
+    <div class="pin">
+      <div class="ground" id="ground">
+        <div class="scene" id="scene">
+          <div class="table" id="table">
+            <div class="table__top"><div class="table__sx" id="sx">&#931;&#935;</div></div>
+            <div class="edge" id="edge"></div>
+            <div class="cup" data-u=".14" data-v=".07"></div>
+            <div class="cup" data-u=".86" data-v=".07"></div>
+            <div class="cup" data-u=".14" data-v=".93"></div>
+            <div class="cup" data-u=".86" data-v=".93"></div>
+            <div class="land" id="land"></div>
+          </div>
+        </div>
+      </div>
+      <div class="shadow" id="shadow"></div>
+      <div class="scrim" id="scrim"></div>
+      <div class="mark" id="mark">
+        <svg viewBox="0 0 120 142" aria-hidden="true"><use href="#crest"></use></svg>
+        <div class="mark__face" id="markFace"></div>
+      </div>
+      <div class="diewrap" id="diewrap"><div class="tilt" id="tilt"><div class="die" id="die"></div></div></div>
+
+      <div class="panels">
+        <div class="wrap">
+          <article class="panel panel--hero is-on" data-k="0">
+            <p class="eyebrow" data-r>Washington University in St. Louis · Beta Colony</p>
+            <h1 data-r>Leaders of Men. Est. 1855.</h1>
+            <span class="rule" aria-hidden="true" data-r></span>
+            <p class="sub" data-r>"In Hoc Signo Vinces" — In this sign you will conquer. Sigma Chi is returning to Washington University in St. Louis, building a new colony on friendship, justice, and learning.</p>
+            <div class="ctas" data-r><a class="btn btn--gold" href="#join">Join Our Founding Class</a><a class="btn btn--ghost" href="#motto">Our Story</a></div>
+          </article>
+          <article class="panel" data-k="1" id="motto">
+            <p class="eyebrow" data-r>Our motto</p>
+            <p class="motto" data-r>In Hoc Signo Vinces</p>
+            <p class="lede" data-r>In this sign you will conquer.</p>
+            <p class="body" data-r>Sigma Chi was founded on June 28, 1855, at Miami University in Oxford, Ohio, by seven founding fathers.</p>
+          </article>
+          <article class="panel" data-k="2">
+            <p class="eyebrow" data-r>The Three Great Aims</p>
+            <h2 data-r>What We Stand For</h2>
+            <div data-r>
+              <div class="aim"><b>01</b><div><h3>Friendship</h3><p>A bond built on genuine loyalty rather than convenience — the belief that brothers are stronger, and better men, together than alone.</p></div></div>
+              <div class="aim"><b>02</b><div><h3>Justice</h3><p>A commitment to fairness and integrity in how members treat one another and the wider community — doing right even when no one is watching.</p></div></div>
+              <div class="aim"><b>03</b><div><h3>Learning</h3><p>A dedication to scholarship and growth, in and out of the classroom, as a lifelong pursuit rather than a college requirement.</p></div></div>
+            </div>
+          </article>
+          <article class="panel" data-k="3">
+            <p class="eyebrow" data-r>By the numbers</p>
+            <div class="stats" data-r>
+              <div><div class="stat__n">1855</div><div class="stat__l">Founded Nationally</div></div>
+              <div><div class="stat__n">7</div><div class="stat__l">Founding Fathers, 1855</div></div>
+              <div><div class="stat__n">2024</div><div class="stat__l">Return to WashU Approved</div></div>
+              <div><div class="stat__n">240+</div><div class="stat__l">Chapters &amp; Colonies Nationally</div></div>
+            </div>
+          </article>
+          <article class="panel" data-k="4">
+            <span class="badge" data-r>Good Standing with WashU's Interfraternity Council</span>
+            <h2 data-r>We're Building Something New</h2>
+            <p class="lede" data-r>In spring 2026, a new class of founding fathers began forming Sigma Chi's colony at WashU — with no connection to the fraternity's former Tau Tau chapter.</p>
+          </article>
+          <article class="panel" data-k="5" id="join">
+            <p class="eyebrow" data-r>Spring 2026 founding class</p>
+            <h2 data-r>Your turn to throw.</h2>
+            <p class="lede" data-r>Men join fraternities, leaders of men join Sigma Chi.</p>
+            <div class="ctas" data-r><a class="btn btn--gold" href="#join">Join Our Founding Class</a><a class="btn btn--ghost" href="#foot">Meet the Colony</a></div>
+          </article>
+        </div>
+      </div>
+      <div class="rail" id="rail" aria-hidden="true"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer" id="foot">
+  <div class="wrap">
+    <strong>Sigma Chi Fraternity</strong>
+    <p>Washington University in St. Louis · Beta Colony</p>
+    <p>Unofficial colony site. Not an official publication of Sigma Chi Fraternity (International Headquarters) or Washington University in St. Louis. This page is a design concept for the colony's own website, not the live site.</p>
+  </div>
+</footer>
+
+<div class="chip" aria-hidden="true"><b>05 / 10</b> Six Faces <span class="chip__bar"><i id="chipBar"></i></span></div>
+
+<script src="https://cdn.jsdelivr.net/npm/motion@11.11.13/dist/motion.js"></script>
+<script>
+(() => {
+  // ---------- Die faces: 1 is the crest, opposite faces sum to seven ----------
+  const PIPS = {
+    1: [[50, 50]],
+    2: [[28, 28], [72, 72]],
+    3: [[28, 28], [50, 50], [72, 72]],
+    4: [[28, 28], [72, 28], [28, 72], [72, 72]],
+    5: [[28, 28], [72, 28], [50, 50], [28, 72], [72, 72]],
+    6: [[28, 26], [72, 26], [28, 50], [72, 50], [28, 74], [72, 74]],
+  };
+  const faceSVG = (n) => n === 1
+    ? '<svg viewBox="0 0 100 100" aria-hidden="true"><g transform="translate(19.6 13.5) scale(.51)"><use href="#crest"></use></g></svg>'
+    : '<svg viewBox="0 0 100 100" aria-hidden="true">' + PIPS[n].map(([x, y]) => `<circle class="pip" cx="${x}" cy="${y}" r="8.5"/>`).join("") + "</svg>";
+  const $ = (id) => document.getElementById(id);
+  const die = $("die");
+  die.innerHTML = [1, 2, 3, 4, 5, 6].map((n) => `<div class="die__core c${n}"></div>`).join("")
+    + [1, 2, 3, 4, 5, 6].map((n) => `<div class="die__face f${n}">${faceSVG(n)}</div>`).join("");
+  $("markFace").innerHTML = `<div class="die__face" style="position:absolute;inset:0">${faceSVG(1)}</div>`;
+  $("rail").innerHTML = [1, 2, 3, 4, 5, 6].map((n) => `<svg viewBox="0 0 100 100"><rect x="4" y="4" width="92" height="92" rx="18"/>${PIPS[n].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="9"/>`).join("")}</svg>`).join("");
+
+  const CUP = '<svg viewBox="0 0 60 80" aria-hidden="true"><defs><linearGradient id="cupg" x1="0" x2="1"><stop offset="0" stop-color="#d9d3c4"/><stop offset=".45" stop-color="#faf7f0"/><stop offset="1" stop-color="#cfc7b5"/></linearGradient></defs><path d="M4 6 H56 L49 78 H11 Z" fill="url(#cupg)"/><rect x="4" y="2" width="52" height="7" rx="2" fill="#c9a227"/><path d="M8 20 H52" stroke="#8a6d1b" stroke-width="1.5" opacity=".6"/></svg>';
+  const cups = [...document.querySelectorAll(".cup")];
+  cups.forEach((c) => (c.innerHTML = CUP));
+
+  const stage = $("stage"), table = $("table"), ground = $("ground"), diewrap = $("diewrap"), tilt = $("tilt");
+  const mark = $("mark"), markFace = $("markFace"), shadow = $("shadow"), land = $("land"), scrim = $("scrim"), chipBar = $("chipBar");
+  const f1 = die.querySelector(".f1");
+  const panels = [...document.querySelectorAll(".panel")];
+  const rail = $("rail"), railFaces = [...rail.children];
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const M = window.Motion;
+
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+  const seg = (p, a, b) => clamp((p - a) / (b - a));
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+  const easeSine = (t) => -(Math.cos(Math.PI * t) - 1) / 2;
+  const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+
+  // Six chapters plus the throw, one screen of scroll each.
+  const N = 7;
+  // Die rotation (rotateX, rotateY) that shows faces 1..6 to the viewer. Each
+  // step adds whole turns where needed so the die always tumbles forward.
+  const K = [[0, 0], [-90, 0], [-360, -90], [-360, -270], [-270, -360], [-360, -540]];
+  const TABLE_TILT = 60;
+
+  let vw, vh, s, C, A, W, H, mobile, mA, mB;
+
+  function layout() {
+    vw = innerWidth; vh = innerHeight;
+    mobile = vw <= 760;
+    s = Math.round(mobile ? Math.min(124, vw * 0.32) : Math.min(290, vw * 0.21, vh * 0.34));
+    C = mobile ? { x: vw / 2, y: 68 + 28 + s * 0.62 } : { x: vw * 0.72, y: vh * 0.53 };
+    diewrap.style.setProperty("--s", s + "px");
+    // Watermark box from the live hero: the crest bleeding off the right edge.
+    const w = clamp(vw * 0.26, 150, 340), h = w * 142 / 120;
+    A = { x: vw - w * 0.9, y: vh / 2 - h / 2 + 24, w, h };
+    [mA, mB] = mobile ? [0.06, 0.125] : [0.03, 0.11];
+
+    W = Math.round(mobile ? Math.min(250, vw * 0.62) : Math.min(420, vw * 0.3));
+    H = W * 2;
+    table.style.width = W + "px";
+    table.style.height = H + "px";
+    $("edge").style.height = Math.max(8, W * 0.035) + "px";
+    $("sx").style.fontSize = W * 0.2 + "px";
+    cups.forEach((c) => {
+      const cw = W * 0.12, ch = cw * 80 / 60;
+      c.style.width = cw + "px";
+      c.style.height = ch + "px";
+      c.style.transform = `translate3d(${+c.dataset.u * W - cw / 2}px, ${+c.dataset.v * H - ch}px, 0) rotateX(-90deg)`;
+    });
+    land.style.transform = `translate3d(${W * 0.5}px, ${H * (mobile ? 0.56 : 0.62)}px, 0)`;
+    const tx = mobile ? vw / 2 : vw * 0.66, ty = vh * (mobile ? 0.42 : 0.58);
+    $("scene").style.perspective = Math.round(vh * 1.45) + "px";
+    $("scene").style.perspectiveOrigin = `${tx}px ${vh * 0.3}px`;
+    table.style.transform = `translate3d(${tx - W / 2}px, ${ty - H / 2}px, 0) rotateX(${TABLE_TILT}deg)`;
+  }
+
+  function orient(p) {
+    let rx = 0, ry = 0;
+    for (let k = 1; k < 6; k++) {
+      const t = ease(seg(p, k / N - 0.035, k / N + 0.035));
+      rx += (K[k][0] - K[k - 1][0]) * t;
+      ry += (K[k][1] - K[k - 1][1]) * t;
+    }
+    return [rx, ry];
+  }
+
+  let active = 0;
+  function setChapter(k) {
+    if (k === active) return;
+    panels.forEach((el, i) => {
+      el.classList.toggle("is-on", i === k);
+      el.inert = i !== k;
+    });
+    // Chapter entrances are a triggered animation, not a scrub: Motion's
+    // animate() staggers the incoming panel's lines.
+    if (M && !reduce) {
+      M.animate(panels[k].querySelectorAll("[data-r]"), { opacity: [0, 1], y: [18, 0] }, { duration: 0.55, delay: M.stagger(0.06), ease: [0.22, 1, 0.36, 1] });
+    }
+    railFaces.forEach((el, i) => el.classList.toggle("on", i === k));
+    active = k;
+  }
+
+  function render(p) {
+    // ---- Watermark becomes face one ----
+    const [rx0, ry0] = orient(p);
+    let rx = rx0, ry = ry0;
+    const throwT = seg(p, 6 / N + 0.01, 0.965);
+    rx += (TABLE_TILT - 1080 - K[5][0]) * easeSine(throwT);
+    ry += (-720 - K[5][1]) * throwT;
+
+    // A slight presentation tilt shows the die is a cube; it eases off for the throw.
+    const show = seg(p, mB, mB + 0.07) * (1 - seg(p, 6 / N - 0.01, 6 / N + 0.05));
+    tilt.style.transform = `rotateX(${-14 * show}deg) rotateY(${22 * show}deg)`;
+    die.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
+
+    // ---- Position: pinned, then thrown onto the table ----
+    const L = land.getBoundingClientRect();
+    const lx = L.left, ly = L.top;
+    const sL = (mobile ? 0.34 : 0.26);
+    let x = lerp(C.x, lx, throwT);
+    let y = lerp(C.y, ly - s * sL * 0.5, throwT) - vh * 0.32 * 4 * throwT * (1 - throwT);
+    const bounce = seg(p, 0.965, 0.99);
+    if (bounce > 0 && bounce < 1) y -= s * sL * 0.35 * Math.sin(Math.PI * bounce);
+    const k = lerp(1, sL, easeOut(throwT));
+    diewrap.style.transform = `translate(${x - s / 2}px, ${y - s / 2}px) scale(${k})`;
+
+    shadow.style.width = s * sL * 1.6 + "px";
+    shadow.style.height = s * sL * 0.8 + "px";
+    shadow.style.opacity = 0.8 * seg(throwT, 0.5, 1);
+    shadow.style.transform = `translate(${lx - s * sL * 0.8}px, ${ly - s * sL * 0.4}px) scale(${1.8 - 0.8 * seg(throwT, 0.5, 1)})`;
+
+    // ---- Table: up out of the dark, soft, then sharp for the landing ----
+    const g = seg(p, 0.13, 0.24);
+    ground.style.opacity = lerp(0, 0.5, g) + 0.5 * seg(p, 6 / N - 0.02, 6 / N + 0.06);
+    const blur = 7 * (1 - seg(p, 6 / N, 6 / N + 0.09));
+    ground.style.filter = blur > 0.2 ? `blur(${blur}px)` : "none";
+    scrim.style.opacity = seg(p, 0.1, 0.16);
+
+    // ---- Crest watermark → face one, then hand over to the cube ----
+    if (p < mB) {
+      const B = f1.getBoundingClientRect();
+      const m = ease(seg(p, mA, mB));
+      mark.style.width = lerp(A.w, B.width, m) + "px";
+      mark.style.height = lerp(A.h, B.height, m) + "px";
+      mark.style.transform = `translate(${lerp(A.x, B.left, m)}px, ${lerp(A.y, B.top, m)}px)`;
+      mark.style.opacity = lerp(0.14, 1, seg(p, mA - 0.02, mA + 0.05));
+      markFace.style.opacity = seg(p, mA + 0.04, mB - 0.005);
+      mark.style.visibility = "visible";
+      diewrap.style.visibility = "hidden";
+    } else {
+      mark.style.visibility = "hidden";
+      diewrap.style.visibility = "visible";
+    }
+
+    // On phones the hero copy steps aside before the crest crosses it.
+    if (mobile) panels[0].style.opacity = active === 0 ? 1 - seg(p, 0.03, 0.065) : "";
+    setChapter(Math.min(5, Math.floor(p * N + 0.02)));
+    rail.style.opacity = seg(p, mB, mB + 0.04);
+  }
+
+  // Reduced motion: each chapter shows its face, no tumbling in between.
+  const still = (p) => (p >= 6 / N ? 1 : Math.min(5, Math.floor(p * N)) / N + 0.5 / N);
+
+  let target = 0, cur = 0, raf = 0;
+  function tick() {
+    cur += (target - cur) * (reduce ? 1 : 0.14);
+    if (Math.abs(target - cur) < 0.0004) cur = target;
+    render(reduce ? still(cur) : cur);
+    raf = cur !== target ? requestAnimationFrame(tick) : 0;
+  }
+  const kick = () => { if (!raf) raf = requestAnimationFrame(tick); };
+
+  function onPage() {
+    const doc = document.documentElement;
+    chipBar.style.transform = `scaleX(${clamp(scrollY / (doc.scrollHeight - innerHeight))})`;
+  }
+  if (M && M.scroll) {
+    // Motion measures the stage and reports 0..1 across its pinned length.
+    M.scroll((progress) => { target = progress; kick(); }, { target: stage, offset: ["start start", "end end"] });
+    M.scroll(onPage);
+  } else {
+    addEventListener("scroll", () => {
+      target = clamp(-stage.getBoundingClientRect().top / (stage.offsetHeight - innerHeight));
+      onPage();
+      kick();
+    }, { passive: true });
+  }
+  addEventListener("resize", () => { layout(); render(reduce ? still(cur) : cur); });
+
+  const menuBtn = $("menuBtn"), links = $("navLinks");
+  menuBtn.addEventListener("click", () => {
+    const open = links.classList.toggle("nav__links--open");
+    menuBtn.setAttribute("aria-expanded", String(open));
+  });
+  links.addEventListener("click", () => { links.classList.remove("nav__links--open"); menuBtn.setAttribute("aria-expanded", "false"); });
+
+  panels.forEach((el, i) => { el.inert = i !== 0; });
+  railFaces[0].classList.add("on");
+  layout();
+  target = cur = clamp(-stage.getBoundingClientRect().top / (stage.offsetHeight - innerHeight));
+  render(reduce ? still(cur) : cur);
+})();
+</script>
+</body>
+</html>

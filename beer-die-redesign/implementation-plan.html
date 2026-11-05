@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Beer Die Home Page · Implementation Plan</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Cormorant+SC:wght@600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;600&display=swap">
+<style>
+/* Source for implementation-plan.pdf. Render with render-plan.py (headless
+   Chrome, Letter). Uses the live site's palette and type. */
+:root {
+  --navy: #0b2545;
+  --navy-dark: #071931;
+  --navy-lift: #15396c;
+  --gold: #c9a227;
+  --gold-dark: #8a6d1b;
+  --cream: #faf7f0;
+  --paper: #fffdf8;
+  --ink: #1a1a1a;
+  --gray: #6b6b6b;
+  --rule: #e4ddcc;
+  --display: "Cormorant Garamond", Georgia, serif;
+  --sc: "Cormorant SC", Georgia, serif;
+  --body: "Source Sans 3", "Segoe UI", sans-serif;
+  --mono: "Source Code Pro", Consolas, monospace;
+}
+@page {
+  size: Letter;
+  margin: 0.72in 0.78in 0.8in;
+  @bottom-left { content: "Beer Die Home Page · Implementation plan"; font: 600 7.5pt "Source Sans 3", sans-serif; color: #8a8a8a; letter-spacing: .06em; }
+  @bottom-right { content: counter(page); font: 600 8pt "Source Sans 3", sans-serif; color: #8a6d1b; }
+}
+@page cover { margin: 0; @bottom-left { content: none; } @bottom-right { content: none; } }
+* { box-sizing: border-box; }
+html { background: var(--paper); }
+body { margin: 0; font-family: var(--body); font-size: 10pt; line-height: 1.5; color: var(--ink); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+h1, h2, h3, h4 { font-family: var(--display); color: var(--navy); line-height: 1.08; letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
+h2 { font-size: 25pt; font-weight: 700; margin-bottom: 6pt; }
+h3 { font-size: 14.5pt; font-weight: 700; margin: 16pt 0 5pt; }
+h4 { font-family: var(--body); font-size: 9pt; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--gold-dark); margin: 12pt 0 4pt; }
+p { margin: 0 0 7pt; }
+ul, ol { margin: 0 0 8pt; padding-left: 15pt; }
+li { margin-bottom: 3pt; }
+strong { font-weight: 700; color: var(--navy-dark); }
+code { font-family: var(--mono); font-size: 8.3pt; background: #f3eee2; padding: 0 3px; border-radius: 2px; }
+pre { font-family: var(--mono); font-size: 7.4pt; line-height: 1.42; background: var(--navy-dark); color: #e8e3d6; padding: 10pt 12pt; border-radius: 4px; margin: 6pt 0 10pt; white-space: pre-wrap; }
+pre .c { color: #9fb0c8; }
+pre .k { color: #e3c25a; }
+.eyebrow { font-family: var(--sc); font-weight: 600; font-size: 8.5pt; letter-spacing: .22em; text-transform: uppercase; color: var(--gold-dark); margin: 0 0 6pt; }
+.section { break-before: page; }
+.section.flow { break-before: auto; margin-top: 30pt; padding-top: 16pt; border-top: 1px solid var(--rule); }
+.eyebrow, h2, h3, h4, .rule { break-after: avoid; }
+.lede { font-size: 11.5pt; line-height: 1.5; color: #333; max-width: 64ch; }
+.muted { color: var(--gray); }
+.small { font-size: 8.5pt; }
+.rule { height: 2px; width: 56px; background: var(--gold); margin: 8pt 0 12pt; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 22pt; }
+.cols > div { min-width: 0; }
+
+table { width: 100%; border-collapse: collapse; margin: 6pt 0 12pt; font-size: 8.6pt; break-inside: auto; }
+th { text-align: left; font-weight: 700; font-size: 7.6pt; letter-spacing: .07em; text-transform: uppercase; color: var(--gold-dark); border-bottom: 1.5px solid var(--navy); padding: 4pt 6pt 4pt 0; vertical-align: bottom; }
+td { border-bottom: 1px solid var(--rule); padding: 5pt 6pt 5pt 0; vertical-align: top; }
+tr { break-inside: avoid; }
+td.n { font-family: var(--display); font-weight: 700; font-size: 12pt; color: var(--gold-dark); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.tag { display: inline-block; padding: 0 5px; border-radius: 3px; font-size: 7.5pt; font-weight: 700; letter-spacing: .03em; }
+.tag--yes { background: #e7efe2; color: #2f5a2a; }
+.tag--maybe { background: #f6edd2; color: #7a5c0f; }
+.tag--no { background: #f3e1e1; color: #8a2a2a; }
+
+.callout { border-left: 3px solid var(--gold); background: #f7f2e4; padding: 9pt 12pt; margin: 8pt 0 12pt; break-inside: avoid; }
+.callout p:last-child { margin: 0; }
+.warn { border-left-color: #ba0c2f; background: #f8ecec; }
+
+/* ---------- Cover ---------- */
+.cover { page: cover; position: relative; height: 11in; width: 8.5in; overflow: hidden; color: var(--cream); background: var(--navy) url("plan-assets/cover-bg.jpg") center / cover no-repeat; }
+.cover__inner { position: absolute; left: 0.85in; right: 0.85in; top: 1.25in; }
+.cover .eyebrow { color: var(--gold); font-size: 9.5pt; }
+.cover h1 { color: var(--cream); font-size: 50pt; font-weight: 700; line-height: .95; letter-spacing: -0.025em; margin: 10pt 0 14pt; max-width: 9ch; }
+.cover .rule { width: 80px; height: 3px; }
+.cover p { color: rgba(250,247,240,.86); font-size: 12pt; max-width: 46ch; }
+.cover__meta { position: absolute; left: 0.85in; bottom: 0.8in; font-size: 9pt; color: rgba(250,247,240,.7); line-height: 1.7; }
+.cover__meta b { color: var(--gold); font-weight: 700; }
+.cover__die { position: absolute; right: 0.7in; top: 4.6in; width: 2.7in; }
+
+/* ---------- Summary ---------- */
+.answer { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12pt; margin: 12pt 0 14pt; }
+.answer > div { border-top: 2px solid var(--navy); padding-top: 7pt; }
+.answer b { display: block; font-family: var(--display); font-size: 13pt; color: var(--navy); margin-bottom: 3pt; line-height: 1.1; }
+.swatches { display: flex; gap: 8pt; margin: 6pt 0 10pt; flex-wrap: wrap; }
+.sw { width: 74pt; font-size: 7.5pt; color: var(--gray); }
+.sw i { display: block; height: 30pt; border-radius: 3px; margin-bottom: 3pt; border: 1px solid rgba(0,0,0,.08); }
+
+/* ---------- Concepts ---------- */
+.concept { display: grid; grid-template-columns: 2.3in 1fr; gap: 12pt; padding: 9pt 0; border-bottom: 1px solid var(--rule); break-inside: avoid; }
+.concept:first-of-type { border-top: 1px solid var(--rule); }
+.concept__shots { display: grid; grid-template-columns: 1fr 1fr; gap: 3pt; }
+.concept__shots img { width: 100%; display: block; border-radius: 2px; aspect-ratio: 16 / 10; object-fit: cover; background: var(--navy); }
+.concept__shots img:first-child { grid-column: 1 / -1; }
+.concept h3 { margin: 0 0 3pt; font-size: 15pt; }
+.concept h3 span { font-family: var(--display); color: var(--gold-dark); margin-right: 6pt; font-variant-numeric: tabular-nums; }
+.concept p { margin-bottom: 4pt; font-size: 9pt; }
+.concept .tech { font-size: 8pt; color: var(--gray); }
+.concept .tech b { color: var(--navy); }
+
+.concept--rev { background: #f7f2e4; padding-left: 8pt; padding-right: 8pt; border-radius: 4px; }
+.concept h3 em.rev { font-family: var(--body); font-style: normal; font-size: 7.5pt; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--cream); background: var(--navy); padding: 2pt 6pt; border-radius: 3px; margin-left: 6pt; vertical-align: middle; }
+
+/* ---------- Diagram ---------- */
+.diagram { width: 100%; margin: 6pt 0 10pt; break-inside: avoid; }
+.diagram text { font-family: "Source Sans 3", sans-serif; }
+
+.timeline { display: grid; grid-template-columns: repeat(20, 1fr); gap: 0; margin: 4pt 0 2pt; height: 14pt; border-radius: 3px; overflow: hidden; }
+.beats { position: relative; height: 112pt; margin: 6pt 0 12pt; border-left: 1px solid var(--rule); border-right: 1px solid var(--rule); }
+.beat { position: absolute; height: 15pt; border-radius: 3px; font-size: 7.4pt; font-weight: 700; color: var(--cream); padding: 2pt 5pt; white-space: nowrap; overflow: hidden; }
+.beats .tick { position: absolute; bottom: -12pt; font-size: 7pt; color: var(--gray); transform: translateX(-50%); }
+.beats .grid { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--rule); }
+</style>
+</head>
+<body>
+
+<!-- ======================= COVER ======================= -->
+<section class="cover">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <g id="crest">
+        <path d="M60 4 L112 20 V68 C112 108 89 130 60 142 C31 130 8 108 8 68 V20 Z" fill="#0b2545" stroke="#c9a227" stroke-width="3"/>
+        <path d="M60 10 L105 24 V68 C105 104 85 124 60 135 C35 124 15 104 15 68 V24 Z" fill="none" stroke="#faf7f0" stroke-width="1.5" opacity=".9"/>
+        <rect x="52" y="34" width="16" height="68" fill="#faf7f0"/>
+        <rect x="28" y="56" width="64" height="16" fill="#faf7f0"/>
+        <text x="60" y="122" text-anchor="middle" font-family="Cormorant SC, Georgia, serif" font-weight="600" font-size="16" fill="#c9a227">&#931;&#935;</text>
+      </g>
+    </defs>
+  </svg>
+  <div class="cover__inner">
+    <p class="eyebrow">Sigma Chi WashU · experiment/beer-die-redesign</p>
+    <h1>Beer Die Home Page</h1>
+    <div class="rule"></div>
+    <p>How the home page becomes a die table on scroll: what we would build, what we would build it with, and the eleven mockups that explore it, including the revised Glow Toss.</p>
+  </div>
+  <!-- An isometric die: crest on top, two and three on the sides (1, 2, 3 share a corner on a real die). -->
+  <svg class="cover__die" viewBox="0 0 200 220" aria-hidden="true">
+    <defs>
+      <linearGradient id="dl" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#15396c"/><stop offset="1" stop-color="#0b2545"/></linearGradient>
+    </defs>
+    <polygon points="100,20 180,64 180,156 100,200 20,156 20,64" fill="#071931"/>
+    <g transform="matrix(0.8 -0.44 0.8 0.44 20 64)">
+      <rect width="100" height="100" rx="14" fill="url(#dl)" stroke="#c9a227" stroke-width="2" vector-effect="non-scaling-stroke"/>
+      <g transform="translate(19.6 13.5) scale(.51)"><use href="#crest"/></g>
+    </g>
+    <g transform="matrix(0.8 0.44 0 0.92 20 64)" fill="#c9a227">
+      <rect width="100" height="100" rx="14" fill="#0b2545" stroke="#c9a227" stroke-width="2" vector-effect="non-scaling-stroke"/>
+      <circle cx="28" cy="28" r="9"/><circle cx="72" cy="72" r="9"/>
+    </g>
+    <g transform="matrix(0.8 -0.44 0 0.92 100 108)" fill="#c9a227">
+      <rect width="100" height="100" rx="14" fill="#071931" stroke="#c9a227" stroke-width="2" vector-effect="non-scaling-stroke"/>
+      <circle cx="28" cy="28" r="9"/><circle cx="50" cy="50" r="9"/><circle cx="72" cy="72" r="9"/>
+    </g>
+  </svg>
+  <div class="cover__meta">
+    <b>Prepared</b> November 5, 2026<br>
+    <b>For</b> the colony's website, sigma-chi-website repository<br>
+    <b>Branch</b> experiment/beer-die-redesign · mockups in beer-die-redesign/mockups
+  </div>
+</section>
+
+<!-- ======================= 1. SUMMARY ======================= -->
+<section>
+  <p class="eyebrow">1 · Summary</p>
+  <h2>No new framework. A new layer.</h2>
+  <div class="rule"></div>
+  <p class="lede">The effect fits the site's current stack. Vite, React 19 and Motion already handle scroll on the live hero; the missing piece is a 3D renderer for the table and die. After the first round of ten mockups, your feedback asked for something more realistic, more modern and glowier, with far less scrolling. Mockup 11 does that, and this plan builds toward it.</p>
+
+  <div class="answer">
+    <div><b>Keep</b>Vite 8, React 19, TypeScript, react-router 7 and Motion 13. Motion detects the first scroll and runs the intro clock.</div>
+    <div><b>Add</b><code>three</code> through React Three Fiber 9, drei 10 and <code>@react-three/postprocessing</code> for bloom, lazy-loaded as one chunk on the home page only.</div>
+    <div><b>Skip</b>GSAP, runtime physics engines, Spline and a framework migration. Each one duplicates Motion, needs a CSP change, or adds weight without changing the result.</div>
+  </div>
+
+  <h3>The brief, as mockup 11 builds it</h3>
+  <ul>
+    <li><strong>It loads looking normal.</strong> The first frame is today's hero: same headline, standfirst, buttons, pinstripes and crest watermark. The table is there, seen straight down and lit flat, so it reads as the familiar navy field.</li>
+    <li><strong>One scroll starts it.</strong> The first bit of scroll, or a click on the cue, plays the whole sequence on its own clock in about 3.4 seconds. Nobody has to scroll four screens to see it. Scrolling back to the top rewinds it.</li>
+    <li><strong>The background turns out to be the table.</strong> The camera cranes up from overhead to a player's view while gold light strips trace the inlay and center line, and four glass cups rise at the corners.</li>
+    <li><strong>The crest becomes the die and gets thrown.</strong> The watermark flies onto the die's top face. The toss uses real gravity: about 5 ft of air, two bounces that lose energy, and a damped settle that always ends crest-up. "Toss again" throws it back from the other end, as players alternate in a real game.</li>
+    <li><strong>Same palette.</strong> Every color comes from <code>src/styles/theme.css</code>; gold is the only color that glows. Type stays Cormorant Garamond and Source Sans 3, plus JetBrains Mono for the small HUD readouts.</li>
+  </ul>
+  <div class="swatches">
+    <div class="sw"><i style="background:#0b2545"></i>Navy #0B2545</div>
+    <div class="sw"><i style="background:#071931"></i>Navy dark #071931</div>
+    <div class="sw"><i style="background:#c9a227"></i>Gold #C9A227</div>
+    <div class="sw"><i style="background:#f0cf62"></i>Gold glow #F0CF62 (new)</div>
+    <div class="sw"><i style="background:#8a6d1b"></i>Gold dark #8A6D1B</div>
+    <div class="sw"><i style="background:#faf7f0"></i>Cream #FAF7F0</div>
+  </div>
+
+  <div class="callout warn">
+    <p><strong>Before this ships: get sign-off on the theme.</strong> Beer die is a drinking game, and the home page is the colony's recruitment page while it builds standing with WashU's IFC and the national fraternity. Every mockup keeps the imagery dry (empty cups, no beer, no cans), and none of the on-page copy says "beer". Run the concept past the colony's risk manager or expansion coordinator before merging to <code>main</code>.</p>
+  </div>
+</section>
+
+<!-- ======================= 2. CONCEPTS ======================= -->
+<section class="section" id="concepts">
+  <p class="eyebrow">2 · Eleven mockups</p>
+  <h2>Ten ways to throw it, then one more</h2>
+  <div class="rule"></div>
+  <p class="lede">Each mockup is one self-contained page in <code>beer-die-redesign/mockups/</code>, also published as a private artifact. The first ten each test a different reveal and, where useful, a different technology. Number 11 is the revision after your feedback. The large frame is each concept's signature moment; all of them open on today's hero, except 10, which never leaves it.</p>
+
+  <div class="concept concept--rev">
+    <div class="concept__shots"><img src="screenshots/11-a.jpg" alt=""><img src="screenshots/11-b.jpg" alt=""><img src="screenshots/11-c.jpg" alt=""></div>
+    <div><h3><span>11</span>Glow Toss <em class="rev">Revision · recommended</em></h3>
+      <p>The direction after your feedback. It has physically based materials, neon gold inlays, glass cups, bloom, and a HUD that reads out the die's height and spin. One small scroll plays the whole toss in about 3.4 seconds with real ballistics, and "Toss again" throws it back the other way.</p>
+      <p class="tech"><b>Built with</b> three.js 0.160, bloom post-processing and a custom studio environment map. Triggered by scroll but runs on its own clock; pinned for under one screen.</p></div>
+  </div>
+  <div class="concept">
+    <div class="concept__shots"><img src="screenshots/01-a.jpg" alt=""><img src="screenshots/01-b.jpg" alt=""><img src="screenshots/01-c.jpg" alt=""></div>
+    <div><h3><span>01</span>Tilt Reveal</h3>
+      <p>The hero's navy field tilts back and turns out to be the painted table. The crest watermark flies onto the die's top face, and the die arcs over the line and lands crest-up.</p>
+      <p class="tech"><b>Built with</b> CSS 3D transforms and vanilla JS, scrubbed by scroll over 3.6 screens.</p></div>
+  </div>
+  <div class="concept">
+    <div class="concept__shots"><img src="screenshots/02-a.jpg" alt=""><img src="screenshots/02-b.jpg" alt=""><img src="screenshots/02-c.jpg" alt=""></div>
+    <div><h3><span>02</span>Cross Fold</h3>
+      <p>The crest's White Cross drops onto the table as six squares, because an unfolded die is a cross. The squares fold up on hinges into the die, which is then thrown.</p>
+      <p class="tech"><b>Built with</b> CSS 3D hinges and vanilla JS, scrubbed over 4.2 screens.</p></div>
+  </div>
+  <div class="concept">
+    <div class="concept__shots"><img src="screenshots/03-a.jpg" alt=""><img src="screenshots/03-b.jpg" alt=""><img src="screenshots/03-c.jpg" alt=""></div>
+    <div><h3><span>03</span>Overhead Toss</h3>
+      <p>The camera stays straight overhead while the page zooms out to a 4 × 8 ft table. The toss reads through the die's growing scale and a shadow that slides away and softens.</p>
+      <p class="tech"><b>Built with</b> one SVG and 2D transforms, no 3D at all, scrubbed over 3.4 screens. The cheapest and most robust option.</p></div>
+  </div>
+  <div class="concept">
+    <div class="concept__shots"><img src="screenshots/04-a.jpg" alt=""><img src="screenshots/04-b.jpg" alt=""><img src="screenshots/04-c.jpg" alt=""></div>
+    <div><h3><span>04</span>Altitude</h3>
+      <p>A side view drawn to scale. The view climbs with the die past a ruler (table top 30 in, head height 6 ft, apex 10 ft), and the die drops into the far cup.</p>
+      <p class="tech"><b>Built with</b> GSAP 3.12 and ScrollTrigger, pinned and scrubbed over 4.5 screens.</p></div>
+  </div>
+  <div class="concept">
+    <div class="concept__shots"><img src="screenshots/05-a.jpg" alt=""><img src="screenshots/05-b.jpg" alt=""><img src="screenshots/05-c.jpg" alt=""></div>
+    <div><h3><span>05</span>Six Faces</h3>
+      <p>The crest becomes face 1 of a large pinned die. Each chapter of the page turns it to its next face while the table rises behind it out of focus, and the last chapter throws it onto the table.</p>
+      <p class="tech"><b>Built with</b> Motion's <code>scroll()</code> and <code>animate()</code> and a CSS 3D die, scrubbed over 7 screens.</p></div>
+  </div>
+  <div class="concept">
+    <div class="concept__shots"><img src="screenshots/06-a.jpg" alt=""><img src="screenshots/06-b.jpg" alt=""><img src="screenshots/06-c.jpg" alt=""></div>
+    <div><h3><span>06</span>Pull Back</h3>
+      <p>The hero shrinks into a rounded square that turns out to be the die's top face. The camera pulls back to the die on the table, then to the whole table, and then the die is thrown.</p>
+      <p class="tech"><b>Built with</b> a log-space 2D zoom and a CSS 3D die, scrubbed over 3.8 screens.</p></div>
+  </div>
+  <div class="concept">
+    <div class="concept__shots"><img src="screenshots/07-a.jpg" alt=""><img src="screenshots/07-b.jpg" alt=""><img src="screenshots/07-c.jpg" alt=""></div>
+    <div><h3><span>07</span>Tablecloth Pull</h3>
+      <p>The hero is a navy cloth over the table. Scrolling yanks it off sideways while the cups wobble in place, and the crest printed on it stays behind as the die.</p>
+      <p class="tech"><b>Built with</b> CSS 3D, skew and an SVG displacement filter, scrubbed over 4 screens.</p></div>
+  </div>
+  <div class="concept">
+    <div class="concept__shots"><img src="screenshots/08-a.jpg" alt=""><img src="screenshots/08-b.jpg" alt=""><img src="screenshots/08-c.jpg" alt=""></div>
+    <div><h3><span>08</span>Split Stage</h3>
+      <p>The page reads normally on the left while a sticky panel on the right holds the table, and the toss follows reading progress. On phones the panel becomes a band under the nav.</p>
+      <p class="tech"><b>Built with</b> Motion <code>scroll()</code> with two targets and a CSS 3D table. No extra scroll; it rides along with the page.</p></div>
+  </div>
+  <div class="concept">
+    <div class="concept__shots"><img src="screenshots/09-a.jpg" alt=""><img src="screenshots/09-b.jpg" alt=""><img src="screenshots/09-c.jpg" alt=""></div>
+    <div><h3><span>09</span>3D Table</h3>
+      <p>The first WebGL build: a lit, rounded die, a painted table on legs, lathe-turned cups and soft shadows. The camera cranes from straight down to a player's view.</p>
+      <p class="tech"><b>Built with</b> three.js 0.160 through an importmap, scrubbed over 3.6 screens.</p></div>
+  </div>
+  <div class="concept">
+    <div class="concept__shots"><img src="screenshots/10-a.jpg" alt=""><img src="screenshots/10-b.jpg" alt=""><img src="screenshots/10-c.jpg" alt=""></div>
+    <div><h3><span>10</span>Quiet Version</h3>
+      <p>Today's home page, nearly untouched. The nav crest becomes a small die that tumbles with reading progress, and a small table at the end catches it beside the Join button.</p>
+      <p class="tech"><b>Built with</b> native CSS scroll-driven animations with a small JS fallback. No libraries and no extra scroll.</p></div>
+  </div>
+</section>
+
+<!-- ======================= 3. COMPARISON ======================= -->
+<section class="section">
+  <p class="eyebrow">3 · Side by side</p>
+  <h2>How the concepts compare</h2>
+  <div class="rule"></div>
+  <p class="small muted">Scroll is how far the reader has to scroll while the scene is pinned. Effort is for a production build in the site's React code, not the mockup.</p>
+  <table>
+    <thead><tr><th style="width:4%">#</th><th style="width:17%">Concept</th><th style="width:15%">Fits the brief</th><th style="width:14%">Scroll</th><th style="width:19%">Production tech</th><th style="width:9%">Effort</th><th>Phone risk</th></tr></thead>
+    <tbody>
+      <tr style="background:#f7f2e4"><td class="n">11</td><td><strong>Glow Toss</strong></td><td><span class="tag tag--yes">Strong</span> and realistic</td><td><strong>One flick</strong>; pinned 0.75 screen</td><td>R3F + drei + bloom</td><td>Large</td><td>Medium (bloom, glass)</td></tr>
+      <tr><td class="n">01</td><td>Tilt Reveal</td><td><span class="tag tag--yes">Strong</span></td><td>3.6 screens</td><td>R3F, or CSS 3D</td><td>Medium</td><td>Low</td></tr>
+      <tr><td class="n">02</td><td>Cross Fold</td><td><span class="tag tag--yes">Strong</span> and the most symbolic</td><td>4.2 screens</td><td>R3F hinged planes</td><td>Medium–large</td><td>Medium</td></tr>
+      <tr><td class="n">03</td><td>Overhead Toss</td><td><span class="tag tag--maybe">Partial</span>: the toss reads as a zoom</td><td>3.4 screens</td><td>SVG + Motion</td><td>Small</td><td>Low</td></tr>
+      <tr><td class="n">04</td><td>Altitude</td><td><span class="tag tag--maybe">Partial</span>: side-on, but the best "up"</td><td>4.5 screens</td><td>SVG + Motion</td><td>Medium</td><td>Low</td></tr>
+      <tr><td class="n">05</td><td>Six Faces</td><td><span class="tag tag--maybe">Partial</span>: die first, table second</td><td>7 screens</td><td>CSS 3D + Motion</td><td>Medium</td><td>Medium (blur filter)</td></tr>
+      <tr><td class="n">06</td><td>Pull Back</td><td><span class="tag tag--yes">Strong</span>: best "it looked normal" twist</td><td>3.8 screens</td><td>CSS 3D + Motion</td><td>Medium</td><td>Low</td></tr>
+      <tr><td class="n">07</td><td>Tablecloth Pull</td><td><span class="tag tag--yes">Strong</span>: the most theatrical</td><td>4 screens</td><td>CSS 3D + SVG filter</td><td>Large</td><td>High (displacement filter)</td></tr>
+      <tr><td class="n">08</td><td>Split Stage</td><td><span class="tag tag--maybe">Partial</span>: the most readable</td><td>None extra</td><td>CSS 3D + Motion</td><td>Small–medium</td><td>Low</td></tr>
+      <tr><td class="n">09</td><td>3D Table</td><td><span class="tag tag--yes">Strong</span></td><td>3.6 screens</td><td>R3F + drei</td><td>Large</td><td>Medium</td></tr>
+      <tr><td class="n">10</td><td>Quiet Version</td><td><span class="tag tag--no">Light</span>: the theme as an accent</td><td>None extra</td><td>CSS only</td><td>Small</td><td>Low</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <p><strong>Recommendation: build 11.</strong> It's the brief, made the way you asked for in the second round: realistic, glowing, and started by one flick of the wheel instead of four screens of scrolling. Two first-round ideas are worth keeping in reserve. 02's cross fold is an alternative crest-to-die moment that ties the die to the White Cross. 10's nav die could carry the theme onto the other pages without a second 3D scene.</p>
+  </div>
+
+  <h3>Why 11 plays on its own clock</h3>
+  <p>Mockups 01 to 09 scrub: every pixel of scroll moves the scene a little, so the toss lasts as long as the reader keeps scrolling (three to seven screens). That's what made them feel like a lot of mouse work. 11 is scroll-triggered instead. The first downward scroll starts a fixed-length timeline, and the reader can keep scrolling, or not, while it plays. It's also why the toss can look physical: gravity needs real seconds, not scroll pixels. The cost is that the reader no longer controls the speed, so the sequence is kept under five seconds (the WCAG 2.2.2 threshold for moving content), it can be skipped, and reduced motion jumps straight to the landed frame.</p>
+</section>
+
+<!-- ======================= 4. TECH CHOICES ======================= -->
+<section class="section flow">
+  <p class="eyebrow">4 · Frameworks and libraries</p>
+  <h2>What we would build it with</h2>
+  <div class="rule"></div>
+  <p class="lede">You asked whether this needs a different framework. It doesn't. Scroll handling and timing are already Motion's job on this site; the only missing capability is drawing a lit 3D die and table.</p>
+  <table>
+    <thead><tr><th style="width:24%">Option</th><th style="width:34%">What it gives us</th><th style="width:16%">Cost</th><th>Verdict</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Vite + React 19 + Motion 13</strong><br><span class="muted small">already installed</span></td><td>Scroll position (<code>useScroll</code>), a time-based clock (<code>animate</code> on a motion value) that can run forward or in reverse, and transforms on the HTML layers.</td><td>None</td><td><span class="tag tag--yes">Keep</span> The base for every concept.</td></tr>
+      <tr><td><strong>three.js via React Three Fiber 9 + drei 10</strong></td><td>Physically based materials, a rounded die, glass cups, soft shadows, a studio environment built from drei <code>Lightformer</code>s (no downloaded HDR), and a camera rig, all inside the React tree.</td><td>Roughly 250–300 KB gzipped with post-processing (estimate), as a lazy chunk</td><td><span class="tag tag--yes">Use</span> R3F 9 is the release line that supports React 19.</td></tr>
+      <tr><td><strong>@react-three/postprocessing</strong></td><td>Bloom that picks up only the gold: inlay strips, cup rims, pips and the flight trail.</td><td>Included above</td><td><span class="tag tag--yes">Use</span> This is where the glow comes from.</td></tr>
+      <tr><td><strong>CSS 3D transforms</strong></td><td>A crisp cube and table with no dependencies. Mockups 01, 02, 05, 06, 07 and 08 use them.</td><td>None</td><td><span class="tag tag--maybe">Not for 11</span> There's no lighting, bloom or glass, and Safari flattens 3D under <code>opacity</code>, <code>filter</code> or <code>overflow</code>.</td></tr>
+      <tr><td><strong>GSAP + ScrollTrigger</strong></td><td>Excellent timelines and pinning, free for all uses since 2025. Mockup 04 uses it.</td><td>About 35 KB gzipped</td><td><span class="tag tag--no">Skip</span> It duplicates Motion, which is already in the bundle.</td></tr>
+      <tr><td><strong>Physics engines</strong><br><span class="muted small">Rapier, cannon-es</span></td><td>Simulated tumbles.</td><td>Hundreds of KB of WASM and a CSP change (<code>'wasm-unsafe-eval'</code>)</td><td><span class="tag tag--no">Skip</span> 11's toss is closed-form physics: a gravity parabola, energy-losing bounces and a damped settle. That's a few dozen lines, it's deterministic, and it always lands crest-up.</td></tr>
+      <tr><td><strong>Spline / Rive runtimes</strong></td><td>Designer-authored scenes.</td><td>Large runtime; hosted assets are blocked by the site CSP</td><td><span class="tag tag--no">Skip</span> Less control and vendor lock-in.</td></tr>
+      <tr><td><strong>Native CSS scroll-driven animations</strong></td><td>Scroll-linked animation with no JavaScript. Mockup 10 uses it.</td><td>None</td><td><span class="tag tag--maybe">Small touches</span> Fine for a nav die on other pages, with the JS fallback.</td></tr>
+      <tr><td><strong>Switching frameworks</strong><br><span class="muted small">Next.js, Astro</span></td><td>Server rendering, islands.</td><td>A migration</td><td><span class="tag tag--no">No</span> The effect is entirely client-side, and the site deploys as static files to GitHub Pages.</td></tr>
+      <tr><td><strong>Smooth-scroll and scroll-lock libraries</strong></td><td>Inertial or hijacked scrolling.</td><td>Small</td><td><span class="tag tag--no">No</span> 11 never takes over the scrollbar. The page keeps scrolling normally while the toss plays.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Dependencies the build would add</h3>
+  <pre><span class="c"># runtime, loaded in a lazy chunk on the home page only</span>
+npm i three @react-three/fiber@^9 @react-three/drei@^10 @react-three/postprocessing
+<span class="c"># types and visual regression tests</span>
+npm i -D @types/three @playwright/test</pre>
+  <p class="small muted">Nothing else changes in <code>package.json</code>. Motion stays at 13.x. Pin exact versions in the lockfile as usual. The HUD face, JetBrains Mono, gets self-hosted through <code>@fontsource</code> like the site's other fonts, because the CSP only allows <code>font-src 'self'</code>.</p>
+</section>
+
+<!-- ======================= 5. ARCHITECTURE ======================= -->
+<section class="section flow">
+  <p class="eyebrow">5 · Architecture</p>
+  <h2>One clock, two layers</h2>
+  <div class="rule"></div>
+  <p class="lede">The stage is a short section, 175vh, with a sticky viewport. Motion watches the scroll position. The first downward scroll animates an intro clock from 0 to 1.6 seconds, and returning to the top animates it back to 0 at double speed. Pure functions turn that clock, plus the current toss's own clock, into every pose. The HTML layer (headline, crest watermark, HUD, closing card) and the 3D scene read the same values, so they can't drift apart.</p>
+
+  <svg class="diagram" viewBox="0 0 700 300" role="img" aria-label="Architecture: the first scroll triggers Motion's intro clock. introPose and tossState turn the clocks into poses for the HTML layer and the React Three Fiber scene, with a still fallback.">
+    <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#8a6d1b"/></marker></defs>
+    <g font-size="11.5">
+      <rect x="10" y="118" width="110" height="58" rx="5" fill="#f7f2e4" stroke="#c9a227"/>
+      <text x="65" y="142" text-anchor="middle" font-weight="700" fill="#0b2545">First scroll</text>
+      <text x="65" y="160" text-anchor="middle" fill="#6b6b6b" font-size="10">or the "Scroll to toss" cue</text>
+
+      <rect x="150" y="108" width="140" height="78" rx="5" fill="#0b2545"/>
+      <text x="220" y="132" text-anchor="middle" font-weight="700" fill="#c9a227">Motion</text>
+      <text x="220" y="150" text-anchor="middle" fill="#faf7f0" font-size="10">useScroll → animate(τ)</text>
+      <text x="220" y="165" text-anchor="middle" fill="#faf7f0" font-size="10">0 → 1.6 s, reversible</text>
+
+      <rect x="320" y="108" width="140" height="78" rx="5" fill="#f7f2e4" stroke="#c9a227"/>
+      <text x="390" y="130" text-anchor="middle" font-weight="700" fill="#0b2545">Pure functions</text>
+      <text x="390" y="148" text-anchor="middle" fill="#6b6b6b" font-size="10">introPose(τ)</text>
+      <text x="390" y="163" text-anchor="middle" fill="#6b6b6b" font-size="10">tossState(toss, t)</text>
+      <text x="390" y="178" text-anchor="middle" fill="#6b6b6b" font-size="10">unit-tested in Vitest</text>
+
+      <rect x="500" y="20" width="190" height="78" rx="5" fill="#fffdf8" stroke="#0b2545"/>
+      <text x="595" y="44" text-anchor="middle" font-weight="700" fill="#0b2545">HTML layer</text>
+      <text x="595" y="62" text-anchor="middle" fill="#6b6b6b" font-size="10">today's hero, crest watermark,</text>
+      <text x="595" y="77" text-anchor="middle" fill="#6b6b6b" font-size="10">HUD readouts, closing card</text>
+
+      <rect x="500" y="118" width="190" height="78" rx="5" fill="#fffdf8" stroke="#0b2545"/>
+      <text x="595" y="142" text-anchor="middle" font-weight="700" fill="#0b2545">3D scene (lazy chunk)</text>
+      <text x="595" y="160" text-anchor="middle" fill="#6b6b6b" font-size="10">R3F Canvas + Bloom: camera,</text>
+      <text x="595" y="175" text-anchor="middle" fill="#6b6b6b" font-size="10">table, strips, cups, die, trail</text>
+
+      <rect x="500" y="216" width="190" height="64" rx="5" fill="#fffdf8" stroke="#0b2545" stroke-dasharray="4 3"/>
+      <text x="595" y="240" text-anchor="middle" font-weight="700" fill="#0b2545">Still fallback</text>
+      <text x="595" y="258" text-anchor="middle" fill="#6b6b6b" font-size="10">no WebGL, jsdom tests</text>
+
+      <path d="M120 147 H148" stroke="#8a6d1b" stroke-width="1.6" marker-end="url(#ar)"/>
+      <path d="M290 147 H318" stroke="#8a6d1b" stroke-width="1.6" marker-end="url(#ar)"/>
+      <path d="M460 140 C480 140 480 59 498 59" fill="none" stroke="#8a6d1b" stroke-width="1.6" marker-end="url(#ar)"/>
+      <path d="M460 152 H498" stroke="#8a6d1b" stroke-width="1.6" marker-end="url(#ar)"/>
+      <path d="M460 164 C480 164 480 248 498 248" fill="none" stroke="#8a6d1b" stroke-width="1.6" stroke-dasharray="4 3" marker-end="url(#ar)"/>
+      <path d="M595 118 V100" stroke="#0b2545" stroke-width="1" stroke-dasharray="2 3"/>
+      <text x="603" y="112" fill="#6b6b6b" font-size="9">die projected to screen → crest handoff, HUD reticle</text>
+    </g>
+  </svg>
+
+  <h3>Files</h3>
+  <table>
+    <thead><tr><th style="width:43%">Path</th><th>Job</th></tr></thead>
+    <tbody>
+      <tr><td><code>src/features/dieTable/DieTableHero.tsx</code></td><td>Replaces <code>HeroBanner</code> on the home page only. Renders the stage, today's hero markup, the cue, HUD, closing card and skip link, and picks between the 3D scene and the still.</td></tr>
+      <tr><td><code>src/features/dieTable/useIntroClock.ts</code></td><td>Starts the intro on the first scroll and rewinds it at the top. Returns a <code>MotionValue&lt;number&gt;</code> in seconds.</td></tr>
+      <tr><td><code>src/features/dieTable/introPose.ts</code></td><td>Camera crane, hero fade, crest handoff, light-strip trace and cup rise, as a function of the intro clock.</td></tr>
+      <tr><td><code>src/features/dieTable/tossPhysics.ts</code></td><td><code>makeToss(from, to, seed)</code> and <code>tossState(toss, t)</code>: flight, bounces, settle, spin, and phase labels for the HUD.</td></tr>
+      <tr><td><code>src/features/dieTable/*.test.ts</code></td><td>Lands crest-up, never sinks into the table, apex height matches gravity, the first frame equals today's hero, and rewinding returns to it.</td></tr>
+      <tr><td><code>src/features/dieTable/scene/DieTableScene.tsx</code></td><td>The lazy R3F <code>Canvas</code>: studio environment, lamp, table, strips, cups, die, trail, impact ring and <code>Bloom</code>.</td></tr>
+      <tr><td><code>src/features/dieTable/scene/faceTextures.ts</code></td><td>Draws the <code>ShieldCrest</code> paths and the pips into colour, glow and bump canvases for the die, so the crest has one source of truth.</td></tr>
+      <tr><td><code>src/features/dieTable/StillFrame.tsx</code></td><td>A static landed composition for no WebGL and for tests.</td></tr>
+      <tr><td><code>src/components/ShieldCrest.tsx</code>, <code>src/pages/Home.tsx</code></td><td>Export the crest path constants, and swap <code>HeroBanner</code> for <code>DieTableHero</code> on the home page. Other pages are untouched.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ======================= 6. CHOREOGRAPHY ======================= -->
+<section class="section flow">
+  <p class="eyebrow">6 · Choreography</p>
+  <h2>The toss, second by second</h2>
+  <div class="rule"></div>
+  <p class="lede">Timings from mockup 11. The intro runs 1.6 seconds; the toss is released at 1.3 seconds and has its own clock, so "Toss again" can replay it without the intro. The scene is built in feet, so gravity is 32.2 ft/s².</p>
+
+  <div class="beats" style="height:132pt">
+    <div class="grid" style="left:27.8%"></div><div class="grid" style="left:55.6%"></div><div class="grid" style="left:83.3%"></div>
+    <div class="beat" style="left:0%;width:12.5%;top:4pt;background:#6b6b6b">Hero out</div>
+    <div class="beat" style="left:2.8%;width:23.6%;top:22pt;background:#8a6d1b">Crest → die</div>
+    <div class="beat" style="left:0%;width:44.4%;top:40pt;background:#0b2545">Camera cranes up to a player's view</div>
+    <div class="beat" style="left:8.3%;width:33.4%;top:58pt;background:#15396c">Light strips trace the inlay</div>
+    <div class="beat" style="left:36.1%;width:31.9%;top:76pt;background:#c9a227;color:#071931">Flight: 1.15 s, apex 5.3 ft, 2 turns</div>
+    <div class="beat" style="left:68%;width:26.7%;top:94pt;background:#071931">2 bounces, settle</div>
+    <div class="beat" style="left:94.7%;width:5.3%;top:112pt;background:#c9a227;color:#071931">Card</div>
+    <span class="tick" style="left:0%">0 s</span><span class="tick" style="left:27.8%">1 s</span><span class="tick" style="left:55.6%">2 s</span><span class="tick" style="left:83.3%">3 s</span>
+  </div>
+  <p class="small muted" style="margin-top:16pt">Bounce heights are 0.5 ft and 0.1 ft, so they last 2√(2h/g): 0.35 s and 0.16 s. The settle is a 0.45 s damped wobble onto a whole number of turns, which is what guarantees crest-up. Impacts fire a gold ring on the table and a tiny camera shake.</p>
+
+  <h3>The core of it in code</h3>
+  <pre><span class="c">// useIntroClock.ts: one scroll plays it, the top of the page rewinds it</span>
+<span class="k">export function</span> useIntroClock() {
+  <span class="k">const</span> tau = useMotionValue(0);
+  <span class="k">const</span> lastTarget = useRef(0);
+  <span class="k">const</span> reduce = useReducedMotion();
+  <span class="k">const</span> { scrollY } = useScroll();
+  useMotionValueEvent(scrollY, <span class="k">"change"</span>, (y) =&gt; {
+    <span class="k">const</span> target = y &gt; 6 ? INTRO_END : 0;
+    <span class="k">if</span> (target === lastTarget.current) <span class="k">return</span>;
+    lastTarget.current = target;
+    <span class="k">const</span> distance = Math.abs(target - tau.get());
+    animate(tau, target, { ease: <span class="k">"linear"</span>, duration: reduce ? 0 : target ? distance : distance / 2 });
+  });
+  <span class="k">return</span> tau;
+}
+
+<span class="c">// tossPhysics.ts: closed-form, deterministic, always lands crest-up</span>
+<span class="k">export function</span> tossState(k: Toss, t: number): TossState {
+  <span class="k">if</span> (t &lt; k.flight) {
+    <span class="k">const</span> u = t / k.flight;                       <span class="c">// apex = G * flight² / 8 ≈ 5.3 ft</span>
+    <span class="k">return</span> { ...lerp2(k.from, k.p1, u), height: 4 * k.apex * u * (1 - u), angle: k.A1 * u, phase: phaseOf(u) };
+  }
+  <span class="c">// ...two shorter parabolas for the bounces, then a damped settle onto A4 = 3 full turns</span>
+}
+
+<span class="c">// scene/Rig.tsx: lift the die so its lowest corner touches the table at any orientation</span>
+<span class="k">const</span> e = m4.makeRotationFromQuaternion(q).elements;
+die.position.y = (HALF - ROUND) * (Math.abs(e[1]) + Math.abs(e[5]) + Math.abs(e[9])) + ROUND + state.height;</pre>
+</section>
+
+<!-- ======================= 7. BUILDING THE SCENE ======================= -->
+<section class="section flow">
+  <p class="eyebrow">7 · The die and the table</p>
+  <h2>Realistic materials, one glowing color</h2>
+  <div class="rule"></div>
+  <div class="cols">
+    <div>
+      <h4>Die</h4>
+      <ul>
+        <li><code>RoundedBox</code> with 6 segments and a 15% edge radius.</li>
+        <li><code>MeshPhysicalMaterial</code>: navy lacquer, clearcoat 1. Three canvases per face: colour (gold pips, the crest on face 1), glow (emissive, so the pips bloom) and bump (so the pips read as engraved).</li>
+        <li>Opposite faces sum to seven. It's drawn larger than a real 5/8 in die so it stays legible at table scale.</li>
+      </ul>
+      <h4>Table</h4>
+      <ul>
+        <li>4 × 8 ft, 30 in off the floor, with a brushed gold-dark metal trim and slim dark legs.</li>
+        <li>The top is navy lacquer with fine grain and the hero's 96 px pinstripes. <strong>Its gloss is tied to the camera:</strong> matte while the camera looks straight down, so the hero reads as a flat field, then clear-coated once the camera is looking along the table. Without that, the lamp's reflection blooms into a white blob behind the headline.</li>
+        <li>The inlay and center line are thin HDR gold strips that trace on during the crane. The ΣΧ monogram is its own layer and fades in.</li>
+        <li>The floor has a faint gold grid that fades out from under the table.</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Cups</h4>
+      <ul><li>Frosted glass (<code>transmission</code>), empty, with a lit gold rim. On weak devices, swap the glass for an opaque cream material; transmission costs an extra render pass.</li></ul>
+      <h4>Light and reflections</h4>
+      <ul>
+        <li>The environment map is built in code from drei <code>Lightformer</code>s: a navy void, one low softbox behind the far end, a cool side panel and a gold strip. Reflections stay navy and gold; a stock "room" environment turns the lacquer grey.</li>
+        <li>One neutral, slightly cool key spot, placed off-axis, with soft shadows. The warmth comes only from the gold.</li>
+        <li>Bloom threshold 0.9, so only the gold glows. Its strength ramps from 0.25 at the hero to 0.75 once the table is revealed.</li>
+      </ul>
+      <h4>Motion details</h4>
+      <ul>
+        <li>The flight trail re-samples the same deterministic path slightly in the past, so it needs no stored state.</li>
+        <li>A gentle pointer parallax after the intro, and no camera roll ever.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= 8. QUALITY BARS ======================= -->
+<section class="section flow">
+  <p class="eyebrow">8 · Accessibility, performance, security</p>
+  <h2>What it has to get right</h2>
+  <div class="rule"></div>
+  <div class="cols">
+    <div>
+      <h4>Accessibility</h4>
+      <ul>
+        <li>All words stay HTML. The canvas is <code>aria-hidden</code>; the HUD is decorative.</li>
+        <li>The sequence runs about 3.4 seconds, under WCAG 2.2.2's five-second limit for moving content. It's skippable ("Skip past the toss"), and the cue is a real button for keyboard users.</li>
+        <li><strong>Reduced motion jumps straight to the landed frame.</strong> No crane, no trail, no shake, no drifting dust. The app's <code>MotionConfig reducedMotion="user"</code> doesn't cover a WebGL scene, so <code>DieTableHero</code> checks <code>useReducedMotion()</code> itself.</li>
+        <li>The page never locks or hijacks the scrollbar.</li>
+      </ul>
+      <h4>Security (the site's CSP)</h4>
+      <ul>
+        <li>The current policy works as-is: three, R3F and post-processing ship in our bundle (<code>script-src 'self'</code>); textures come from canvases; the environment map is generated in code, with no HDR download.</li>
+        <li>Self-host JetBrains Mono through <code>@fontsource</code> (<code>font-src 'self'</code>).</li>
+        <li>The policy would need changing only for runtime physics (<code>'wasm-unsafe-eval'</code>), GLB textures (<code>blob:</code>) or a CDN-hosted Draco decoder. The plan avoids all three.</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Performance budget</h4>
+      <table>
+        <tbody>
+          <tr><td>First paint and LCP</td><td>Unchanged. The LCP element stays the hero headline, and the page's own gradient shows until the canvas fades in.</td></tr>
+          <tr><td>3D chunk</td><td>≤ 300 KB gzipped, fetched on idle after load.</td></tr>
+          <tr><td>Frame rate</td><td>60 fps on an iPhone 12-class phone; check with Chrome's 4× CPU throttle.</td></tr>
+          <tr><td>Rendering</td><td>Only while the stage is on screen. Full rate while the intro or a toss runs; dust motes are the only idle motion, and they stop on low-power devices.</td></tr>
+          <tr><td>Scaling down</td><td>drei <code>PerformanceMonitor</code> steps down: device pixel ratio 1.75 → 1.25, then glass cups → opaque, then bloom at half resolution, then shadows off.</td></tr>
+        </tbody>
+      </table>
+      <h4>Fallbacks</h4>
+      <table>
+        <tbody>
+          <tr><td>Reduced motion</td><td>The scroll trigger jumps to the landed frame.</td></tr>
+          <tr><td>No WebGL</td><td>Today's hero, then the still and the closing card.</td></tr>
+          <tr><td>3D chunk still loading</td><td>The hero behaves normally; the scene fades in when ready.</td></tr>
+          <tr><td>Tests (jsdom)</td><td><code>canRender3D()</code> returns false, so the still renders.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= 9. PLAN ======================= -->
+<section class="section flow">
+  <p class="eyebrow">9 · Delivery</p>
+  <h2>Testing, rollout and open questions</h2>
+  <div class="rule"></div>
+  <div class="cols">
+    <div>
+      <h4>Testing</h4>
+      <ul>
+        <li><strong>Vitest:</strong> <code>tossPhysics</code> and <code>introPose</code> unit tests (crest-up landing, no table penetration at any orientation, apex = gT²/8, first frame equals today's hero, rewind returns to it).</li>
+        <li><strong>Existing suite:</strong> <code>App.test.tsx</code> keeps passing because jsdom takes the still path.</li>
+        <li><strong>Playwright visual checks:</strong> seek the clock to fixed times (hero, apex, impact, landed) on desktop and phone. Mockup 11 already has this hook (<code>window.__seek</code>), which is how its frames in this document were captured.</li>
+        <li><strong>By hand:</strong> iOS Safari (sticky with <code>100svh</code>), Firefox, reduced motion on, keyboard only, a low-end Android.</li>
+      </ul>
+      <h4>Previewing the branch</h4>
+      <p>GitHub Pages deploys only <code>main</code>. Review this branch locally with <code>npm run dev</code>, or connect Vercel or Netlify (their configs are already in the repo) for preview URLs. <strong>Don't run the Pages workflow from this branch:</strong> it has <code>workflow_dispatch</code>, and a manual run would replace the live site.</p>
+    </div>
+    <div>
+      <h4>Rollout</h4>
+      <table>
+        <thead><tr><th>Phase</th><th>Work</th><th>Effort</th></tr></thead>
+        <tbody>
+          <tr><td class="n">1</td><td>Confirm 11 as the direction and the die finish; get theme sign-off.</td><td>You</td></tr>
+          <tr><td class="n">2</td><td>Stage, intro clock, <code>introPose</code> and <code>tossPhysics</code> with tests, HTML layers, still, reduced-motion path.</td><td>1–2 days</td></tr>
+          <tr><td class="n">3</td><td>R3F scene: table, strips, cups, die textures, environment, bloom, crest handoff, HUD.</td><td>3–5 days</td></tr>
+          <tr><td class="n">4</td><td>Phone tuning and the performance step-down, Safari pass, Playwright baselines.</td><td>2 days</td></tr>
+          <tr><td class="n">5</td><td>Preview deploy, review, merge to <code>main</code>.</td><td>½ day</td></tr>
+        </tbody>
+      </table>
+      <p class="small muted">These are focused working days with Claude Code doing most of the typing; review and sign-off time is on top.</p>
+      <h4>Questions for you</h4>
+      <ol>
+        <li>Is 11 the direction, or should a first-round idea (02's cross fold, 06's pull back) be folded into it?</li>
+        <li>How much HUD: the full readout as mocked up, or just the reticle?</li>
+        <li>Should the toss end crest-up on the table, or in a cup?</li>
+        <li>Should the glow carry into the rest of the site (the dark glass sections in 11), or stop at the hero?</li>
+        <li>Who signs off on the theme before it goes live?</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

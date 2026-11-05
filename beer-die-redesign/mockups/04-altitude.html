@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Beer Die Altitude</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Cormorant+SC:wght@600&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+/* Concept 04 · Altitude. Side elevation, drawn to scale in inches. The hero's
+   navy field is the wall above the table; the camera drops to the table, then
+   rides the toss up to ten feet and back down into the far cup. Driven by a
+   GSAP timeline scrubbed by ScrollTrigger, with the stage pinned. */
+:root {
+  --navy: #0b2545;
+  --navy-dark: #071931;
+  --navy-lift: #15396c;
+  --navy-deep: #040f1f;
+  --gold: #c9a227;
+  --gold-dark: #8a6d1b;
+  --ply: #a8874a;
+  --cream: #faf7f0;
+  --ink: #1a1a1a;
+  --gray: #6b6b6b;
+  --white: #ffffff;
+  --font-display: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --font-sc: "Cormorant SC", Georgia, "Times New Roman", serif;
+  --font-body: "Source Sans 3", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --nav-h: 84px;
+  --gut-l: max(24px, env(safe-area-inset-left, 0px));
+  --gut-r: max(24px, env(safe-area-inset-right, 0px));
+}
+* { box-sizing: border-box; }
+html { background: var(--cream); }
+body { margin: 0; background: var(--cream); color: var(--ink); font-family: var(--font-body); font-size: 18px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 110; background: var(--navy-dark); }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 600; color: var(--navy); margin: 0 0 .5em; line-height: 1.06; letter-spacing: -0.015em; text-wrap: balance; }
+p { margin: 0 0 1em; }
+a { color: inherit; text-decoration: none; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+.wrap { max-width: 1200px; margin: 0 auto; padding-left: var(--gut-l); padding-right: var(--gut-r); }
+.eyebrow { font-family: var(--font-sc); font-weight: 600; font-size: .8rem; letter-spacing: .22em; text-transform: uppercase; color: var(--gold-dark); margin: 0 0 16px; }
+.skip { position: absolute; left: 16px; top: -60px; z-index: 200; background: var(--gold); color: var(--navy-dark); padding: 10px 16px; font-weight: 700; }
+.skip:focus { top: calc(env(safe-area-inset-top, 0px) + 12px); }
+
+/* ---------- Nav (matches the live site) ---------- */
+.nav { position: fixed; top: env(safe-area-inset-top, 0px); left: 0; right: 0; z-index: 100; transition: background-color .3s ease-out, box-shadow .3s ease-out; }
+.nav--solid { background: rgba(11, 37, 69, .86); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); box-shadow: 0 1px 0 rgba(201, 162, 39, .55); }
+.nav__inner { display: flex; align-items: center; justify-content: space-between; height: var(--nav-h); }
+.brand { display: flex; align-items: center; gap: 12px; font-family: var(--font-display); font-weight: 700; font-size: 1.3rem; color: var(--cream); }
+.brand svg { width: 36px; height: auto; }
+.brand em { font-style: normal; color: var(--gold); }
+.nav__links { display: flex; gap: 4px; }
+.nav__links a { display: inline-flex; align-items: center; min-height: 44px; padding: 10px 14px; font-size: .95rem; font-weight: 600; color: rgba(250, 247, 240, .85); }
+.nav__links a:hover { color: var(--cream); }
+.nav__links a[aria-current] { color: var(--gold); }
+.nav__toggle { display: none; min-width: 44px; min-height: 44px; background: none; border: 1px solid rgba(250, 247, 240, .3); border-radius: 4px; color: var(--cream); font: 600 .85rem var(--font-body); letter-spacing: .06em; cursor: pointer; }
+@media (max-width: 980px) {
+  :root { --nav-h: 68px; }
+  .nav__toggle { display: inline-flex; align-items: center; justify-content: center; padding: 0 12px; }
+  .nav__links { display: none; position: absolute; top: var(--nav-h); left: 0; right: 0; flex-direction: column; padding: 8px var(--gut-r) 16px var(--gut-l); background: rgba(7, 25, 49, .97); }
+  .nav__links--open { display: flex; }
+}
+
+/* ---------- Buttons ---------- */
+.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 14px 30px; font: 700 15px var(--font-body); letter-spacing: .04em; border-radius: 4px; border: 1.5px solid transparent; transition: background-color .25s, transform .25s; }
+.btn--gold { background: var(--gold); color: var(--navy-dark); }
+.btn--gold:hover { background: #b6911f; transform: translateY(-1px); }
+.btn--ghost { border-color: var(--cream); color: var(--cream); }
+.btn--ghost:hover { background: rgba(250, 247, 240, .12); }
+.btn--navy { border-color: var(--navy); color: var(--navy); }
+
+/* ---------- Stage (pinned by ScrollTrigger) ---------- */
+.stage { position: relative; height: 100vh; height: 100svh; overflow: hidden; background: var(--navy-deep); }
+.world { position: absolute; left: 0; top: 0; width: 100%; will-change: transform; }
+.wall { position: absolute; left: 0; right: 0; top: 0; background: radial-gradient(120% 40% at 12% 0%, var(--navy-lift) 0%, var(--navy) 45%, var(--navy-dark) 100%); }
+.wall::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, rgba(201, 162, 39, .07) 0 1px, transparent 1px 96px); -webkit-mask-image: linear-gradient(90deg, #000 0%, transparent 62%); mask-image: linear-gradient(90deg, #000 0%, transparent 62%); }
+.base { position: absolute; left: 0; right: 0; height: 6px; background: linear-gradient(var(--gold-dark), #5d4820); }
+.floor { position: absolute; left: 0; right: 0; bottom: 0; background: repeating-linear-gradient(90deg, rgba(0, 0, 0, .25) 0 2px, transparent 2px 140px), linear-gradient(#0b1f3a, var(--navy-deep)); }
+.table { position: absolute; overflow: visible; }
+.cup { position: absolute; left: 0; top: 0; transform-origin: 50% 100%; }
+.cup svg { display: block; width: 100%; height: 100%; }
+.die-shadow { position: absolute; left: 0; top: 0; height: 6px; border-radius: 50%; background: radial-gradient(closest-side, rgba(0, 0, 0, .7), rgba(0, 0, 0, 0)); }
+.sd { position: absolute; left: 0; top: 0; visibility: hidden; will-change: transform; }
+.sd__face { position: absolute; inset: 0; border-radius: 16%; background: radial-gradient(circle at 30% 25%, var(--navy-lift), var(--navy) 58%, var(--navy-dark)); box-shadow: inset 0 0 0 1.5px rgba(201, 162, 39, .8), 0 0 0 1px rgba(201, 162, 39, .35), 0 0 22px rgba(201, 162, 39, .28), 0 6px 14px rgba(0, 0, 0, .35); }
+.sd__face svg { display: block; width: 100%; height: 100%; }
+.pip { fill: var(--gold); stroke: var(--gold-dark); stroke-width: 1; }
+.ring { position: absolute; left: 0; top: 0; border: 2px solid var(--gold); border-radius: 50%; opacity: 0; }
+.sink-label { position: absolute; left: 0; top: 0; font: 700 .78rem var(--font-body); letter-spacing: .22em; color: var(--gold); opacity: 0; white-space: nowrap; }
+
+/* Altitude ruler: real heights, drawn in the world so it scrolls with it. */
+.ruler { position: absolute; left: var(--gut-l); top: 0; width: 1px; background: rgba(250, 247, 240, .35); }
+.tick { position: absolute; left: 0; height: 1px; width: 8px; background: rgba(250, 247, 240, .4); }
+.tick--ft { width: 14px; background: rgba(250, 247, 240, .7); }
+.tick span { position: absolute; left: 20px; top: -.7em; font: 600 .72rem var(--font-body); letter-spacing: .08em; color: rgba(250, 247, 240, .55); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.tick--key { width: 34px; background: var(--gold); }
+.tick--key span { left: 42px; color: var(--gold); letter-spacing: .14em; text-transform: uppercase; }
+.readout { position: absolute; right: var(--gut-r); bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); padding: 8px 14px; border: 1px solid rgba(201, 162, 39, .5); border-radius: 4px; background: rgba(7, 25, 49, .85); color: var(--cream); font: 600 .78rem var(--font-body); letter-spacing: .08em; text-transform: uppercase; opacity: 0; }
+.readout b { margin-left: 8px; font-family: var(--font-display); font-size: 1.35rem; letter-spacing: 0; text-transform: none; color: var(--gold); font-variant-numeric: tabular-nums; }
+
+.glow { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle at 12% -10%, rgba(21, 57, 108, .9) 0%, rgba(21, 57, 108, 0) 55%); }
+.mark { position: absolute; left: 0; top: 0; pointer-events: none; will-change: transform; z-index: 3; }
+.mark > * { position: absolute; inset: 0; width: 100%; height: 100%; }
+.mark__face { opacity: 0; }
+
+.hero { position: absolute; inset: 0; display: flex; align-items: center; padding-top: var(--nav-h); color: var(--cream); will-change: transform, opacity; z-index: 2; }
+.hero .wrap { width: 100%; }
+.hero h1 { color: var(--cream); font-weight: 700; font-size: clamp(3rem, 7.5vw, 5.75rem); line-height: .98; letter-spacing: -0.028em; max-width: 16ch; margin-bottom: 24px; }
+.hero .eyebrow { color: var(--gold); margin-bottom: 24px; }
+.hero__rule { display: block; width: 96px; height: 3px; background: var(--gold); margin-bottom: 24px; }
+.hero__sub { max-width: 54ch; font-size: clamp(1.05rem, 1.5vw, 1.3rem); line-height: 1.55; color: rgba(250, 247, 240, .86); }
+.hero__ctas { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 24px; }
+
+.caps { position: absolute; top: calc(var(--nav-h) + 6vh); right: var(--gut-r); width: min(28rem, 36vw); pointer-events: none; z-index: 2; }
+.cap { position: absolute; left: 0; top: 0; width: 100%; visibility: hidden; color: var(--cream); }
+.cap .eyebrow { color: var(--gold); }
+.cap__big { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.8rem, 3.2vw, 2.8rem); line-height: 1.05; letter-spacing: -0.02em; text-wrap: balance; margin: 0 0 20px; }
+.cap--word { font-family: var(--font-display); font-style: italic; font-weight: 500; font-size: clamp(3rem, 7vw, 6rem); line-height: 1; color: var(--gold); }
+.cap a { pointer-events: auto; }
+@media (max-width: 760px) {
+  .caps { left: var(--gut-l); right: var(--gut-r); width: auto; top: calc(var(--nav-h) + 16px); }
+  .cap--word { font-size: clamp(2.6rem, 14vw, 4rem); }
+  .tick span { font-size: .62rem; }
+  .tick--key span { display: none; }
+}
+
+/* ---------- Ordinary page content after the toss ---------- */
+.aims { padding-block: 104px; background: var(--cream); }
+.split { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 40px 64px; align-items: start; }
+.split__head { position: sticky; top: calc(var(--nav-h) + 40px); }
+.split__head h2 { font-size: clamp(2.1rem, 4.4vw, 3.4rem); }
+.note { font-family: var(--font-display); font-style: italic; font-size: 1.25rem; color: var(--gold-dark); }
+.row { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr); gap: 0 24px; padding-block: 32px; border-top: 1px solid rgba(11, 37, 69, .14); }
+.row:last-child { border-bottom: 1px solid rgba(11, 37, 69, .14); }
+.row__n { font-family: var(--font-display); font-size: 2.6rem; line-height: 1; color: var(--gold-dark); font-variant-numeric: tabular-nums; }
+.row h3 { font-size: clamp(1.45rem, 2.5vw, 1.95rem); margin-bottom: 8px; }
+.row p { color: #3d3d3d; margin: 0; max-width: 60ch; }
+.stats { background: var(--navy); color: var(--cream); padding-block: 72px; }
+.stats__grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 40px; }
+.stat__n { font-family: var(--font-display); font-weight: 700; font-size: clamp(2.6rem, 5vw, 4rem); line-height: 1; color: var(--gold); font-variant-numeric: tabular-nums; }
+.stat__l { margin-top: 10px; font-size: .95rem; color: rgba(250, 247, 240, .78); }
+.colony { background: var(--white); padding-block: 104px; }
+.colony .wrap > div { max-width: 66ch; }
+.badge { display: inline-block; margin-bottom: 24px; padding: 6px 14px; border: 1px solid rgba(11, 37, 69, .25); border-radius: 999px; font-size: .85rem; font-weight: 600; color: var(--navy); }
+.lede { font-size: 1.3rem; line-height: 1.5; color: var(--ink); }
+.muted { color: var(--gray); }
+.footer { background: var(--navy-dark); color: rgba(250, 247, 240, .72); padding-block: 56px calc(88px + env(safe-area-inset-bottom, 0px)); font-size: .9rem; }
+.footer strong { display: block; font-family: var(--font-display); font-size: 1.3rem; color: var(--cream); }
+.footer p { max-width: 70ch; }
+@media (max-width: 900px) {
+  .split { grid-template-columns: 1fr; }
+  .split__head { position: static; }
+  .stats__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* ---------- Concept label ---------- */
+.chip { position: fixed; z-index: 120; left: max(16px, calc(env(safe-area-inset-left, 0px) + 12px)); bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); display: flex; align-items: center; gap: 10px; padding: 8px 14px; border-radius: 999px; background: rgba(7, 25, 49, .92); border: 1px solid rgba(201, 162, 39, .5); color: var(--cream); font: 600 .78rem var(--font-body); letter-spacing: .04em; box-shadow: 0 8px 24px rgba(0, 0, 0, .25); }
+.chip b { color: var(--gold); font-weight: 700; }
+.chip__bar { width: 54px; height: 3px; background: rgba(250, 247, 240, .2); border-radius: 2px; overflow: hidden; }
+.chip__bar i { display: block; height: 100%; background: var(--gold); transform-origin: 0 50%; transform: scaleX(0); }
+</style>
+</head>
+<body>
+<a class="skip" href="#aims">Skip past the toss</a>
+
+<header class="nav" id="nav">
+  <div class="wrap nav__inner">
+    <a class="brand" href="#top" aria-label="Sigma Chi WashU, home">
+      <svg viewBox="0 0 120 142" aria-hidden="true"><use href="#crest"></use></svg>
+      <span>Sigma Chi <em>WashU</em></span>
+    </a>
+    <button class="nav__toggle" id="menuBtn" aria-expanded="false" aria-controls="navLinks">Menu</button>
+    <nav class="nav__links" id="navLinks" aria-label="Main">
+      <a href="#top" aria-current="page">Home</a>
+      <a href="#aims">Our History</a>
+      <a href="#aims">Values &amp; Creed</a>
+      <a href="#join">The Colony Today</a>
+      <a href="#join">Philanthropy</a>
+      <a href="#join">Join Us</a>
+    </nav>
+  </div>
+</header>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <g id="crest">
+      <path d="M60 4 L112 20 V68 C112 108 89 130 60 142 C31 130 8 108 8 68 V20 Z" fill="#0b2545" stroke="#c9a227" stroke-width="3"/>
+      <path d="M60 10 L105 24 V68 C105 104 85 124 60 135 C35 124 15 104 15 68 V24 Z" fill="none" stroke="#faf7f0" stroke-width="1.5" opacity=".9"/>
+      <rect x="52" y="34" width="16" height="68" fill="#faf7f0"/>
+      <rect x="28" y="56" width="64" height="16" fill="#faf7f0"/>
+      <text x="60" y="122" text-anchor="middle" font-family="Cormorant SC, Georgia, serif" font-weight="600" font-size="16" fill="#c9a227">&#931;&#935;</text>
+    </g>
+  </defs>
+</svg>
+
+<main id="top">
+  <section class="stage" id="stage" aria-label="Opening: side view of the table; the crest becomes a die, is tossed ten feet up and lands in the far cup">
+    <div class="world" id="world">
+      <div class="wall" id="wall"></div>
+      <div class="base" id="base"></div>
+      <div class="floor" id="floor"></div>
+      <div class="ruler" id="ruler" aria-hidden="true"></div>
+      <svg class="table" id="table" viewBox="0 0 96 30" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="slab" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c4a462"/><stop offset="1" stop-color="#7d6230"/></linearGradient>
+          <linearGradient id="leg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0b2545"/><stop offset=".5" stop-color="#12345f"/><stop offset="1" stop-color="#071931"/></linearGradient>
+        </defs>
+        <rect x="4" y="1.5" width="3.5" height="28.5" fill="url(#leg)"/>
+        <rect x="88.5" y="1.5" width="3.5" height="28.5" fill="url(#leg)"/>
+        <rect x="4" y="1.5" width="88" height="4" fill="#0b2545"/>
+        <rect x="4" y="5.2" width="88" height=".3" fill="#8a6d1b"/>
+        <rect x="0" y="0" width="96" height="1.5" fill="url(#slab)"/>
+        <rect x="0" y="0" width="96" height=".3" fill="#0b2545"/>
+        <rect x="0" y=".3" width="96" height=".15" fill="#c9a227"/>
+      </svg>
+      <div class="die-shadow" id="dieShadow"></div>
+      <div class="sd" id="die"><div class="sd__face" id="dieFace"></div></div>
+      <div class="cup" id="cupL"></div>
+      <div class="cup" id="cupR"></div>
+      <div class="ring" id="ring"></div>
+      <div class="sink-label" id="sinkLabel">Sink</div>
+    </div>
+
+    <div class="glow" id="glow"></div>
+    <div class="mark" id="mark">
+      <svg viewBox="0 0 120 142" aria-hidden="true"><use href="#crest"></use></svg>
+      <div class="mark__face" id="markFace"></div>
+    </div>
+
+    <div class="hero" id="hero">
+      <div class="wrap">
+        <p class="eyebrow">Washington University in St. Louis · Beta Colony</p>
+        <h1>Leaders of Men. Est. 1855.</h1>
+        <span class="hero__rule" aria-hidden="true"></span>
+        <p class="hero__sub">"In Hoc Signo Vinces" — In this sign you will conquer. Sigma Chi is returning to Washington University in St. Louis, building a new colony on friendship, justice, and learning.</p>
+        <div class="hero__ctas">
+          <a class="btn btn--gold" href="#join">Join Our Founding Class</a>
+          <a class="btn btn--ghost" href="#aims">Our Story</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="caps">
+      <div class="cap" data-in=".15" data-out=".31"><p class="eyebrow">The Beta Colony</p><p class="cap__big">A new chapter at WashU, built by its founding class.</p></div>
+      <div class="cap cap--word" data-in=".32" data-out=".43">Friendship.</div>
+      <div class="cap cap--word" data-in=".43" data-out=".54">Justice.</div>
+      <div class="cap cap--word" data-in=".54" data-out=".66">Learning.</div>
+      <div class="cap" data-in=".66" data-out=".77"><p class="eyebrow">In Hoc Signo Vinces</p><p class="cap__big">In this sign you will conquer.</p></div>
+      <div class="cap" data-in=".79" data-out="9"><p class="eyebrow">Spring 2026 founding class</p><p class="cap__big">Your turn to throw.</p><a class="btn btn--gold" href="#join">Join Our Founding Class</a></div>
+    </div>
+    <div class="readout" id="readout" aria-hidden="true">Die height <b id="readVal">2&prime; 6&Prime;</b></div>
+  </section>
+
+  <section class="aims" id="aims">
+    <div class="wrap split">
+      <div class="split__head">
+        <p class="eyebrow">The Three Great Aims</p>
+        <h2>What We Stand For</h2>
+        <p class="note">In Hoc Signo Vinces</p>
+      </div>
+      <div>
+        <div class="row"><span class="row__n">01</span><div><h3>Friendship</h3><p>A bond built on genuine loyalty rather than convenience — the belief that brothers are stronger, and better men, together than alone.</p></div></div>
+        <div class="row"><span class="row__n">02</span><div><h3>Justice</h3><p>A commitment to fairness and integrity in how members treat one another and the wider community — doing right even when no one is watching.</p></div></div>
+        <div class="row"><span class="row__n">03</span><div><h3>Learning</h3><p>A dedication to scholarship and growth, in and out of the classroom, as a lifelong pursuit rather than a college requirement.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="stats" aria-label="Sigma Chi by the numbers">
+    <div class="wrap stats__grid">
+      <div><div class="stat__n">1855</div><div class="stat__l">Founded Nationally</div></div>
+      <div><div class="stat__n">7</div><div class="stat__l">Founding Fathers, 1855</div></div>
+      <div><div class="stat__n">2024</div><div class="stat__l">Return to WashU Approved</div></div>
+      <div><div class="stat__n">240+</div><div class="stat__l">Chapters &amp; Colonies Nationally</div></div>
+    </div>
+  </section>
+
+  <section class="colony" id="join">
+    <div class="wrap">
+      <div>
+        <span class="badge">Good Standing with WashU's Interfraternity Council</span>
+        <h2>We're Building Something New</h2>
+        <p class="lede">In spring 2026, a new class of founding fathers began forming Sigma Chi's colony at WashU — with no connection to the fraternity's former Tau Tau chapter.</p>
+        <p class="muted">This is a clean start, focused, in the words of our expansion coordinator, on "community service, more academics, and more philanthropy."</p>
+        <a class="btn btn--navy" href="#top">Meet the Colony</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <strong>Sigma Chi Fraternity</strong>
+    <p>Washington University in St. Louis · Beta Colony</p>
+    <p>Unofficial colony site. Not an official publication of Sigma Chi Fraternity (International Headquarters) or Washington University in St. Louis. This page is a design concept for the colony's own website, not the live site.</p>
+  </div>
+</footer>
+
+<div class="chip" aria-hidden="true"><b>04 / 10</b> Altitude <span class="chip__bar"><i id="chipBar"></i></span></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+(() => {
+  // ---------- Die faces: 1 is the crest, opposite faces sum to seven ----------
+  const PIPS = {
+    2: [[28, 28], [72, 72]],
+    3: [[28, 28], [50, 50], [72, 72]],
+    4: [[28, 28], [72, 28], [28, 72], [72, 72]],
+    5: [[28, 28], [72, 28], [50, 50], [28, 72], [72, 72]],
+    6: [[28, 26], [72, 26], [28, 50], [72, 50], [28, 74], [72, 74]],
+  };
+  const faceSVG = (n) => n === 1
+    ? '<svg viewBox="0 0 100 100" aria-hidden="true"><g transform="translate(19.6 13.5) scale(.51)"><use href="#crest"></use></g></svg>'
+    : '<svg viewBox="0 0 100 100" aria-hidden="true">' + PIPS[n].map(([x, y]) => `<circle class="pip" cx="${x}" cy="${y}" r="8.5"/>`).join("") + "</svg>";
+  // Rolling sideways, the face toward us cycles front, right, back, left.
+  const ROLL = [1, 3, 6, 4];
+  const CUP = '<svg viewBox="0 0 60 80" aria-hidden="true"><defs><linearGradient id="cupg" x1="0" x2="1"><stop offset="0" stop-color="#d9d3c4"/><stop offset=".45" stop-color="#faf7f0"/><stop offset="1" stop-color="#cfc7b5"/></linearGradient></defs><path d="M4 6 H56 L49 78 H11 Z" fill="url(#cupg)"/><rect x="4" y="2" width="52" height="7" rx="2" fill="#c9a227"/><path d="M8 20 H52" stroke="#8a6d1b" stroke-width="1.5" opacity=".6"/></svg>';
+
+  const $ = (id) => document.getElementById(id);
+  const stage = $("stage"), world = $("world"), hero = $("hero"), glow = $("glow");
+  const die = $("die"), dieFace = $("dieFace"), dieShadow = $("dieShadow");
+  const cupL = $("cupL"), cupR = $("cupR"), ring = $("ring"), sinkLabel = $("sinkLabel");
+  const mark = $("mark"), markFace = $("markFace"), readout = $("readout"), readVal = $("readVal");
+  const chipBar = $("chipBar"), nav = $("nav"), ruler = $("ruler");
+  const caps = [...document.querySelectorAll(".cap")];
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  cupL.innerHTML = CUP;
+  cupR.innerHTML = CUP;
+  markFace.innerHTML = `<div class="sd__face">${faceSVG(1)}</div>`;
+  let shownFace = 0;
+  const setFace = (n) => { if (n !== shownFace) { dieFace.innerHTML = faceSVG(n); shownFace = n; } };
+  setFace(1);
+
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+  const lerp = (a, b, t) => a + (b - a) * t;
+
+  // ---------- Scale drawing, in inches ----------
+  const TABLE_H = 30;   // table top
+  const APEX = 120;     // ten feet
+  const X0 = 30;        // release point, inches from the near end
+  const XC = 92;        // far cup centre
+  let vw, vh, k, D, cupW, cupH, top, tableLeft, camT, camH, camA, A;
+
+  function layout() {
+    vw = innerWidth; vh = innerHeight;
+    const narrow = vw < 760;
+    const navH = narrow ? 68 : 84;
+    k = narrow ? ((vh - navH) * 0.5) / 80 : Math.min(((vh - navH) * 0.85) / 84, (vw * 0.6) / 96);
+    // Die and cups are drawn oversize (a real die is 5/8 in) so the toss reads.
+    D = Math.max(5 * k, 34);
+    cupW = Math.max(5.25 * k, D * 1.45);
+    cupH = cupW * 80 / 60;
+    camT = (vh / 2 - (narrow ? 64 : 50)) / k;   // floor near the bottom edge
+    camH = camT + vh / k;                       // one screen up the wall
+    camA = APEX - (vh * 0.08) / k;
+    top = camH + vh / (2 * k) + 30;             // highest altitude drawn
+    tableLeft = narrow ? vw - 16 - 96 * k : vw / 2 - 48 * k + 40;
+
+    const px = (alt) => (top - alt) * k;        // altitude to world y
+    world.style.height = (top + 24) * k + "px";
+    $("wall").style.height = px(0) + "px";
+    $("base").style.top = px(0) - 6 + "px";
+    const floor = $("floor");
+    floor.style.top = px(0) + "px";
+    floor.style.height = 24 * k + "px";
+    const table = $("table");
+    table.style.left = tableLeft + "px";
+    table.style.top = px(TABLE_H) + "px";
+    table.style.width = 96 * k + "px";
+    table.style.height = TABLE_H * k + "px";
+    for (const [cup, x] of [[cupL, 4], [cupR, XC]]) {
+      cup.style.width = cupW + "px";
+      cup.style.height = cupH + "px";
+      cup.dataset.x = tableLeft + x * k - cupW / 2;
+      cup.dataset.y = px(TABLE_H) - cupH;
+      cup.style.transform = `translate(${cup.dataset.x}px, ${cup.dataset.y}px)`;
+    }
+    die.style.width = D + "px";
+    die.style.height = D + "px";
+
+    // Ruler ticks every 6in, labels every foot, and the three heights that matter.
+    ruler.style.top = px(132) + "px";
+    ruler.style.height = 132 * k + "px";
+    const keys = { 30: "Table top · 30 in", 72: "Head height · 6 ft", 120: "Toss apex · 10 ft" };
+    let html = "";
+    for (let a = 0; a <= 132; a += 6) {
+      const y = (132 - a) * k;
+      if (keys[a]) html += `<div class="tick tick--key" style="top:${y}px"><span>${keys[a]}</span></div>`;
+      else if (a % 12 === 0) html += `<div class="tick tick--ft" style="top:${y}px"><span>${a / 12} ft</span></div>`;
+      else html += `<div class="tick" style="top:${y}px"></div>`;
+    }
+    ruler.innerHTML = html;
+
+    const w = clamp(vw * 0.26, 150, 340), h = w * 142 / 120;
+    A = { x: vw - w * 0.9, y: vh / 2 - h / 2 + 24, w, h };
+  }
+
+  // ---------- Timeline state: normalized phases, mapped to pixels in render ----------
+  const S = { pan: 0, mark: 0, climb: 0, up: 0, down: 0, travel: 0, spin: 0, sink: 0 };
+
+  function render() {
+    const cam = lerp(camH, camT, S.pan) + (camA - camT) * S.climb;
+    const worldY = vh / 2 - (top - cam) * k;
+    world.style.transform = `translateY(${worldY}px)`;
+    const px = (alt) => (top - alt) * k;
+
+    // The hero is painted on the wall, so it rides up with it.
+    hero.style.transform = `translateY(${(cam - camH) * k}px)`;
+    hero.style.opacity = 1 - clamp(S.pan * 2.4);
+    hero.style.visibility = S.pan > 0.45 ? "hidden" : "visible";
+    glow.style.opacity = 1 - S.pan;
+
+    // Ballistic flight: power1.out up, power1.in down — both true quadratics.
+    const h = S.down > 0 ? APEX - (APEX - 31) * S.down : TABLE_H + (APEX - TABLE_H) * S.up;
+    const x = lerp(X0, XC, S.travel);
+    const roll = S.spin * 8;
+    const q = Math.round(roll), frac = roll - q;
+    setFace(ROLL[((q % 4) + 4) % 4]);
+    const squash = Math.max(0.35, Math.cos(frac * Math.PI));
+    const dx = tableLeft + x * k - D / 2, dy = px(h) - D;
+    die.style.transform = `translate(${dx}px, ${dy}px) rotate(${S.spin * 360}deg)`;
+    dieFace.style.transform = `scaleX(${squash})`;
+    dieFace.style.filter = `brightness(${0.8 + 0.2 * squash})`;
+
+    // Contact shadow on the table top, fading as the die climbs.
+    const lift = clamp((h - TABLE_H) / 40);
+    const sw = D * (1.3 + lift * 1.5);
+    dieShadow.style.width = sw + "px";
+    dieShadow.style.transform = `translate(${tableLeft + x * k - sw / 2}px, ${px(TABLE_H) - 3}px)`;
+    dieShadow.style.opacity = S.sink > 0 ? 0 : 0.8 * (1 - lift);
+
+    // Sink: a gold ring off the far cup's rim, and the cup rocks once.
+    const rim = { x: tableLeft + XC * k, y: px(TABLE_H) - cupH + cupH * 0.05 };
+    const rs = cupW * (0.9 + S.sink * 1.4);
+    ring.style.width = rs + "px";
+    ring.style.height = rs * 0.32 + "px";
+    ring.style.transform = `translate(${rim.x - rs / 2}px, ${rim.y - rs * 0.16}px)`;
+    ring.style.opacity = Math.sin(Math.PI * S.sink);
+    cupR.style.transform = `translate(${cupR.dataset.x}px, ${cupR.dataset.y}px) rotate(${Math.sin(Math.PI * S.sink * 2) * 4 * (1 - S.sink)}deg)`;
+    sinkLabel.style.transform = `translate(${rim.x + cupW * 0.8}px, ${rim.y - cupH * 0.5}px)`;
+    sinkLabel.style.opacity = clamp(S.sink * 3);
+
+    // Crest flies down from the wall onto the waiting die, then hands over.
+    if (S.mark < 0.999) {
+      const B = die.getBoundingClientRect();
+      const m = S.mark;
+      mark.style.width = lerp(A.w, B.width, m) + "px";
+      mark.style.height = lerp(A.h, B.height, m) + "px";
+      mark.style.transform = `translate(${lerp(A.x, B.left, m)}px, ${lerp(A.y, B.top, m)}px)`;
+      mark.style.opacity = lerp(0.14, 1, clamp(m * 3));
+      markFace.style.opacity = clamp((m - 0.6) / 0.38);
+      mark.style.visibility = "visible";
+      die.style.visibility = "hidden";
+    } else {
+      mark.style.visibility = "hidden";
+      die.style.visibility = "visible";
+    }
+
+    readout.style.opacity = clamp((S.pan - 0.6) * 3);
+    ruler.style.opacity = clamp((S.pan - 0.5) * 3);
+    const inches = Math.max(0, Math.round(S.sink > 0.2 ? TABLE_H : h));
+    readVal.textContent = `${Math.floor(inches / 12)}′ ${inches % 12}″`;
+  }
+
+  layout();
+
+  // ---------- GSAP: one timeline, length 1, so positions read as scroll progress ----------
+  gsap.registerPlugin(ScrollTrigger);
+  const tl = gsap.timeline({ paused: true, defaults: { ease: "none" }, onUpdate: render });
+  tl.to(S, { pan: 1, duration: 0.24, ease: "power2.inOut" }, 0.03)
+    .to(S, { mark: 1, duration: 0.18, ease: "power2.inOut" }, 0.07)
+    .to(S, { up: 1, duration: 0.2, ease: "power1.out" }, 0.32)
+    .to(S, { down: 1, duration: 0.22, ease: "power1.in" }, 0.52)
+    .to(S, { travel: 1, duration: 0.42 }, 0.32)
+    .to(S, { spin: 1, duration: 0.42 }, 0.32)
+    .to(S, { climb: 1, duration: 0.2, ease: "sine.inOut" }, 0.31)
+    .to(S, { climb: 0, duration: 0.21, ease: "sine.inOut" }, 0.53)
+    .to(S, { sink: 1, duration: 0.08, ease: "power2.out" }, 0.74);
+  gsap.set(caps, { autoAlpha: 0 });
+  caps.forEach((c) => {
+    const i = +c.dataset.in, o = +c.dataset.out;
+    tl.fromTo(c, { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.02, immediateRender: false }, i);
+    if (o < 1) tl.to(c, { autoAlpha: 0, y: -12, duration: 0.02 }, o - 0.02);
+  });
+  tl.set({}, {}, 1);
+
+  // Reduced motion: the pin stays, but the scene steps between still frames.
+  const still = (p) => (p < 0.12 ? 0 : p < 0.6 ? 0.3 : 0.97);
+  const doc = document.documentElement;
+  const trigger = ScrollTrigger.create({
+    trigger: stage,
+    pin: true,
+    start: "top top",
+    end: () => "+=" + innerHeight * 4.5,
+    scrub: reduce ? false : 0.6,
+    animation: reduce ? null : tl,
+    onUpdate: (self) => {
+      if (reduce) tl.progress(still(self.progress));
+      nav.classList.toggle("nav--solid", self.progress >= 1);
+    },
+    onRefresh: () => { layout(); render(); },
+  });
+  addEventListener("scroll", () => {
+    chipBar.style.transform = `scaleX(${clamp(scrollY / (doc.scrollHeight - innerHeight))})`;
+  }, { passive: true });
+
+  const menuBtn = $("menuBtn"), links = $("navLinks");
+  menuBtn.addEventListener("click", () => {
+    const open = links.classList.toggle("nav__links--open");
+    menuBtn.setAttribute("aria-expanded", String(open));
+  });
+  links.addEventListener("click", () => { links.classList.remove("nav__links--open"); menuBtn.setAttribute("aria-expanded", "false"); });
+
+  tl.progress(reduce ? still(trigger.progress) : trigger.progress);
+  render();
+})();
+</script>
+</body>
+</html>

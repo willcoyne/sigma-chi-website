@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Beer Die Pull Back</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Cormorant+SC:wght@600&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+/* Concept 06 · Pull Back. A powers-of-ten dolly: the hero is the die's top
+   face seen from a quarter inch away. Scrolling pulls the camera straight
+   up, from the face, to the die on the table, to the whole table, and then
+   the die launches toward the camera. One 2D world scaled in log space. */
+:root {
+  --navy: #0b2545;
+  --navy-dark: #071931;
+  --navy-lift: #15396c;
+  --navy-deep: #040f1f;
+  --gold: #c9a227;
+  --gold-dark: #8a6d1b;
+  --ply: #a8874a;
+  --cream: #faf7f0;
+  --ink: #1a1a1a;
+  --gray: #6b6b6b;
+  --white: #ffffff;
+  --font-display: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --font-sc: "Cormorant SC", Georgia, "Times New Roman", serif;
+  --font-body: "Source Sans 3", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --nav-h: 84px;
+  --gut-l: max(24px, env(safe-area-inset-left, 0px));
+  --gut-r: max(24px, env(safe-area-inset-right, 0px));
+}
+* { box-sizing: border-box; }
+html { background: var(--cream); }
+body { margin: 0; background: var(--cream); color: var(--ink); font-family: var(--font-body); font-size: 18px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 110; background: var(--navy-dark); }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 600; color: var(--navy); margin: 0 0 .5em; line-height: 1.06; letter-spacing: -0.015em; text-wrap: balance; }
+p { margin: 0 0 1em; }
+a { color: inherit; text-decoration: none; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+.wrap { max-width: 1200px; margin: 0 auto; padding-left: var(--gut-l); padding-right: var(--gut-r); }
+.eyebrow { font-family: var(--font-sc); font-weight: 600; font-size: .8rem; letter-spacing: .22em; text-transform: uppercase; color: var(--gold-dark); margin: 0 0 16px; }
+.skip { position: absolute; left: 16px; top: -60px; z-index: 200; background: var(--gold); color: var(--navy-dark); padding: 10px 16px; font-weight: 700; }
+.skip:focus { top: calc(env(safe-area-inset-top, 0px) + 12px); }
+
+/* ---------- Nav (matches the live site) ---------- */
+.nav { position: fixed; top: env(safe-area-inset-top, 0px); left: 0; right: 0; z-index: 100; transition: background-color .3s ease-out, box-shadow .3s ease-out; }
+.nav--solid { background: rgba(11, 37, 69, .86); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); box-shadow: 0 1px 0 rgba(201, 162, 39, .55); }
+.nav__inner { display: flex; align-items: center; justify-content: space-between; height: var(--nav-h); }
+.brand { display: flex; align-items: center; gap: 12px; font-family: var(--font-display); font-weight: 700; font-size: 1.3rem; color: var(--cream); }
+.brand svg { width: 36px; height: auto; }
+.brand em { font-style: normal; color: var(--gold); }
+.nav__links { display: flex; gap: 4px; }
+.nav__links a { display: inline-flex; align-items: center; min-height: 44px; padding: 10px 14px; font-size: .95rem; font-weight: 600; color: rgba(250, 247, 240, .85); }
+.nav__links a:hover { color: var(--cream); }
+.nav__links a[aria-current] { color: var(--gold); }
+.nav__toggle { display: none; min-width: 44px; min-height: 44px; background: none; border: 1px solid rgba(250, 247, 240, .3); border-radius: 4px; color: var(--cream); font: 600 .85rem var(--font-body); letter-spacing: .06em; cursor: pointer; }
+@media (max-width: 980px) {
+  :root { --nav-h: 68px; }
+  .nav__toggle { display: inline-flex; align-items: center; justify-content: center; padding: 0 12px; }
+  .nav__links { display: none; position: absolute; top: var(--nav-h); left: 0; right: 0; flex-direction: column; padding: 8px var(--gut-r) 16px var(--gut-l); background: rgba(7, 25, 49, .97); }
+  .nav__links--open { display: flex; }
+}
+
+/* ---------- Buttons ---------- */
+.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 14px 30px; font: 700 15px var(--font-body); letter-spacing: .04em; border-radius: 4px; border: 1.5px solid transparent; transition: background-color .25s, transform .25s; }
+.btn--gold { background: var(--gold); color: var(--navy-dark); }
+.btn--gold:hover { background: #b6911f; transform: translateY(-1px); }
+.btn--ghost { border-color: var(--cream); color: var(--cream); }
+.btn--ghost:hover { background: rgba(250, 247, 240, .12); }
+.btn--navy { border-color: var(--navy); color: var(--navy); }
+
+/* ---------- Stage ---------- */
+.stage { position: relative; height: 480vh; background: var(--navy-deep); }
+.pin { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; background: radial-gradient(ellipse 70% 60% at 50% 55%, #10305a 0%, var(--navy-dark) 55%, var(--navy-deep) 100%); }
+.scene { position: absolute; inset: 0; perspective: 1200px; perspective-origin: 50% 50%; }
+.world { position: absolute; left: 0; top: 0; width: 0; height: 0; transform-origin: 0 0; transform-style: preserve-3d; }
+.table { position: absolute; left: 0; top: 0; background: radial-gradient(130% 90% at 25% 10%, var(--navy-lift) 0%, var(--navy) 45%, var(--navy-dark) 100%); box-shadow: 0 0 0 2px var(--gold-dark), 0 40px 120px rgba(0, 0, 0, .55); }
+.table__stripes { position: absolute; inset: 0; opacity: 0; }
+.table__inlay { position: absolute; inset: 4.5%; border: 2px solid var(--gold); border-radius: 2px; }
+.table__line { position: absolute; background: var(--gold); }
+.table__sx { position: absolute; font-family: var(--font-sc); font-weight: 600; color: var(--gold-dark); opacity: .55; line-height: 1; transform: translate(-50%, -50%); }
+.cup { position: absolute; border-radius: 50%; background: radial-gradient(circle at 50% 50%, #cfc7b5 0%, #e8e2d4 52%, var(--cream) 64%, #d9d3c4 70%, var(--gold) 72%, var(--gold) 80%, var(--gold-dark) 84%, rgba(0, 0, 0, .35) 86%, rgba(0, 0, 0, 0) 100%); }
+.shadow { position: absolute; left: 0; top: 0; border-radius: 22%; background: radial-gradient(closest-side, rgba(0, 0, 0, .7), rgba(0, 0, 0, 0)); }
+
+/* ---------- The die ---------- */
+.die { position: absolute; left: 0; top: 0; width: var(--s); height: var(--s); transform-style: preserve-3d; visibility: hidden; }
+.die__face, .die__core { position: absolute; inset: 0; backface-visibility: hidden; }
+.die__face { border-radius: 16%; background: radial-gradient(circle at 30% 25%, var(--navy-lift), var(--navy) 58%, var(--navy-dark)); box-shadow: inset 0 0 0 calc(var(--s) * .028) rgba(201, 162, 39, .75), inset 0 0 calc(var(--s) * .1) rgba(0, 0, 0, .35); }
+.die__core { background: var(--navy-dark); }
+.die__face svg { display: block; width: 100%; height: 100%; }
+.f1 { transform: translateZ(calc(var(--s) / 2)); }
+.f6 { transform: rotateY(180deg) translateZ(calc(var(--s) / 2)); }
+.f3 { transform: rotateY(90deg) translateZ(calc(var(--s) / 2)); }
+.f4 { transform: rotateY(-90deg) translateZ(calc(var(--s) / 2)); }
+.f2 { transform: rotateX(90deg) translateZ(calc(var(--s) / 2)); }
+.f5 { transform: rotateX(-90deg) translateZ(calc(var(--s) / 2)); }
+.c1 { transform: translateZ(calc(var(--s) * .47)); }
+.c6 { transform: rotateY(180deg) translateZ(calc(var(--s) * .47)); }
+.c3 { transform: rotateY(90deg) translateZ(calc(var(--s) * .47)); }
+.c4 { transform: rotateY(-90deg) translateZ(calc(var(--s) * .47)); }
+.c2 { transform: rotateX(90deg) translateZ(calc(var(--s) * .47)); }
+.c5 { transform: rotateX(-90deg) translateZ(calc(var(--s) * .47)); }
+.pip { fill: var(--gold); stroke: var(--gold-dark); stroke-width: 1; }
+
+/* ---------- The hero card: the viewport, which is the die's face ---------- */
+.card { position: absolute; left: 0; top: 0; overflow: hidden; color: var(--cream); will-change: transform; }
+.card__face { position: absolute; left: 0; top: 0; transform-origin: 0 0; opacity: 0; }
+.card__face .die__face { position: absolute; inset: 0; }
+.card__hero { position: absolute; inset: 0; background: radial-gradient(circle at 12% -10%, var(--navy-lift) 0%, var(--navy) 45%, var(--navy-dark) 100%); }
+.card__hero::before { content: ""; position: absolute; inset: 0; opacity: .55; background-image: repeating-linear-gradient(90deg, rgba(201, 162, 39, .07) 0 1px, transparent 1px 96px); -webkit-mask-image: linear-gradient(90deg, #000 0%, transparent 62%); mask-image: linear-gradient(90deg, #000 0%, transparent 62%); }
+.crest { position: absolute; left: 0; top: 0; pointer-events: none; }
+.crest svg { display: block; width: 100%; height: 100%; }
+.hero { position: absolute; left: 0; top: 0; display: flex; align-items: center; padding-top: var(--nav-h); }
+.hero .wrap { width: 100%; }
+.hero h1 { color: var(--cream); font-weight: 700; font-size: clamp(3rem, 7.5vw, 5.75rem); line-height: .98; letter-spacing: -0.028em; max-width: 16ch; margin-bottom: 24px; }
+.hero .eyebrow { color: var(--gold); margin-bottom: 24px; }
+.hero__rule { display: block; width: 96px; height: 3px; background: var(--gold); margin-bottom: 24px; }
+.hero__sub { max-width: 54ch; font-size: clamp(1.05rem, 1.5vw, 1.3rem); line-height: 1.55; color: rgba(250, 247, 240, .86); }
+.hero__ctas { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 24px; }
+
+.caps { position: absolute; left: 0; right: 0; top: calc(var(--nav-h) + 20px); pointer-events: none; }
+.caps .wrap { position: relative; }
+.cap { position: absolute; left: var(--gut-l); top: 0; width: min(32rem, 44vw); opacity: 0; visibility: hidden; color: var(--cream); }
+.cap .eyebrow { color: var(--gold); margin-bottom: 10px; }
+.cap__big { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.7rem, 3vw, 2.6rem); line-height: 1.05; letter-spacing: -0.02em; text-wrap: balance; margin: 0 0 18px; text-shadow: 0 2px 18px rgba(4, 15, 31, .8); }
+.cap--word { font-family: var(--font-display); font-style: italic; font-weight: 500; font-size: clamp(2.8rem, 7vw, 5.6rem); line-height: 1; color: var(--gold); text-shadow: 0 2px 24px rgba(4, 15, 31, .9); }
+.cap a { pointer-events: auto; }
+.ruler { opacity: 0; position: absolute; right: var(--gut-r); bottom: 24px; display: flex; gap: 18px; font: 600 .72rem var(--font-body); letter-spacing: .16em; text-transform: uppercase; color: rgba(250, 247, 240, .4); }
+.ruler span.on { color: var(--gold); }
+@media (max-width: 760px) {
+  .cap { width: auto; right: var(--gut-r); }
+  .caps { top: calc(var(--nav-h) + 12px); }
+  .ruler { display: none; }
+}
+
+/* ---------- Ordinary page content after the dolly ---------- */
+.aims { padding-block: 104px; background: var(--cream); }
+.split { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 40px 64px; align-items: start; }
+.split__head { position: sticky; top: calc(var(--nav-h) + 40px); }
+.split__head h2 { font-size: clamp(2.1rem, 4.4vw, 3.4rem); }
+.note { font-family: var(--font-display); font-style: italic; font-size: 1.25rem; color: var(--gold-dark); }
+.row { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr); gap: 0 24px; padding-block: 32px; border-top: 1px solid rgba(11, 37, 69, .14); }
+.row:last-child { border-bottom: 1px solid rgba(11, 37, 69, .14); }
+.row__n { font-family: var(--font-display); font-size: 2.6rem; line-height: 1; color: var(--gold-dark); font-variant-numeric: tabular-nums; }
+.row h3 { font-size: clamp(1.45rem, 2.5vw, 1.95rem); margin-bottom: 8px; }
+.row p { color: #3d3d3d; margin: 0; max-width: 60ch; }
+.stats { background: var(--navy); color: var(--cream); padding-block: 72px; }
+.stats__grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 40px; }
+.stat__n { font-family: var(--font-display); font-weight: 700; font-size: clamp(2.6rem, 5vw, 4rem); line-height: 1; color: var(--gold); font-variant-numeric: tabular-nums; }
+.stat__l { margin-top: 10px; font-size: .95rem; color: rgba(250, 247, 240, .78); }
+.colony { background: var(--white); padding-block: 104px; }
+.colony .wrap > div { max-width: 66ch; }
+.badge { display: inline-block; margin-bottom: 24px; padding: 6px 14px; border: 1px solid rgba(11, 37, 69, .25); border-radius: 999px; font-size: .85rem; font-weight: 600; color: var(--navy); }
+.lede { font-size: 1.3rem; line-height: 1.5; color: var(--ink); }
+.muted { color: var(--gray); }
+.footer { background: var(--navy-dark); color: rgba(250, 247, 240, .72); padding-block: 56px calc(88px + env(safe-area-inset-bottom, 0px)); font-size: .9rem; }
+.footer strong { display: block; font-family: var(--font-display); font-size: 1.3rem; color: var(--cream); }
+.footer p { max-width: 70ch; }
+@media (max-width: 900px) {
+  .split { grid-template-columns: 1fr; }
+  .split__head { position: static; }
+  .stats__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* ---------- Concept label ---------- */
+.chip { position: fixed; z-index: 120; left: max(16px, calc(env(safe-area-inset-left, 0px) + 12px)); bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); display: flex; align-items: center; gap: 10px; padding: 8px 14px; border-radius: 999px; background: rgba(7, 25, 49, .92); border: 1px solid rgba(201, 162, 39, .5); color: var(--cream); font: 600 .78rem var(--font-body); letter-spacing: .04em; box-shadow: 0 8px 24px rgba(0, 0, 0, .25); }
+.chip b { color: var(--gold); font-weight: 700; }
+.chip__bar { width: 54px; height: 3px; background: rgba(250, 247, 240, .2); border-radius: 2px; overflow: hidden; }
+.chip__bar i { display: block; height: 100%; background: var(--gold); transform-origin: 0 50%; transform: scaleX(0); }
+</style>
+</head>
+<body>
+<a class="skip" href="#aims">Skip past the pull-back</a>
+
+<header class="nav" id="nav">
+  <div class="wrap nav__inner">
+    <a class="brand" href="#top" aria-label="Sigma Chi WashU, home">
+      <svg viewBox="0 0 120 142" aria-hidden="true"><use href="#crest"></use></svg>
+      <span>Sigma Chi <em>WashU</em></span>
+    </a>
+    <button class="nav__toggle" id="menuBtn" aria-expanded="false" aria-controls="navLinks">Menu</button>
+    <nav class="nav__links" id="navLinks" aria-label="Main">
+      <a href="#top" aria-current="page">Home</a>
+      <a href="#aims">Our History</a>
+      <a href="#aims">Values &amp; Creed</a>
+      <a href="#join">The Colony Today</a>
+      <a href="#join">Philanthropy</a>
+      <a href="#join">Join Us</a>
+    </nav>
+  </div>
+</header>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <g id="crest">
+      <path d="M60 4 L112 20 V68 C112 108 89 130 60 142 C31 130 8 108 8 68 V20 Z" fill="#0b2545" stroke="#c9a227" stroke-width="3"/>
+      <path d="M60 10 L105 24 V68 C105 104 85 124 60 135 C35 124 15 104 15 68 V24 Z" fill="none" stroke="#faf7f0" stroke-width="1.5" opacity=".9"/>
+      <rect x="52" y="34" width="16" height="68" fill="#faf7f0"/>
+      <rect x="28" y="56" width="64" height="16" fill="#faf7f0"/>
+      <text x="60" y="122" text-anchor="middle" font-family="Cormorant SC, Georgia, serif" font-weight="600" font-size="16" fill="#c9a227">&#931;&#935;</text>
+    </g>
+  </defs>
+</svg>
+
+<main id="top">
+  <section class="stage" id="stage" aria-label="Opening: the camera pulls back from the die's face to the whole table, then the die is thrown">
+    <div class="pin">
+      <div class="scene" id="scene">
+        <div class="world" id="world">
+          <div class="table" id="table">
+            <div class="table__stripes" id="stripes"></div>
+            <div class="table__inlay"></div>
+            <div class="table__line" id="line"></div>
+            <div class="table__sx" id="sx">&#931;&#935;</div>
+            <div class="cup"></div><div class="cup"></div><div class="cup"></div><div class="cup"></div>
+          </div>
+          <div class="shadow" id="shadow"></div>
+          <div class="die" id="die"></div>
+        </div>
+      </div>
+
+      <div class="card" id="card">
+        <div class="card__face" id="cardFace"></div>
+        <div class="card__hero" id="cardHero"></div>
+      </div>
+      <div class="crest" id="crestEl"><svg viewBox="0 0 120 142" aria-hidden="true"><use href="#crest"></use></svg></div>
+      <div class="hero" id="hero">
+        <div class="wrap">
+          <p class="eyebrow">Washington University in St. Louis · Beta Colony</p>
+          <h1>Leaders of Men. Est. 1855.</h1>
+          <span class="hero__rule" aria-hidden="true"></span>
+          <p class="hero__sub">"In Hoc Signo Vinces" — In this sign you will conquer. Sigma Chi is returning to Washington University in St. Louis, building a new colony on friendship, justice, and learning.</p>
+          <div class="hero__ctas">
+            <a class="btn btn--gold" href="#join">Join Our Founding Class</a>
+            <a class="btn btn--ghost" href="#aims">Our Story</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="caps">
+        <div class="wrap">
+          <div class="cap" data-in=".15" data-out=".31"><p class="eyebrow">In Hoc Signo Vinces</p><p class="cap__big">In this sign you will conquer.</p></div>
+          <div class="cap" data-in=".31" data-out=".45"><p class="eyebrow">The Beta Colony</p><p class="cap__big">A new chapter at WashU, built by its founding class.</p></div>
+          <div class="cap" data-in=".45" data-out=".59"><p class="eyebrow">Since 1855</p><p class="cap__big">Founded June 28, 1855, at Miami University in Oxford, Ohio.</p></div>
+          <div class="cap cap--word" data-in=".6" data-out=".7">Friendship.</div>
+          <div class="cap cap--word" data-in=".7" data-out=".8">Justice.</div>
+          <div class="cap cap--word" data-in=".8" data-out=".9">Learning.</div>
+          <div class="cap" data-in=".91" data-out="9"><p class="eyebrow">Spring 2026 founding class</p><p class="cap__big">Your turn to throw.</p><a class="btn btn--gold" href="#join">Join Our Founding Class</a></div>
+        </div>
+      </div>
+      <div class="ruler" id="ruler" aria-hidden="true"><span>Face</span><span>Die</span><span>Table</span><span>Toss</span><span>Landed</span></div>
+    </div>
+  </section>
+
+  <section class="aims" id="aims">
+    <div class="wrap split">
+      <div class="split__head">
+        <p class="eyebrow">The Three Great Aims</p>
+        <h2>What We Stand For</h2>
+        <p class="note">In Hoc Signo Vinces</p>
+      </div>
+      <div>
+        <div class="row"><span class="row__n">01</span><div><h3>Friendship</h3><p>A bond built on genuine loyalty rather than convenience — the belief that brothers are stronger, and better men, together than alone.</p></div></div>
+        <div class="row"><span class="row__n">02</span><div><h3>Justice</h3><p>A commitment to fairness and integrity in how members treat one another and the wider community — doing right even when no one is watching.</p></div></div>
+        <div class="row"><span class="row__n">03</span><div><h3>Learning</h3><p>A dedication to scholarship and growth, in and out of the classroom, as a lifelong pursuit rather than a college requirement.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="stats" aria-label="Sigma Chi by the numbers">
+    <div class="wrap stats__grid">
+      <div><div class="stat__n">1855</div><div class="stat__l">Founded Nationally</div></div>
+      <div><div class="stat__n">7</div><div class="stat__l">Founding Fathers, 1855</div></div>
+      <div><div class="stat__n">2024</div><div class="stat__l">Return to WashU Approved</div></div>
+      <div><div class="stat__n">240+</div><div class="stat__l">Chapters &amp; Colonies Nationally</div></div>
+    </div>
+  </section>
+
+  <section class="colony" id="join">
+    <div class="wrap">
+      <div>
+        <span class="badge">Good Standing with WashU's Interfraternity Council</span>
+        <h2>We're Building Something New</h2>
+        <p class="lede">In spring 2026, a new class of founding fathers began forming Sigma Chi's colony at WashU — with no connection to the fraternity's former Tau Tau chapter.</p>
+        <p class="muted">This is a clean start, focused, in the words of our expansion coordinator, on "community service, more academics, and more philanthropy."</p>
+        <a class="btn btn--navy" href="#top">Meet the Colony</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <strong>Sigma Chi Fraternity</strong>
+    <p>Washington University in St. Louis · Beta Colony</p>
+    <p>Unofficial colony site. Not an official publication of Sigma Chi Fraternity (International Headquarters) or Washington University in St. Louis. This page is a design concept for the colony's own website, not the live site.</p>
+  </div>
+</footer>
+
+<div class="chip" aria-hidden="true"><b>06 / 10</b> Pull Back <span class="chip__bar"><i id="chipBar"></i></span></div>
+
+<script>
+(() => {
+  // ---------- Die faces: 1 is the crest, opposite faces sum to seven ----------
+  const PIPS = {
+    2: [[28, 28], [72, 72]],
+    3: [[28, 28], [50, 50], [72, 72]],
+    4: [[28, 28], [72, 28], [28, 72], [72, 72]],
+    5: [[28, 28], [72, 28], [50, 50], [28, 72], [72, 72]],
+    6: [[28, 26], [72, 26], [28, 50], [72, 50], [28, 74], [72, 74]],
+  };
+  const faceSVG = (n) => n === 1
+    ? '<svg viewBox="0 0 100 100" aria-hidden="true"><g transform="translate(19.6 13.5) scale(.51)"><use href="#crest"></use></g></svg>'
+    : '<svg viewBox="0 0 100 100" aria-hidden="true">' + PIPS[n].map(([x, y]) => `<circle class="pip" cx="${x}" cy="${y}" r="8.5"/>`).join("") + "</svg>";
+  const $ = (id) => document.getElementById(id);
+  const die = $("die");
+  die.innerHTML = [1, 2, 3, 4, 5, 6].map((n) => `<div class="die__core c${n}"></div>`).join("")
+    + [1, 2, 3, 4, 5, 6].map((n) => `<div class="die__face f${n}">${faceSVG(n)}</div>`).join("");
+
+  const stage = $("stage"), world = $("world"), table = $("table"), shadow = $("shadow");
+  const card = $("card"), cardFace = $("cardFace"), cardHero = $("cardHero"), crestEl = $("crestEl"), hero = $("hero");
+  const stripes = $("stripes"), line = $("line"), sx = $("sx"), chipBar = $("chipBar"), nav = $("nav"), ruler = $("ruler");
+  const cups = [...document.querySelectorAll(".cup")];
+  const caps = [...document.querySelectorAll(".cap")];
+  const steps = [...ruler.children];
+  const f1 = die.querySelector(".f1");
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+  const seg = (p, a, b) => clamp((p - a) / (b - a));
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+  const easeSine = (t) => -(Math.cos(Math.PI * t) - 1) / 2;
+
+  // World units: the table is 800 x 400 (a 4 x 8 ft sheet), long side across
+  // on landscape screens and up the screen on portrait ones. The die is drawn
+  // far larger than its real 3/4 in so it stays legible at table scale.
+  const D = 34;
+  let vw, vh, horiz, TW, TH, die0, die1, Zface, Ztable, A, navH, anchorY;
+
+  function layout() {
+    vw = innerWidth; vh = innerHeight;
+    navH = vw <= 980 ? 68 : 84;
+    horiz = vw >= vh;
+    [TW, TH] = horiz ? [800, 400] : [400, 800];
+    table.style.width = TW + "px";
+    table.style.height = TH + "px";
+    stripes.style.backgroundImage = `repeating-linear-gradient(${horiz ? 0 : 90}deg, rgba(201, 162, 39, .09) 0 1px, transparent 1px 29px)`;
+    Object.assign(line.style, horiz
+      ? { left: "calc(50% - 1.5px)", top: "4.5%", bottom: "4.5%", width: "3px", height: "auto", right: "auto" }
+      : { top: "calc(50% - 1.5px)", left: "4.5%", right: "4.5%", height: "3px", width: "auto", bottom: "auto" });
+    sx.style.fontSize = Math.min(TW, TH) * 0.2 + "px";
+    sx.style.left = (horiz ? 0.17 : 0.5) * TW + "px";
+    sx.style.top = (horiz ? 0.5 : 0.8) * TH + "px";
+    const cd = Math.min(TW, TH) * 0.12;
+    const spots = horiz ? [[0.07, 0.15], [0.07, 0.85], [0.93, 0.15], [0.93, 0.85]] : [[0.15, 0.07], [0.85, 0.07], [0.15, 0.93], [0.85, 0.93]];
+    cups.forEach((c, i) => Object.assign(c.style, { width: cd + "px", height: cd + "px", left: spots[i][0] * TW - cd / 2 + "px", top: spots[i][1] * TH - cd / 2 + "px" }));
+    die0 = horiz ? { x: 0.34 * TW, y: 0.56 * TH } : { x: 0.5 * TW, y: 0.66 * TH };
+    die1 = horiz ? { x: 0.72 * TW, y: 0.44 * TH } : { x: 0.44 * TW, y: 0.27 * TH };
+    die.style.setProperty("--s", D + "px");
+
+    const F = Math.min(vw, vh) * (horiz ? 0.46 : 0.62);
+    Zface = F / D;
+    Ztable = horiz ? Math.min(vw / (TW * 1.3), (vh - navH - 150) / TH) : Math.min(vw / (TW * 1.2), (vh - navH - 190) / TH);
+    anchorY = horiz ? navH + 150 + (vh - navH - 150) / 2 : vh * 0.6;
+    const w = clamp(vw * 0.26, 150, 340), h = w * 142 / 120;
+    A = { x: vw - w * 0.9, y: vh / 2 - h / 2 + 24, w, h };
+    cardFace.style.width = D + "px";
+    cardFace.style.height = D + "px";
+    cardFace.style.setProperty("--s", D + "px");
+    cardFace.innerHTML = `<div class="die__face">${faceSVG(1)}</div>`;
+    hero.style.width = vw + "px";
+    hero.style.height = vh + "px";
+  }
+
+  function render(p) {
+    // ---- World camera: log-space zoom from the face out to the table ----
+    const tz = ease(seg(p, 0.17, 0.56));
+    const Z = Math.exp(lerp(Math.log(Zface), Math.log(Ztable), tz));
+    const tf = ease(seg(p, 0.2, 0.56));
+    const fx = lerp(die0.x, TW / 2, tf), fy = lerp(die0.y, TH / 2, tf);
+    const ay = lerp(vh / 2, anchorY, tf);
+    world.style.transform = `translate3d(${vw / 2}px, ${ay}px, 0) scale3d(${Z}, ${Z}, ${Z}) translate3d(${-fx}px, ${-fy}px, 0)`;
+    stripes.style.opacity = seg(p, 0.3, 0.5);
+
+    // ---- The die: resting, then launched toward the camera ----
+    const t = seg(p, 0.6, 0.89);
+    const apex = TH * 0.85;
+    const x = lerp(die0.x, die1.x, t), y = lerp(die0.y, die1.y, t);
+    let z = 4 * apex * t * (1 - t);
+    const b = seg(p, 0.89, 0.93);
+    if (b > 0 && b < 1) z += D * 0.3 * Math.sin(Math.PI * b);
+    die.style.transform = `translate3d(${x - D / 2}px, ${y - D / 2}px, ${z + D / 2}px) rotateX(${720 * easeSine(t)}deg) rotateY(${360 * t}deg) rotateZ(${50 * t}deg)`;
+    const k = z / apex;
+    shadow.style.width = D * 1.25 + "px";
+    shadow.style.height = D * 1.25 + "px";
+    shadow.style.opacity = 0.8 * (1 - 0.75 * k);
+    shadow.style.transform = `translate3d(${x - D * 0.625 + D * 0.12}px, ${y - D * 0.625 + D * 0.12}px, 0.5px) scale(${1 + 1.4 * k})`;
+
+    // ---- The hero card shrinks to the face it always was ----
+    const handoff = 0.17;
+    if (p < handoff) {
+      const B = f1.getBoundingClientRect();
+      const m = ease(seg(p, 0.04, handoff));
+      const cx = lerp(0, B.left, m), cy = lerp(0, B.top, m), cw = lerp(vw, B.width, m), ch = lerp(vh, B.height, m);
+      card.style.transform = `translate(${cx}px, ${cy}px)`;
+      card.style.width = cw + "px";
+      card.style.height = ch + "px";
+      card.style.borderRadius = Math.min(cw, ch) * 0.16 * m + "px";
+      card.style.boxShadow = `0 ${30 * m}px ${80 * m}px rgba(0, 0, 0, ${0.5 * m})`;
+      cardHero.style.opacity = 1 - seg(p, 0.1, handoff - 0.01);
+      cardFace.style.opacity = seg(p, 0.135, handoff - 0.008);
+      cardFace.style.transform = `scale(${cw / D}, ${ch / D})`;
+      // The watermark settles into the face's emblem position.
+      const E = { x: B.left + 0.196 * B.width, y: B.top + 0.135 * B.height, w: 0.612 * B.width, h: 0.724 * B.height };
+      crestEl.style.transform = `translate(${lerp(A.x, E.x, m)}px, ${lerp(A.y, E.y, m)}px)`;
+      crestEl.style.width = lerp(A.w, E.w, m) + "px";
+      crestEl.style.height = lerp(A.h, E.h, m) + "px";
+      crestEl.style.opacity = lerp(0.14, 1, seg(p, 0.03, 0.1)) * (1 - seg(p, handoff - 0.025, handoff - 0.005));
+      card.style.visibility = crestEl.style.visibility = "visible";
+      die.style.visibility = "hidden";
+    } else {
+      card.style.visibility = crestEl.style.visibility = "hidden";
+      die.style.visibility = "visible";
+    }
+    const ht = seg(p, 0.02, 0.09);
+    hero.style.opacity = 1 - ht;
+    hero.style.transform = `translateY(${-50 * ht}px)`;
+    hero.style.visibility = ht >= 1 ? "hidden" : "visible";
+
+    caps.forEach((c) => {
+      const a = +c.dataset.in, o = +c.dataset.out;
+      const v = Math.min(seg(p, a, a + 0.025), 1 - seg(p, o - 0.025, o));
+      c.style.opacity = v;
+      c.style.transform = `translateY(${(1 - v) * 16}px)`;
+      c.style.visibility = v > 0.01 ? "visible" : "hidden";
+    });
+    const step = p < handoff ? 0 : p < 0.36 ? 1 : p < 0.6 ? 2 : p < 0.9 ? 3 : 4;
+    steps.forEach((el, i) => el.classList.toggle("on", i === step));
+    ruler.style.opacity = seg(p, 0.12, 0.18);
+  }
+
+  // Reduced motion: four still frames instead of a continuous dolly.
+  const still = (p) => (p < 0.1 ? 0 : p < 0.36 ? 0.2 : p < 0.75 ? 0.58 : 0.96);
+
+  let target = 0, cur = 0, raf = 0;
+  function measure() {
+    target = clamp(-stage.getBoundingClientRect().top / (stage.offsetHeight - vh));
+    const doc = document.documentElement;
+    chipBar.style.transform = `scaleX(${clamp(scrollY / (doc.scrollHeight - vh))})`;
+    nav.classList.toggle("nav--solid", target >= 1);
+  }
+  function tick() {
+    cur += (target - cur) * (reduce ? 1 : 0.15);
+    if (Math.abs(target - cur) < 0.0004) cur = target;
+    render(reduce ? still(cur) : cur);
+    raf = cur !== target ? requestAnimationFrame(tick) : 0;
+  }
+  const kick = () => { measure(); if (!raf) raf = requestAnimationFrame(tick); };
+  addEventListener("scroll", kick, { passive: true });
+  addEventListener("resize", () => { layout(); measure(); cur = target; render(reduce ? still(cur) : cur); });
+
+  const menuBtn = $("menuBtn"), links = $("navLinks");
+  menuBtn.addEventListener("click", () => {
+    const open = links.classList.toggle("nav__links--open");
+    menuBtn.setAttribute("aria-expanded", String(open));
+  });
+  links.addEventListener("click", () => { links.classList.remove("nav__links--open"); menuBtn.setAttribute("aria-expanded", "false"); });
+
+  layout();
+  measure();
+  cur = target;
+  render(reduce ? still(cur) : cur);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Beer Die Overhead Toss</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Cormorant+SC:wght@600&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+/* Concept 03 · Overhead Toss. The camera never leaves straight overhead. The
+   hero field zooms out into the table top seen from above; the die's height is
+   told only by its size and by a shadow that drifts off, shrinks and softens.
+   No 3D: one SVG and 2D transforms, so it runs anywhere. */
+:root {
+  --navy: #0b2545;
+  --navy-dark: #071931;
+  --navy-lift: #15396c;
+  --navy-deep: #040f1f;
+  --gold: #c9a227;
+  --gold-dark: #8a6d1b;
+  --ply: #a8874a;
+  --cream: #faf7f0;
+  --ink: #1a1a1a;
+  --gray: #6b6b6b;
+  --white: #ffffff;
+  --font-display: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --font-sc: "Cormorant SC", Georgia, "Times New Roman", serif;
+  --font-body: "Source Sans 3", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --nav-h: 84px;
+  --gut-l: max(24px, env(safe-area-inset-left, 0px));
+  --gut-r: max(24px, env(safe-area-inset-right, 0px));
+}
+* { box-sizing: border-box; }
+html { background: var(--cream); }
+body { margin: 0; background: var(--cream); color: var(--ink); font-family: var(--font-body); font-size: 18px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 110; background: var(--navy-dark); }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 600; color: var(--navy); margin: 0 0 .5em; line-height: 1.06; letter-spacing: -0.015em; text-wrap: balance; }
+p { margin: 0 0 1em; }
+a { color: inherit; text-decoration: none; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+.wrap { max-width: 1200px; margin: 0 auto; padding-left: var(--gut-l); padding-right: var(--gut-r); }
+.eyebrow { font-family: var(--font-sc); font-weight: 600; font-size: .8rem; letter-spacing: .22em; text-transform: uppercase; color: var(--gold-dark); margin: 0 0 16px; }
+.skip { position: absolute; left: 16px; top: -60px; z-index: 200; background: var(--gold); color: var(--navy-dark); padding: 10px 16px; font-weight: 700; }
+.skip:focus { top: calc(env(safe-area-inset-top, 0px) + 12px); }
+
+/* ---------- Nav (matches the live site) ---------- */
+.nav { position: fixed; top: env(safe-area-inset-top, 0px); left: 0; right: 0; z-index: 100; transition: background-color .3s ease-out, box-shadow .3s ease-out; }
+.nav--solid { background: rgba(11, 37, 69, .86); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); box-shadow: 0 1px 0 rgba(201, 162, 39, .55); }
+.nav__inner { display: flex; align-items: center; justify-content: space-between; height: var(--nav-h); }
+.brand { display: flex; align-items: center; gap: 12px; font-family: var(--font-display); font-weight: 700; font-size: 1.3rem; color: var(--cream); }
+.brand svg { width: 36px; height: auto; }
+.brand em { font-style: normal; color: var(--gold); }
+.nav__links { display: flex; gap: 4px; }
+.nav__links a { display: inline-flex; align-items: center; min-height: 44px; padding: 10px 14px; font-size: .95rem; font-weight: 600; color: rgba(250, 247, 240, .85); }
+.nav__links a:hover { color: var(--cream); }
+.nav__links a[aria-current] { color: var(--gold); }
+.nav__toggle { display: none; min-width: 44px; min-height: 44px; background: none; border: 1px solid rgba(250, 247, 240, .3); border-radius: 4px; color: var(--cream); font: 600 .85rem var(--font-body); letter-spacing: .06em; cursor: pointer; }
+@media (max-width: 980px) {
+  :root { --nav-h: 68px; }
+  .nav__toggle { display: inline-flex; align-items: center; justify-content: center; padding: 0 12px; }
+  .nav__links { display: none; position: absolute; top: var(--nav-h); left: 0; right: 0; flex-direction: column; padding: 8px var(--gut-r) 16px var(--gut-l); background: rgba(7, 25, 49, .97); }
+  .nav__links--open { display: flex; }
+}
+
+/* ---------- Buttons ---------- */
+.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 14px 30px; font: 700 15px var(--font-body); letter-spacing: .04em; border-radius: 4px; border: 1.5px solid transparent; transition: background-color .25s, transform .25s; }
+.btn--gold { background: var(--gold); color: var(--navy-dark); }
+.btn--gold:hover { background: #b6911f; transform: translateY(-1px); }
+.btn--ghost { border-color: var(--cream); color: var(--cream); }
+.btn--ghost:hover { background: rgba(250, 247, 240, .12); }
+.btn--navy { border-color: var(--navy); color: var(--navy); }
+
+/* ---------- Stage ---------- */
+.stage { position: relative; height: 440vh; background: var(--navy-deep); }
+.pin { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; }
+.room { position: absolute; inset: 0; background:
+  repeating-linear-gradient(0deg, rgba(0, 0, 0, .18) 0 1px, transparent 1px 64px),
+  radial-gradient(ellipse 70% 70% at 60% 55%, #10305a 0%, var(--navy-dark) 55%, var(--navy-deep) 100%); }
+/* The world is the table in its own pixels (400 x 800, i.e. 4 x 8 ft at
+   100px per foot). One translate + scale moves the camera. */
+.world { position: absolute; left: 0; top: 0; width: 400px; height: 800px; transform-origin: 0 0; will-change: transform; }
+.world > svg { position: absolute; left: -80px; top: -50px; width: 560px; height: 900px; overflow: visible; }
+.dim { font: 600 15px var(--font-body); letter-spacing: .14em; fill: rgba(250, 247, 240, .55); }
+
+/* The die and its shadow live in screen space, placed from the world transform. */
+.dz, .dz-shadow { position: absolute; left: 0; top: 0; width: 100px; height: 100px; visibility: hidden; will-change: transform; }
+.dz-shadow { border-radius: 18%; background: rgba(0, 0, 0, .85); }
+.dz__face { position: absolute; inset: 0; border-radius: 16%; background: radial-gradient(circle at 30% 25%, var(--navy-lift), var(--navy) 58%, var(--navy-dark)); box-shadow: inset 0 0 0 1.5px rgba(201, 162, 39, .6), inset 0 0 14px rgba(0, 0, 0, .4); }
+.dz__face svg { display: block; width: 100%; height: 100%; }
+.pip { fill: var(--gold); stroke: var(--gold-dark); stroke-width: 1; }
+
+.glow { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle at 12% -10%, rgba(21, 57, 108, .9) 0%, rgba(21, 57, 108, 0) 55%); }
+.mark { position: absolute; left: 0; top: 0; pointer-events: none; will-change: transform; }
+.mark > * { position: absolute; inset: 0; width: 100%; height: 100%; }
+.mark__face { opacity: 0; }
+
+.hero { position: absolute; inset: 0; display: flex; align-items: center; padding-top: var(--nav-h); color: var(--cream); will-change: transform, opacity; }
+.hero .wrap { width: 100%; }
+.hero h1 { color: var(--cream); font-weight: 700; font-size: clamp(3rem, 7.5vw, 5.75rem); line-height: .98; letter-spacing: -0.028em; max-width: 16ch; margin-bottom: 24px; }
+.hero .eyebrow { color: var(--gold); margin-bottom: 24px; }
+.hero__rule { display: block; width: 96px; height: 3px; background: var(--gold); margin-bottom: 24px; }
+.hero__sub { max-width: 54ch; font-size: clamp(1.05rem, 1.5vw, 1.3rem); line-height: 1.55; color: rgba(250, 247, 240, .86); }
+.hero__ctas { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 24px; }
+
+.caps { position: absolute; left: 0; right: 0; top: calc(var(--nav-h) + 8vh); pointer-events: none; }
+.caps .wrap { position: relative; }
+.cap { position: absolute; left: 0; top: 0; width: min(30rem, 40vw); opacity: 0; visibility: hidden; color: var(--cream); }
+.cap .eyebrow { color: var(--gold); }
+.cap__big { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.8rem, 3.4vw, 2.9rem); line-height: 1.05; letter-spacing: -0.02em; text-wrap: balance; margin: 0 0 20px; }
+.cap--word { font-family: var(--font-display); font-style: italic; font-weight: 500; font-size: clamp(3rem, 8vw, 6.5rem); line-height: 1; color: var(--gold); }
+.cap a { pointer-events: auto; }
+.cap__note { font-size: .95rem; color: rgba(250, 247, 240, .7); max-width: 34ch; }
+@media (max-width: 760px) {
+  .cap { width: 100%; }
+  .caps { top: calc(var(--nav-h) + 16px); }
+  .cap--word { font-size: clamp(2.6rem, 14vw, 4rem); }
+  .cap__note { display: none; }
+}
+
+/* ---------- Ordinary page content after the toss ---------- */
+.aims { padding-block: 104px; background: var(--cream); }
+.split { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 40px 64px; align-items: start; }
+.split__head { position: sticky; top: calc(var(--nav-h) + 40px); }
+.split__head h2 { font-size: clamp(2.1rem, 4.4vw, 3.4rem); }
+.note { font-family: var(--font-display); font-style: italic; font-size: 1.25rem; color: var(--gold-dark); }
+.row { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr); gap: 0 24px; padding-block: 32px; border-top: 1px solid rgba(11, 37, 69, .14); }
+.row:last-child { border-bottom: 1px solid rgba(11, 37, 69, .14); }
+.row__n { font-family: var(--font-display); font-size: 2.6rem; line-height: 1; color: var(--gold-dark); font-variant-numeric: tabular-nums; }
+.row h3 { font-size: clamp(1.45rem, 2.5vw, 1.95rem); margin-bottom: 8px; }
+.row p { color: #3d3d3d; margin: 0; max-width: 60ch; }
+.stats { background: var(--navy); color: var(--cream); padding-block: 72px; }
+.stats__grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 40px; }
+.stat__n { font-family: var(--font-display); font-weight: 700; font-size: clamp(2.6rem, 5vw, 4rem); line-height: 1; color: var(--gold); font-variant-numeric: tabular-nums; }
+.stat__l { margin-top: 10px; font-size: .95rem; color: rgba(250, 247, 240, .78); }
+.colony { background: var(--white); padding-block: 104px; }
+.colony .wrap > div { max-width: 66ch; }
+.badge { display: inline-block; margin-bottom: 24px; padding: 6px 14px; border: 1px solid rgba(11, 37, 69, .25); border-radius: 999px; font-size: .85rem; font-weight: 600; color: var(--navy); }
+.lede { font-size: 1.3rem; line-height: 1.5; color: var(--ink); }
+.muted { color: var(--gray); }
+.footer { background: var(--navy-dark); color: rgba(250, 247, 240, .72); padding-block: 56px calc(88px + env(safe-area-inset-bottom, 0px)); font-size: .9rem; }
+.footer strong { display: block; font-family: var(--font-display); font-size: 1.3rem; color: var(--cream); }
+.footer p { max-width: 70ch; }
+@media (max-width: 900px) {
+  .split { grid-template-columns: 1fr; }
+  .split__head { position: static; }
+  .stats__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* ---------- Concept label ---------- */
+.chip { position: fixed; z-index: 120; left: max(16px, calc(env(safe-area-inset-left, 0px) + 12px)); bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); display: flex; align-items: center; gap: 10px; padding: 8px 14px; border-radius: 999px; background: rgba(7, 25, 49, .92); border: 1px solid rgba(201, 162, 39, .5); color: var(--cream); font: 600 .78rem var(--font-body); letter-spacing: .04em; box-shadow: 0 8px 24px rgba(0, 0, 0, .25); }
+.chip b { color: var(--gold); font-weight: 700; }
+.chip__bar { width: 54px; height: 3px; background: rgba(250, 247, 240, .2); border-radius: 2px; overflow: hidden; }
+.chip__bar i { display: block; height: 100%; background: var(--gold); transform-origin: 0 50%; transform: scaleX(0); }
+</style>
+</head>
+<body>
+<a class="skip" href="#aims">Skip past the toss</a>
+
+<header class="nav" id="nav">
+  <div class="wrap nav__inner">
+    <a class="brand" href="#top" aria-label="Sigma Chi WashU, home">
+      <svg viewBox="0 0 120 142" aria-hidden="true"><use href="#crest"></use></svg>
+      <span>Sigma Chi <em>WashU</em></span>
+    </a>
+    <button class="nav__toggle" id="menuBtn" aria-expanded="false" aria-controls="navLinks">Menu</button>
+    <nav class="nav__links" id="navLinks" aria-label="Main">
+      <a href="#top" aria-current="page">Home</a>
+      <a href="#aims">Our History</a>
+      <a href="#aims">Values &amp; Creed</a>
+      <a href="#join">The Colony Today</a>
+      <a href="#join">Philanthropy</a>
+      <a href="#join">Join Us</a>
+    </nav>
+  </div>
+</header>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <g id="crest">
+      <path d="M60 4 L112 20 V68 C112 108 89 130 60 142 C31 130 8 108 8 68 V20 Z" fill="#0b2545" stroke="#c9a227" stroke-width="3"/>
+      <path d="M60 10 L105 24 V68 C105 104 85 124 60 135 C35 124 15 104 15 68 V24 Z" fill="none" stroke="#faf7f0" stroke-width="1.5" opacity=".9"/>
+      <rect x="52" y="34" width="16" height="68" fill="#faf7f0"/>
+      <rect x="28" y="56" width="64" height="16" fill="#faf7f0"/>
+      <text x="60" y="122" text-anchor="middle" font-family="Cormorant SC, Georgia, serif" font-weight="600" font-size="16" fill="#c9a227">&#931;&#935;</text>
+    </g>
+  </defs>
+</svg>
+
+<main id="top">
+  <section class="stage" id="stage" aria-label="Opening: the page zooms out to a table seen from above, and the crest is tossed as a die">
+    <div class="pin">
+      <div class="room"></div>
+      <div class="world" id="world">
+        <svg viewBox="-80 -50 560 900" aria-hidden="true">
+          <defs>
+            <radialGradient id="tableTop" cx=".25" cy=".1" r="1.1">
+              <stop offset="0" stop-color="#15396c"/>
+              <stop offset=".45" stop-color="#0b2545"/>
+              <stop offset="1" stop-color="#071931"/>
+            </radialGradient>
+            <pattern id="stripes" width="25.4" height="10" patternUnits="userSpaceOnUse">
+              <rect width=".3" height="10" fill="rgba(201,162,39,.09)"/>
+            </pattern>
+            <radialGradient id="cupIn" cx=".46" cy=".44" r=".55">
+              <stop offset="0" stop-color="#d4ccb9"/>
+              <stop offset=".62" stop-color="#e9e3d4"/>
+              <stop offset=".8" stop-color="#faf7f0"/>
+              <stop offset="1" stop-color="#cfc7b5"/>
+            </radialGradient>
+            <filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="14"/></filter>
+          </defs>
+          <!-- table shadow on the floor -->
+          <rect x="10" y="16" width="400" height="800" rx="4" fill="#000" opacity=".5" filter="url(#soft)"/>
+          <!-- ply edge peeking out around the painted top -->
+          <rect x="0" y="0" width="400" height="800" rx="3" fill="#a8874a"/>
+          <rect x="2.5" y="2.5" width="395" height="795" rx="2" fill="url(#tableTop)"/>
+          <rect x="2.5" y="2.5" width="395" height="795" fill="url(#stripes)"/>
+          <g id="marks" opacity="0">
+            <rect x="18" y="36" width="364" height="728" fill="none" stroke="#c9a227" stroke-width="2"/>
+            <rect x="23" y="41" width="354" height="718" fill="none" stroke="rgba(201,162,39,.18)" stroke-width="4"/>
+            <rect x="18" y="398.5" width="364" height="3" fill="#c9a227"/>
+            <text x="200" y="640" text-anchor="middle" font-family="Cormorant SC, Georgia, serif" font-weight="600" font-size="80" fill="#8a6d1b" opacity=".55">&#931;&#935;</text>
+            <g id="rims">
+              <g transform="translate(56 56)"><circle r="27" fill="#c9a227"/><circle r="23.5" fill="#8a6d1b"/><circle r="22" fill="url(#cupIn)"/><circle r="15" fill="none" stroke="rgba(138,109,27,.35)" stroke-width="1"/></g>
+              <g transform="translate(344 56)"><circle r="27" fill="#c9a227"/><circle r="23.5" fill="#8a6d1b"/><circle r="22" fill="url(#cupIn)"/><circle r="15" fill="none" stroke="rgba(138,109,27,.35)" stroke-width="1"/></g>
+              <g transform="translate(56 744)"><circle r="27" fill="#c9a227"/><circle r="23.5" fill="#8a6d1b"/><circle r="22" fill="url(#cupIn)"/><circle r="15" fill="none" stroke="rgba(138,109,27,.35)" stroke-width="1"/></g>
+              <g transform="translate(344 744)"><circle r="27" fill="#c9a227"/><circle r="23.5" fill="#8a6d1b"/><circle r="22" fill="url(#cupIn)"/><circle r="15" fill="none" stroke="rgba(138,109,27,.35)" stroke-width="1"/></g>
+            </g>
+          </g>
+          <!-- Dimension lines: the table is a 4 x 8 ft sheet of plywood. -->
+          <g id="dims" opacity="0" stroke="rgba(250,247,240,.45)" stroke-width="1.2">
+            <line x1="-34" y1="0" x2="-34" y2="800"/>
+            <line x1="-42" y1="0" x2="-26" y2="0"/>
+            <line x1="-42" y1="800" x2="-26" y2="800"/>
+            <line x1="0" y1="830" x2="400" y2="830"/>
+            <line x1="0" y1="822" x2="0" y2="838"/>
+            <line x1="400" y1="822" x2="400" y2="838"/>
+            <rect x="-48" y="372" width="28" height="56" fill="#071931" stroke="none"/>
+            <rect x="176" y="820" width="48" height="20" fill="#071931" stroke="none"/>
+            <text class="dim" x="-34" y="400" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90 -34 400)" stroke="none">8 FT</text>
+            <text class="dim" x="200" y="831" text-anchor="middle" dominant-baseline="middle" stroke="none">4 FT</text>
+          </g>
+        </svg>
+      </div>
+      <div class="dz-shadow" id="dzShadow"></div>
+      <div class="dz" id="dz"><div class="dz__face" id="dzFace"></div></div>
+      <div class="glow" id="glow"></div>
+      <div class="mark" id="mark">
+        <svg viewBox="0 0 120 142" aria-hidden="true"><use href="#crest"></use></svg>
+        <div class="mark__face" id="markFace"></div>
+      </div>
+
+      <div class="hero" id="hero">
+        <div class="wrap">
+          <p class="eyebrow">Washington University in St. Louis · Beta Colony</p>
+          <h1>Leaders of Men. Est. 1855.</h1>
+          <span class="hero__rule" aria-hidden="true"></span>
+          <p class="hero__sub">"In Hoc Signo Vinces" — In this sign you will conquer. Sigma Chi is returning to Washington University in St. Louis, building a new colony on friendship, justice, and learning.</p>
+          <div class="hero__ctas">
+            <a class="btn btn--gold" href="#join">Join Our Founding Class</a>
+            <a class="btn btn--ghost" href="#aims">Our Story</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="caps">
+        <div class="wrap">
+          <div class="cap" data-in=".17" data-out=".31"><p class="eyebrow">The Beta Colony</p><p class="cap__big">A new chapter at WashU, built by its founding class.</p></div>
+          <div class="cap" data-in=".31" data-out=".44"><p class="eyebrow">In Hoc Signo Vinces</p><p class="cap__big">In this sign you will conquer.</p></div>
+          <div class="cap cap--word" data-in=".45" data-out=".58">Friendship.</div>
+          <div class="cap cap--word" data-in=".58" data-out=".71">Justice.</div>
+          <div class="cap cap--word" data-in=".71" data-out=".85">Learning.</div>
+          <div class="cap" data-in=".88" data-out="9"><p class="eyebrow">Spring 2026 founding class</p><p class="cap__big">Your turn to throw.</p><a class="btn btn--gold" href="#join">Join Our Founding Class</a></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="aims" id="aims">
+    <div class="wrap split">
+      <div class="split__head">
+        <p class="eyebrow">The Three Great Aims</p>
+        <h2>What We Stand For</h2>
+        <p class="note">In Hoc Signo Vinces</p>
+      </div>
+      <div>
+        <div class="row"><span class="row__n">01</span><div><h3>Friendship</h3><p>A bond built on genuine loyalty rather than convenience — the belief that brothers are stronger, and better men, together than alone.</p></div></div>
+        <div class="row"><span class="row__n">02</span><div><h3>Justice</h3><p>A commitment to fairness and integrity in how members treat one another and the wider community — doing right even when no one is watching.</p></div></div>
+        <div class="row"><span class="row__n">03</span><div><h3>Learning</h3><p>A dedication to scholarship and growth, in and out of the classroom, as a lifelong pursuit rather than a college requirement.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="stats" aria-label="Sigma Chi by the numbers">
+    <div class="wrap stats__grid">
+      <div><div class="stat__n">1855</div><div class="stat__l">Founded Nationally</div></div>
+      <div><div class="stat__n">7</div><div class="stat__l">Founding Fathers, 1855</div></div>
+      <div><div class="stat__n">2024</div><div class="stat__l">Return to WashU Approved</div></div>
+      <div><div class="stat__n">240+</div><div class="stat__l">Chapters &amp; Colonies Nationally</div></div>
+    </div>
+  </section>
+
+  <section class="colony" id="join">
+    <div class="wrap">
+      <div>
+        <span class="badge">Good Standing with WashU's Interfraternity Council</span>
+        <h2>We're Building Something New</h2>
+        <p class="lede">In spring 2026, a new class of founding fathers began forming Sigma Chi's colony at WashU — with no connection to the fraternity's former Tau Tau chapter.</p>
+        <p class="muted">This is a clean start, focused, in the words of our expansion coordinator, on "community service, more academics, and more philanthropy."</p>
+        <a class="btn btn--navy" href="#top">Meet the Colony</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <strong>Sigma Chi Fraternity</strong>
+    <p>Washington University in St. Louis · Beta Colony</p>
+    <p>Unofficial colony site. Not an official publication of Sigma Chi Fraternity (International Headquarters) or Washington University in St. Louis. This page is a design concept for the colony's own website, not the live site.</p>
+  </div>
+</footer>
+
+<div class="chip" aria-hidden="true"><b>03 / 10</b> Overhead Toss <span class="chip__bar"><i id="chipBar"></i></span></div>
+
+<script>
+(() => {
+  // ---------- Die faces: 1 is the crest, opposite faces sum to seven ----------
+  const PIPS = {
+    2: [[28, 28], [72, 72]],
+    3: [[28, 28], [50, 50], [72, 72]],
+    4: [[28, 28], [72, 28], [28, 72], [72, 72]],
+    5: [[28, 28], [72, 28], [50, 50], [28, 72], [72, 72]],
+    6: [[28, 26], [72, 26], [28, 50], [72, 50], [28, 74], [72, 74]],
+  };
+  const faceSVG = (n) => n === 1
+    ? '<svg viewBox="0 0 100 100" aria-hidden="true"><g transform="translate(19.6 13.5) scale(.51)"><use href="#crest"></use></g></svg>'
+    : '<svg viewBox="0 0 100 100" aria-hidden="true">' + PIPS[n].map(([x, y]) => `<circle class="pip" cx="${x}" cy="${y}" r="8.5"/>`).join("") + "</svg>";
+  // Rolling end over end toward the far end, the top face cycles 1, 5, 6, 2.
+  const ROLL = [1, 5, 6, 2];
+
+  const $ = (id) => document.getElementById(id);
+  const stage = $("stage"), world = $("world"), hero = $("hero"), glow = $("glow");
+  const dz = $("dz"), dzFace = $("dzFace"), dzShadow = $("dzShadow");
+  const mark = $("mark"), markFace = $("markFace"), marks = $("marks"), dims = $("dims");
+  const chipBar = $("chipBar"), nav = $("nav");
+  const caps = [...document.querySelectorAll(".cap")];
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  markFace.innerHTML = `<div class="dz__face">${faceSVG(1)}</div>`;
+  let shownFace = 0;
+  const setFace = (n) => { if (n !== shownFace) { dzFace.innerHTML = faceSVG(n); shownFace = n; } };
+  setFace(1);
+
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+  const seg = (p, a, b) => clamp((p - a) / (b - a));
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+
+  const DIE = 60; // die edge in table pixels (a real one is far smaller; this reads)
+  let vw, vh, k0, k1, c0, c1, A, cam;
+
+  function layout() {
+    vw = innerWidth; vh = innerHeight;
+    const narrow = vw < 760;
+    k0 = Math.max(vw / 400, vh / 800) * 1.05;
+    c0 = { x: vw / 2, y: vh / 2 };
+    if (narrow) {
+      k1 = Math.min((vh * 0.56) / 800, (vw - 72) / 400);
+      c1 = { x: vw / 2, y: vh * 0.6 };
+    } else {
+      k1 = Math.min((vh * 0.8) / 800, (vw * 0.4) / 400);
+      c1 = { x: vw * 0.66, y: vh * 0.53 };
+    }
+    const w = clamp(vw * 0.26, 150, 340), h = w * 142 / 120;
+    A = { x: vw - w * 0.9, y: vh / 2 - h / 2 + 24, w, h };
+  }
+
+  // Table point (u, v in 0..1) to screen.
+  const toScreen = (u, v) => ({ x: cam.x + u * 400 * cam.k, y: cam.y + v * 800 * cam.k });
+
+  function render(p) {
+    // Camera: cover (the table IS the hero background) to fit, straight down.
+    const tz = ease(seg(p, 0.04, 0.18));
+    const k = Math.pow(k0, 1 - tz) * Math.pow(k1, tz);
+    const cx = lerp(c0.x, c1.x, tz), cy = lerp(c0.y, c1.y, tz);
+    cam = { k, x: cx - 200 * k, y: cy - 400 * k };
+    world.style.transform = `translate(${cam.x}px, ${cam.y}px) scale(${k})`;
+    marks.setAttribute("opacity", seg(p, 0.08, 0.2));
+    dims.setAttribute("opacity", seg(p, 0.18, 0.28));
+    glow.style.opacity = 1 - seg(p, 0.05, 0.22);
+
+    const ht = seg(p, 0.03, 0.16);
+    hero.style.opacity = 1 - ht;
+    hero.style.transform = `translateY(${-70 * ht}px)`;
+    hero.style.visibility = ht >= 1 ? "hidden" : "visible";
+
+    // Toss: rest in the near half, land on the far half. z is height, 0..1.
+    const t = seg(p, 0.45, 0.84);
+    const z0 = 4 * t * (1 - t);
+    const b = seg(p, 0.84, 0.89);
+    const z = z0 + (b > 0 && b < 1 ? 0.07 * Math.sin(Math.PI * b) : 0);
+    const u = lerp(0.5, 0.56, t), v = lerp(0.65, 0.26, t);
+    const P = toScreen(u, v);
+    const size = DIE * k * (1 + 1.6 * z);
+    const roll = 8 * t + 0.35 * Math.sin(Math.PI * b); // quarter turns; 8 lands crest up
+    const q = Math.round(roll), frac = roll - q;
+    setFace(ROLL[((q % 4) + 4) % 4]);
+    const squash = Math.max(0.06, Math.cos(frac * Math.PI));
+    const rot = 366 * t - 6 + 8 * Math.sin(Math.PI * b);
+    dz.style.transform = `translate(${P.x - 50}px, ${P.y - 50}px) rotate(${rot}deg) scale(${size / 100})`;
+    dzFace.style.transform = `scaleY(${squash})`;
+    dzFace.style.filter = `brightness(${0.55 + 0.45 * squash + 0.25 * z})`;
+    dz.style.zIndex = 2;
+
+    // Shadow: light from the upper left, so it slides down-right as the die
+    // climbs, and it shrinks and softens with height.
+    const sSize = DIE * k * (1 - 0.3 * z);
+    const off = DIE * k * 1.6 * z;
+    const blur = 2 + 22 * z;
+    const sc = sSize / 100;
+    dzShadow.style.transform = `translate(${P.x - 50 + off * 0.6}px, ${P.y - 50 + off}px) rotate(${rot}deg) scale(${sc})`;
+    dzShadow.style.filter = `blur(${blur / sc}px)`;
+    dzShadow.style.opacity = 0.6 - 0.35 * z;
+
+    // Crest: flies onto the die's resting spot and becomes its top face.
+    const handoff = 0.22;
+    if (p < handoff) {
+      const B = toScreen(0.5, 0.65), bs = DIE * k;
+      const m = ease(seg(p, 0.08, handoff));
+      mark.style.width = lerp(A.w, bs, m) + "px";
+      mark.style.height = lerp(A.h, bs, m) + "px";
+      mark.style.transform = `translate(${lerp(A.x, B.x - bs / 2, m)}px, ${lerp(A.y, B.y - bs / 2, m)}px) rotate(${-6 * m}deg)`;
+      mark.style.opacity = lerp(0.14, 1, seg(p, 0.04, 0.12));
+      markFace.style.opacity = seg(p, 0.15, handoff - 0.01);
+      mark.style.visibility = "visible";
+      dz.style.visibility = "hidden";
+      dzShadow.style.visibility = "hidden";
+    } else {
+      mark.style.visibility = "hidden";
+      dz.style.visibility = "visible";
+      dzShadow.style.visibility = "visible";
+    }
+
+    caps.forEach((c) => {
+      const i = +c.dataset.in, o = +c.dataset.out;
+      const vv = Math.min(seg(p, i, i + 0.025), 1 - seg(p, o - 0.025, o));
+      c.style.opacity = vv;
+      c.style.transform = `translateY(${(1 - vv) * 18}px)`;
+      c.style.visibility = vv > 0.01 ? "visible" : "hidden";
+    });
+  }
+
+  const still = (p) => (p < 0.12 ? 0 : p < 0.6 ? 0.38 : 0.95);
+
+  let target = 0, cur = 0, raf = 0;
+  function measure() {
+    const total = stage.offsetHeight - vh;
+    target = clamp(-stage.getBoundingClientRect().top / total);
+    const doc = document.documentElement;
+    chipBar.style.transform = `scaleX(${clamp(scrollY / (doc.scrollHeight - vh))})`;
+    nav.classList.toggle("nav--solid", target >= 1);
+  }
+  function tick() {
+    cur += (target - cur) * (reduce ? 1 : 0.16);
+    if (Math.abs(target - cur) < 0.0004) cur = target;
+    render(reduce ? still(cur) : cur);
+    raf = cur !== target ? requestAnimationFrame(tick) : 0;
+  }
+  const kick = () => { measure(); if (!raf) raf = requestAnimationFrame(tick); };
+  addEventListener("scroll", kick, { passive: true });
+  addEventListener("resize", () => { layout(); measure(); cur = target; render(reduce ? still(cur) : cur); });
+
+  const menuBtn = $("menuBtn"), links = $("navLinks");
+  menuBtn.addEventListener("click", () => {
+    const open = links.classList.toggle("nav__links--open");
+    menuBtn.setAttribute("aria-expanded", String(open));
+  });
+  links.addEventListener("click", () => { links.classList.remove("nav__links--open"); menuBtn.setAttribute("aria-expanded", "false"); });
+
+  layout();
+  measure();
+  cur = target;
+  render(reduce ? still(cur) : cur);
+})();
+</script>
+</body>
+</html>

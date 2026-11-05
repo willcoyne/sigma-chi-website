@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Beer Die 3D Table</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Cormorant+SC:wght@600&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+/* Concept 09 · 3D Table. A real WebGL scene behind the hero: the camera starts
+   straight down on the painted table top (so the page looks like today's navy
+   hero), then cranes back to a player's eye view while the crest drops onto
+   the die and the die is tossed along a fixed, scroll-reversible arc. */
+:root {
+  --navy: #0b2545;
+  --navy-dark: #071931;
+  --navy-lift: #15396c;
+  --navy-deep: #040f1f;
+  --gold: #c9a227;
+  --gold-dark: #8a6d1b;
+  --ply: #a8874a;
+  --cream: #faf7f0;
+  --ink: #1a1a1a;
+  --gray: #6b6b6b;
+  --white: #ffffff;
+  --font-display: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --font-sc: "Cormorant SC", Georgia, "Times New Roman", serif;
+  --font-body: "Source Sans 3", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --nav-h: 84px;
+  --gut-l: max(24px, env(safe-area-inset-left, 0px));
+  --gut-r: max(24px, env(safe-area-inset-right, 0px));
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+* { box-sizing: border-box; }
+html { background: var(--cream); }
+body { margin: 0; background: var(--cream); color: var(--ink); font-family: var(--font-body); font-size: 18px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 110; background: var(--navy-dark); }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 600; color: var(--navy); margin: 0 0 .5em; line-height: 1.06; letter-spacing: -0.015em; text-wrap: balance; }
+p { margin: 0 0 1em; }
+a { color: inherit; text-decoration: none; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+.wrap { max-width: 1200px; margin: 0 auto; padding-left: var(--gut-l); padding-right: var(--gut-r); }
+.eyebrow { font-family: var(--font-sc); font-weight: 600; font-size: .8rem; letter-spacing: .22em; text-transform: uppercase; color: var(--gold-dark); margin: 0 0 16px; }
+.skip { position: absolute; left: 16px; top: -60px; z-index: 200; background: var(--gold); color: var(--navy-dark); padding: 10px 16px; font-weight: 700; }
+.skip:focus { top: calc(env(safe-area-inset-top, 0px) + 12px); }
+
+/* ---------- Nav (matches the live site) ---------- */
+.nav { position: fixed; top: env(safe-area-inset-top, 0px); left: 0; right: 0; z-index: 100; transition: background-color .3s ease-out, box-shadow .3s ease-out; }
+.nav--solid { background: rgba(11, 37, 69, .86); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); box-shadow: 0 1px 0 rgba(201, 162, 39, .55); }
+.nav__inner { display: flex; align-items: center; justify-content: space-between; height: var(--nav-h); }
+.brand { display: flex; align-items: center; gap: 12px; font-family: var(--font-display); font-weight: 700; font-size: 1.3rem; color: var(--cream); }
+.brand svg { width: 36px; height: auto; }
+.brand em { font-style: normal; color: var(--gold); }
+.nav__links { display: flex; gap: 4px; }
+.nav__links a { display: inline-flex; align-items: center; min-height: 44px; padding: 10px 14px; font-size: .95rem; font-weight: 600; color: rgba(250, 247, 240, .85); }
+.nav__links a:hover { color: var(--cream); }
+.nav__links a[aria-current] { color: var(--gold); }
+.nav__toggle { display: none; min-width: 44px; min-height: 44px; background: none; border: 1px solid rgba(250, 247, 240, .3); border-radius: 4px; color: var(--cream); font: 600 .85rem var(--font-body); letter-spacing: .06em; cursor: pointer; }
+@media (max-width: 980px) {
+  :root { --nav-h: 68px; }
+  .nav__toggle { display: inline-flex; align-items: center; justify-content: center; padding: 0 12px; }
+  .nav__links { display: none; position: absolute; top: var(--nav-h); left: 0; right: 0; flex-direction: column; padding: 8px var(--gut-r) 16px var(--gut-l); background: rgba(7, 25, 49, .97); }
+  .nav__links--open { display: flex; }
+}
+
+/* ---------- Buttons ---------- */
+.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 14px 30px; font: 700 15px var(--font-body); letter-spacing: .04em; border-radius: 4px; border: 1.5px solid transparent; transition: background-color .25s, transform .25s; }
+.btn--gold { background: var(--gold); color: var(--navy-dark); }
+.btn--gold:hover { background: #b6911f; transform: translateY(-1px); }
+.btn--ghost { border-color: var(--cream); color: var(--cream); }
+.btn--ghost:hover { background: rgba(250, 247, 240, .12); }
+.btn--navy { border-color: var(--navy); color: var(--navy); }
+
+/* ---------- The stage: one pinned viewport, WebGL canvas behind HTML type ---------- */
+.stage { position: relative; height: 460vh; background: var(--navy-deep); }
+.pin { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; background: var(--navy); }
+.gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.glow { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle at 12% -10%, rgba(21, 57, 108, .9) 0%, rgba(21, 57, 108, 0) 55%); }
+
+/* Static still, shown only when WebGL is unavailable. */
+.still { position: absolute; inset: 0; display: none; background: radial-gradient(ellipse 70% 60% at 50% 55%, #10305a 0%, var(--navy-dark) 55%, var(--navy-deep) 100%); }
+.still--on { display: block; }
+.still svg { position: absolute; left: 50%; top: 54%; width: min(92vw, 900px); height: auto; transform: translate(-50%, -50%); }
+.still__note { position: absolute; right: var(--gut-r); bottom: calc(env(safe-area-inset-bottom, 0px) + 20px); max-width: 22rem; margin: 0; padding: 10px 14px; border-left: 2px solid var(--gold); background: rgba(7, 25, 49, .85); color: rgba(250, 247, 240, .85); font-size: .85rem; }
+
+/* The crest watermark, and the flat die face it turns into before the 3D die takes over. */
+.mark { position: absolute; left: 0; top: 0; pointer-events: none; will-change: transform; }
+.mark > * { position: absolute; inset: 0; width: 100%; height: 100%; }
+.mark__face { opacity: 0; }
+.die__face { position: absolute; inset: 0; border-radius: 16%; background: radial-gradient(circle at 30% 25%, var(--navy-lift), var(--navy) 58%, var(--navy-dark)); box-shadow: inset 0 0 0 1.5px rgba(201, 162, 39, .6), inset 0 0 18px rgba(0, 0, 0, .4); }
+.die__face svg { display: block; width: 100%; height: 100%; }
+
+.hero { position: absolute; inset: 0; display: flex; align-items: center; padding-top: var(--nav-h); color: var(--cream); will-change: transform, opacity; }
+.hero .wrap { width: 100%; }
+.hero h1 { color: var(--cream); font-weight: 700; font-size: clamp(3rem, 7.5vw, 5.75rem); line-height: .98; letter-spacing: -0.028em; max-width: 16ch; margin-bottom: 24px; }
+.hero .eyebrow { color: var(--gold); margin-bottom: 24px; }
+.hero__rule { display: block; width: 96px; height: 3px; background: var(--gold); margin-bottom: 24px; }
+.hero__sub { max-width: 54ch; font-size: clamp(1.05rem, 1.5vw, 1.3rem); line-height: 1.55; color: rgba(250, 247, 240, .86); }
+.hero__ctas { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 24px; }
+
+.caps { position: absolute; left: 0; right: 0; top: calc(var(--nav-h) + 6vh); pointer-events: none; }
+.cap { position: absolute; left: 0; top: 0; width: min(30rem, 42vw); opacity: 0; visibility: hidden; color: var(--cream); }
+.cap .eyebrow { color: var(--gold); }
+.cap__big { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.8rem, 3.4vw, 2.9rem); line-height: 1.05; letter-spacing: -0.02em; text-wrap: balance; margin: 0 0 20px; text-shadow: 0 2px 18px rgba(4, 15, 31, .6); }
+.cap--word { font-family: var(--font-display); font-style: italic; font-weight: 500; font-size: clamp(3rem, 8vw, 6.5rem); line-height: 1; color: var(--gold); text-shadow: 0 2px 18px rgba(4, 15, 31, .6); }
+.cap a { pointer-events: auto; }
+.caps .wrap { position: relative; }
+.ruler { opacity: 0; position: absolute; right: var(--gut-r); top: 50%; transform: translateY(-50%); display: grid; gap: 10px; justify-items: end; font: 600 .72rem var(--font-body); letter-spacing: .16em; text-transform: uppercase; color: rgba(250, 247, 240, .4); }
+.ruler span { transition: color .3s; }
+.ruler span.on { color: var(--gold); }
+
+@media (max-width: 760px) {
+  .cap { width: 100%; }
+  .caps { top: calc(var(--nav-h) + 16px); }
+  .cap--word { font-size: clamp(2.6rem, 14vw, 4rem); }
+  .ruler { display: none; }
+  .still__note { left: var(--gut-l); right: var(--gut-r); bottom: calc(env(safe-area-inset-bottom, 0px) + 72px); }
+}
+
+/* ---------- Ordinary page content after the toss ---------- */
+.aims { padding-block: 104px; background: var(--cream); }
+.split { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 40px 64px; align-items: start; }
+.split__head { position: sticky; top: calc(var(--nav-h) + 40px); }
+.split__head h2 { font-size: clamp(2.1rem, 4.4vw, 3.4rem); }
+.note { font-family: var(--font-display); font-style: italic; font-size: 1.25rem; color: var(--gold-dark); }
+.row { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr); gap: 0 24px; padding-block: 32px; border-top: 1px solid rgba(11, 37, 69, .14); }
+.row:last-child { border-bottom: 1px solid rgba(11, 37, 69, .14); }
+.row__n { font-family: var(--font-display); font-size: 2.6rem; line-height: 1; color: var(--gold-dark); font-variant-numeric: tabular-nums; }
+.row h3 { font-size: clamp(1.45rem, 2.5vw, 1.95rem); margin-bottom: 8px; }
+.row p { color: #3d3d3d; margin: 0; max-width: 60ch; }
+.stats { background: var(--navy); color: var(--cream); padding-block: 72px; }
+.stats__grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 40px; }
+.stat__n { font-family: var(--font-display); font-weight: 700; font-size: clamp(2.6rem, 5vw, 4rem); line-height: 1; color: var(--gold); font-variant-numeric: tabular-nums; }
+.stat__l { margin-top: 10px; font-size: .95rem; color: rgba(250, 247, 240, .78); }
+.colony { background: var(--white); padding-block: 104px; }
+.colony .wrap > div { max-width: 66ch; }
+.badge { display: inline-block; margin-bottom: 24px; padding: 6px 14px; border: 1px solid rgba(11, 37, 69, .25); border-radius: 999px; font-size: .85rem; font-weight: 600; color: var(--navy); }
+.lede { font-size: 1.3rem; line-height: 1.5; color: var(--ink); }
+.muted { color: var(--gray); }
+.footer { background: var(--navy-dark); color: rgba(250, 247, 240, .72); padding-block: 56px calc(88px + env(safe-area-inset-bottom, 0px)); font-size: .9rem; }
+.footer strong { display: block; font-family: var(--font-display); font-size: 1.3rem; color: var(--cream); }
+.footer p { max-width: 70ch; }
+@media (max-width: 900px) {
+  .split { grid-template-columns: 1fr; }
+  .split__head { position: static; }
+  .stats__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* ---------- Concept label ---------- */
+.chip { position: fixed; z-index: 120; left: max(16px, calc(env(safe-area-inset-left, 0px) + 12px)); bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); display: flex; align-items: center; gap: 10px; padding: 8px 14px; border-radius: 999px; background: rgba(7, 25, 49, .92); border: 1px solid rgba(201, 162, 39, .5); color: var(--cream); font: 600 .78rem var(--font-body); letter-spacing: .04em; box-shadow: 0 8px 24px rgba(0, 0, 0, .25); }
+.chip b { color: var(--gold); font-weight: 700; }
+.chip__bar { width: 54px; height: 3px; background: rgba(250, 247, 240, .2); border-radius: 2px; overflow: hidden; }
+.chip__bar i { display: block; height: 100%; background: var(--gold); transform-origin: 0 50%; transform: scaleX(0); }
+</style>
+</head>
+<body>
+<a class="skip" href="#aims">Skip past the toss</a>
+
+<header class="nav" id="nav">
+  <div class="wrap nav__inner">
+    <a class="brand" href="#top" aria-label="Sigma Chi WashU, home">
+      <svg viewBox="0 0 120 142" aria-hidden="true"><use href="#crest"></use></svg>
+      <span>Sigma Chi <em>WashU</em></span>
+    </a>
+    <button class="nav__toggle" id="menuBtn" aria-expanded="false" aria-controls="navLinks">Menu</button>
+    <nav class="nav__links" id="navLinks" aria-label="Main">
+      <a href="#top" aria-current="page">Home</a>
+      <a href="#aims">Our History</a>
+      <a href="#aims">Values &amp; Creed</a>
+      <a href="#join">The Colony Today</a>
+      <a href="#join">Philanthropy</a>
+      <a href="#join">Join Us</a>
+    </nav>
+  </div>
+</header>
+
+<!-- One shared crest drawing, referenced by every copy on the page. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <g id="crest">
+      <path d="M60 4 L112 20 V68 C112 108 89 130 60 142 C31 130 8 108 8 68 V20 Z" fill="#0b2545" stroke="#c9a227" stroke-width="3"/>
+      <path d="M60 10 L105 24 V68 C105 104 85 124 60 135 C35 124 15 104 15 68 V24 Z" fill="none" stroke="#faf7f0" stroke-width="1.5" opacity=".9"/>
+      <rect x="52" y="34" width="16" height="68" fill="#faf7f0"/>
+      <rect x="28" y="56" width="64" height="16" fill="#faf7f0"/>
+      <text x="60" y="122" text-anchor="middle" font-family="Cormorant SC, Georgia, serif" font-weight="600" font-size="16" fill="#c9a227">&#931;&#935;</text>
+    </g>
+  </defs>
+</svg>
+
+<main id="top">
+  <section class="stage" id="stage" aria-label="Opening: a 3D table is revealed under the hero and the crest die is tossed across it">
+    <div class="pin" id="pin">
+      <canvas class="gl" id="gl" aria-hidden="true"></canvas>
+      <div class="still" id="still" aria-hidden="true">
+        <svg viewBox="0 0 1000 640">
+          <defs>
+            <linearGradient id="stTop" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b2545"/><stop offset="1" stop-color="#15396c"/></linearGradient>
+          </defs>
+          <path d="M380 120 H620 L800 560 H200 Z" fill="url(#stTop)"/>
+          <path d="M200 560 H800 V578 H200 Z" fill="#a8874a"/>
+          <path d="M391 136 H609 L774 545 H226 Z" fill="none" stroke="#c9a227" stroke-width="3"/>
+          <path d="M327 294 H673" stroke="#c9a227" stroke-width="5"/>
+          <text x="500" y="455" text-anchor="middle" font-family="Cormorant SC, Georgia, serif" font-weight="600" font-size="78" fill="#8a6d1b" opacity=".6">&#931;&#935;</text>
+          <g fill="#faf7f0" stroke="#c9a227" stroke-width="3"><path d="M402 104 h26 l-4 26 h-18 z"/><path d="M572 104 h26 l-4 26 h-18 z"/><path d="M248 486 h44 l-7 46 h-30 z"/><path d="M708 486 h44 l-7 46 h-30 z"/></g>
+          <ellipse cx="530" cy="236" rx="36" ry="10" fill="#000" opacity=".4"/>
+          <g id="stillDie" transform="translate(498 168)"><rect width="64" height="64" rx="10" fill="#0b2545" stroke="#c9a227" stroke-opacity=".6" stroke-width="1.5"/><g transform="translate(12.5 8.6) scale(.326)"><use href="#crest"></use></g></g>
+        </svg>
+        <p class="still__note">3D view unavailable on this device, so this is a still of the table.</p>
+      </div>
+      <div class="glow" id="glow"></div>
+      <div class="mark" id="mark">
+        <svg viewBox="0 0 120 142" aria-hidden="true"><use href="#crest"></use></svg>
+        <div class="mark__face" id="markFace"></div>
+      </div>
+
+      <div class="hero" id="hero">
+        <div class="wrap">
+          <p class="eyebrow">Washington University in St. Louis · Beta Colony</p>
+          <h1>Leaders of Men. Est. 1855.</h1>
+          <span class="hero__rule" aria-hidden="true"></span>
+          <p class="hero__sub">"In Hoc Signo Vinces" — In this sign you will conquer. Sigma Chi is returning to Washington University in St. Louis, building a new colony on friendship, justice, and learning.</p>
+          <div class="hero__ctas">
+            <a class="btn btn--gold" href="#join">Join Our Founding Class</a>
+            <a class="btn btn--ghost" href="#aims">Our Story</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="caps">
+        <div class="wrap">
+          <div class="cap" data-in=".17" data-out=".35"><p class="eyebrow">The Beta Colony</p><p class="cap__big">A new chapter at WashU, built by its founding class.</p></div>
+          <div class="cap" data-in=".35" data-out=".46"><p class="eyebrow">In Hoc Signo Vinces</p><p class="cap__big">In this sign you will conquer.</p></div>
+          <div class="cap cap--word" data-in=".47" data-out=".59">Friendship.</div>
+          <div class="cap cap--word" data-in=".59" data-out=".71">Justice.</div>
+          <div class="cap cap--word" data-in=".71" data-out=".85">Learning.</div>
+          <div class="cap" data-in=".87" data-out="9"><p class="eyebrow">Spring 2026 founding class</p><p class="cap__big">Your turn to throw.</p><a class="btn btn--gold" href="#join">Join Our Founding Class</a></div>
+        </div>
+      </div>
+      <div class="ruler" aria-hidden="true"><span>Page</span><span>Table</span><span>Die</span><span>Toss</span><span>Landed</span></div>
+    </div>
+  </section>
+
+  <section class="aims" id="aims">
+    <div class="wrap split">
+      <div class="split__head">
+        <p class="eyebrow">The Three Great Aims</p>
+        <h2>What We Stand For</h2>
+        <p class="note">In Hoc Signo Vinces</p>
+      </div>
+      <div>
+        <div class="row"><span class="row__n">01</span><div><h3>Friendship</h3><p>A bond built on genuine loyalty rather than convenience — the belief that brothers are stronger, and better men, together than alone.</p></div></div>
+        <div class="row"><span class="row__n">02</span><div><h3>Justice</h3><p>A commitment to fairness and integrity in how members treat one another and the wider community — doing right even when no one is watching.</p></div></div>
+        <div class="row"><span class="row__n">03</span><div><h3>Learning</h3><p>A dedication to scholarship and growth, in and out of the classroom, as a lifelong pursuit rather than a college requirement.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="stats" aria-label="Sigma Chi by the numbers">
+    <div class="wrap stats__grid">
+      <div><div class="stat__n">1855</div><div class="stat__l">Founded Nationally</div></div>
+      <div><div class="stat__n">7</div><div class="stat__l">Founding Fathers, 1855</div></div>
+      <div><div class="stat__n">2024</div><div class="stat__l">Return to WashU Approved</div></div>
+      <div><div class="stat__n">240+</div><div class="stat__l">Chapters &amp; Colonies Nationally</div></div>
+    </div>
+  </section>
+
+  <section class="colony" id="join">
+    <div class="wrap">
+      <div>
+        <span class="badge">Good Standing with WashU's Interfraternity Council</span>
+        <h2>We're Building Something New</h2>
+        <p class="lede">In spring 2026, a new class of founding fathers began forming Sigma Chi's colony at WashU — with no connection to the fraternity's former Tau Tau chapter.</p>
+        <p class="muted">This is a clean start, focused, in the words of our expansion coordinator, on "community service, more academics, and more philanthropy."</p>
+        <a class="btn btn--navy" href="#top">Meet the Colony</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <strong>Sigma Chi Fraternity</strong>
+    <p>Washington University in St. Louis · Beta Colony</p>
+    <p>Unofficial colony site. Not an official publication of Sigma Chi Fraternity (International Headquarters) or Washington University in St. Louis. This page is a design concept for the colony's own website, not the live site.</p>
+  </div>
+</footer>
+
+<div class="chip" aria-hidden="true"><b>09 / 10</b> 3D Table <span class="chip__bar"><i id="chipBar"></i></span></div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+// ---------- Die art: 1 is the crest, opposite faces sum to seven ----------
+const PIPS = {
+  2: [[28, 28], [72, 72]],
+  3: [[28, 28], [50, 50], [72, 72]],
+  4: [[28, 28], [72, 28], [28, 72], [72, 72]],
+  5: [[28, 28], [72, 28], [50, 50], [28, 72], [72, 72]],
+  6: [[28, 26], [72, 26], [28, 50], [72, 50], [28, 74], [72, 74]],
+};
+const $ = (id) => document.getElementById(id);
+$("markFace").innerHTML = '<div class="die__face"><svg viewBox="0 0 100 100" aria-hidden="true"><g transform="translate(19.6 13.5) scale(.51)"><use href="#crest"></use></g></svg></div>';
+
+// Standalone crest for the canvas textures (an <img> cannot see the page's <defs>).
+const CREST = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 142" width="480" height="568">${document.getElementById("crest").innerHTML}</svg>`;
+const crestImg = new Image();
+const crestReady = new Promise((res) => { crestImg.onload = res; crestImg.onerror = res; });
+crestImg.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(CREST);
+
+const stage = $("stage"), pin = $("pin"), canvas = $("gl"), hero = $("hero"), glow = $("glow");
+const mark = $("mark"), markFace = $("markFace"), chipBar = $("chipBar"), nav = $("nav");
+const caps = [...document.querySelectorAll(".cap")];
+const steps = [...document.querySelectorAll(".ruler span")];
+const ruler = document.querySelector(".ruler");
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const seg = (p, a, b) => clamp((p - a) / (b - a));
+const lerp = (a, b, t) => a + (b - a) * t;
+const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+const easeSine = (t) => -(Math.cos(Math.PI * t) - 1) / 2;
+const HANDOFF = 0.19;
+
+// ---------- Canvas painters (shared by the textures) ----------
+function paintFace(c, n) {
+  const g = c.getContext("2d");
+  const grd = g.createRadialGradient(154, 128, 0, 154, 128, 480);
+  grd.addColorStop(0, "#15396c"); grd.addColorStop(0.55, "#0b2545"); grd.addColorStop(1, "#071931");
+  g.fillStyle = grd;
+  g.fillRect(0, 0, 512, 512);
+  g.strokeStyle = "rgba(201, 162, 39, .55)";
+  g.lineWidth = 6;
+  g.beginPath(); g.roundRect(34, 34, 444, 444, 56); g.stroke();
+  if (n === 1) {
+    if (crestImg.naturalWidth) g.drawImage(crestImg, 100, 69, 313, 371);
+    return;
+  }
+  for (const [x, y] of PIPS[n]) {
+    const px = x * 5.12, py = y * 5.12, r = 44;
+    const pg = g.createRadialGradient(px - 12, py - 14, 4, px, py, r);
+    pg.addColorStop(0, "#e6c868"); pg.addColorStop(0.7, "#c9a227"); pg.addColorStop(1, "#8a6d1b");
+    g.fillStyle = pg;
+    g.beginPath(); g.arc(px, py, r, 0, Math.PI * 2); g.fill();
+  }
+}
+
+// The painted top: the hero's navy field and its gold arcade rules, 1024px = 4ft.
+function paintTop(c) {
+  const g = c.getContext("2d"), W = c.width, H = c.height;
+  const grd = g.createRadialGradient(W * 0.25, H * 0.1, 0, W * 0.25, H * 0.1, H * 0.95);
+  grd.addColorStop(0, "#15396c"); grd.addColorStop(0.45, "#0b2545"); grd.addColorStop(1, "#071931");
+  g.fillStyle = grd;
+  g.fillRect(0, 0, W, H);
+  g.fillStyle = "rgba(201, 162, 39, .09)";
+  for (let x = 32; x < W; x += 64) g.fillRect(x, 0, 2, H);
+}
+
+// Inlay, center line and monogram, on their own layer so they can fade in.
+function paintMarks(c) {
+  const g = c.getContext("2d"), W = c.width, H = c.height, ins = W * 0.045;
+  g.clearRect(0, 0, W, H);
+  g.strokeStyle = "rgba(201, 162, 39, .16)";
+  g.lineWidth = 16;
+  g.strokeRect(ins + 14, ins + 14, W - 2 * ins - 28, H - 2 * ins - 28);
+  g.strokeStyle = "#c9a227";
+  g.lineWidth = 7;
+  g.strokeRect(ins, ins, W - 2 * ins, H - 2 * ins);
+  g.fillStyle = "#c9a227";
+  g.fillRect(ins, H / 2 - 6, W - 2 * ins, 12);
+  g.fillStyle = "rgba(138, 109, 27, .8)";
+  g.font = `600 ${Math.round(W * 0.2)}px "Cormorant SC", Georgia, serif`;
+  g.textAlign = "center";
+  g.textBaseline = "middle";
+  g.fillText("ΣΧ", W / 2, H * 0.73);
+}
+
+// ---------- 3D scene ----------
+async function build3D() {
+  const T = await import("three");
+  const { RoundedBoxGeometry } = await import("three/addons/geometries/RoundedBoxGeometry.js");
+  const renderer = new T.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.outputColorSpace = T.SRGBColorSpace;
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = T.PCFSoftShadowMap;
+  const aniso = renderer.capabilities.getMaxAnisotropy();
+
+  const scene = new T.Scene();
+  scene.background = new T.Color(0x040f1f);
+  scene.fog = new T.Fog(0x040f1f, 16, 40);
+  const camera = new T.PerspectiveCamera(40, 1, 0.1, 100);
+
+  // Lighting: a cool fill plus one warm lamp hung over the table.
+  scene.add(new T.HemisphereLight(0xc9d6ee, 0x071931, 1.1));
+  const lamp = new T.SpotLight(0xffe2b0, 2.4, 0, 0.62, 0.7, 0);
+  lamp.position.set(0.5, 10, 1.4);
+  lamp.target.position.set(0, 0, 0);
+  lamp.castShadow = true;
+  lamp.shadow.mapSize.set(1024, 1024);
+  lamp.shadow.bias = -0.0004;
+  lamp.shadow.radius = 4;
+  lamp.shadow.camera.near = 4;
+  lamp.shadow.camera.far = 16;
+  scene.add(lamp, lamp.target);
+
+  const tex = (c) => {
+    const t = new T.CanvasTexture(c);
+    t.colorSpace = T.SRGBColorSpace;
+    t.anisotropy = aniso;
+    return t;
+  };
+  const mk = (w, h) => Object.assign(document.createElement("canvas"), { width: w, height: h });
+
+  // Table: 4 x 8 ft ply, 1 unit = 1 ft. Top surface at y = 0.
+  const topCanvas = mk(1024, 2048);
+  paintTop(topCanvas);
+  const ply = new T.MeshStandardMaterial({ color: 0xa8874a, roughness: 0.85 });
+  // Lambert: no specular sheen, which would wash the dark navy out to grey.
+  const topMat = new T.MeshLambertMaterial({ map: tex(topCanvas) });
+  const table = new T.Mesh(new T.BoxGeometry(4, 0.12, 8), [ply, ply, topMat, ply, ply, ply]);
+  table.position.y = -0.06;
+  table.receiveShadow = true;
+  scene.add(table);
+
+  const marksCanvas = mk(1024, 2048);
+  paintMarks(marksCanvas);
+  const marksTex = tex(marksCanvas);
+  const marksMat = new T.MeshStandardMaterial({ map: marksTex, transparent: true, opacity: 0, roughness: 0.55, metalness: 0.25, depthWrite: false });
+  const marks = new T.Mesh(new T.PlaneGeometry(4, 8), marksMat);
+  marks.rotation.x = -Math.PI / 2;
+  marks.position.y = 0.003;
+  marks.receiveShadow = true;
+  scene.add(marks);
+  document.fonts.ready.then(() => { paintMarks(marksCanvas); marksTex.needsUpdate = true; draw(); });
+
+  const legMat = new T.MeshStandardMaterial({ color: 0x2a2110, roughness: 0.9 });
+  for (const [x, z] of [[-1.72, -3.7], [1.72, -3.7], [-1.72, 3.7], [1.72, 3.7]]) {
+    const leg = new T.Mesh(new T.BoxGeometry(0.22, 2.38, 0.22), legMat);
+    leg.position.set(x, -1.31, z);
+    scene.add(leg);
+  }
+  const floor = new T.Mesh(new T.PlaneGeometry(90, 90), new T.MeshStandardMaterial({ color: 0x071931, roughness: 1 }));
+  floor.rotation.x = -Math.PI / 2;
+  floor.position.y = -2.5;
+  floor.receiveShadow = true;
+  scene.add(floor);
+
+  // Cups: plain cream tumblers with a gold rim, empty. One at each corner.
+  const profile = [[0, 0], [0.15, 0], [0.158, 0.015], [0.235, 0.6], [0.25, 0.615], [0.24, 0.622], [0.226, 0.6], [0.148, 0.03], [0, 0.03]]
+    .map(([x, y]) => new T.Vector2(x, y));
+  const cupGeo = new T.LatheGeometry(profile, 48);
+  const cupMat = new T.MeshStandardMaterial({ color: 0xf3eee2, roughness: 0.55, side: T.DoubleSide });
+  const rimGeo = new T.TorusGeometry(0.245, 0.013, 8, 48);
+  const rimMat = new T.MeshStandardMaterial({ color: 0xc9a227, roughness: 0.35, metalness: 0.6 });
+  const cups = [[-1.55, -3.45], [1.55, -3.45], [-1.55, 3.45], [1.55, 3.45]].map(([x, z]) => {
+    const g = new T.Group();
+    const body = new T.Mesh(cupGeo, cupMat);
+    body.castShadow = true;
+    body.receiveShadow = true;
+    const rim = new T.Mesh(rimGeo, rimMat);
+    rim.rotation.x = Math.PI / 2;
+    rim.position.y = 0.613;
+    g.add(body, rim);
+    g.position.set(x, 0, z);
+    scene.add(g);
+    return g;
+  });
+
+  // The die. Box material order is +x, -x, +y, -y, +z, -z; the crest sits on +y.
+  const S = 0.56;
+  const order = [3, 4, 1, 6, 2, 5];
+  const faceCanvases = {};
+  const faceTextures = {};
+  const mats = order.map((n) => {
+    const c = mk(512, 512);
+    paintFace(c, n);
+    faceCanvases[n] = c;
+    faceTextures[n] = tex(c);
+    // A little self-light from the face art keeps pips and crest legible on the navy table.
+    return new T.MeshStandardMaterial({ map: faceTextures[n], emissive: 0xffffff, emissiveMap: faceTextures[n], emissiveIntensity: 0.35, roughness: 0.4, metalness: 0.05 });
+  });
+  const die = new T.Mesh(new RoundedBoxGeometry(S, S, S, 5, S * 0.13), mats);
+  die.castShadow = true;
+  die.visible = false;
+  scene.add(die);
+  crestReady.then(() => { paintFace(faceCanvases[1], 1); faceTextures[1].needsUpdate = true; draw(); });
+
+  let w = 1, h = 1, r0 = 3, r1 = 12, zc0 = 1;
+  const FOV = 40, tanH = Math.tan((FOV / 2) * Math.PI / 180);
+  function resize() {
+    w = pin.clientWidth; h = pin.clientHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    // Start: straight down, framed so only painted top is in view (no edges).
+    zc0 = camera.aspect < 0.8 ? 0.4 : 1;
+    r0 = 0.94 * Math.min(1.92 / (tanH * camera.aspect), (3.95 - Math.abs(zc0)) / tanH);
+    // End: a player's-eye view wide enough for the whole table and the cups.
+    r1 = Math.max(12, 2.9 / (tanH * camera.aspect));
+  }
+
+  let last = 0;
+  const v = new T.Vector3();
+  function frame(p) {
+    last = p;
+    const tt = ease(seg(p, 0.05, 0.42));
+    const phi = 0.96 * tt;
+    const r = Math.exp(lerp(Math.log(r0), Math.log(r1), tt));
+
+    // Keyframed toss: same scroll position always gives the same pose.
+    const tos = seg(p, 0.46, 0.85);
+    const apex = 2.6;
+    let lift = 4 * apex * tos * (1 - tos);
+    const b = seg(p, 0.85, 0.9);
+    if (b > 0 && b < 1) lift += S * 0.3 * Math.sin(Math.PI * b);
+    die.position.set(lerp(0, 0.3, tos), S / 2 + lift, lerp(1.3, -2.1, tos));
+    die.rotation.set(4 * Math.PI * easeSine(tos), 0.45 * Math.PI * tos, 2 * Math.PI * tos);
+    die.visible = p >= HANDOFF;
+
+    const ty = lerp(0, 0.7, tt) + 0.25 * lift;
+    const tz = lerp(zc0, 0.1, tt);
+    camera.position.set(0, ty + r * Math.cos(phi), tz + r * Math.sin(phi));
+    camera.rotation.set(-Math.PI / 2 + phi, 0, 0);
+
+    marksMat.opacity = seg(p, 0.1, 0.3);
+    const grow = ease(seg(p, 0.14, 0.32));
+    cups.forEach((c) => { c.visible = grow > 0.01; c.scale.set(1, Math.max(grow, 0.01), 1); });
+
+    renderer.render(scene, camera);
+
+    if (p >= HANDOFF) return null;
+    // Screen box of the die's top face, the target for the crest watermark.
+    const cr = canvas.getBoundingClientRect();
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    for (const [dx, dz] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) {
+      v.set(die.position.x + dx * S / 2, S, die.position.z + dz * S / 2).project(camera);
+      const sx = (v.x + 1) / 2 * w, sy = (1 - v.y) / 2 * h;
+      x0 = Math.min(x0, sx); x1 = Math.max(x1, sx); y0 = Math.min(y0, sy); y1 = Math.max(y1, sy);
+    }
+    return { left: cr.left + x0, top: cr.top + y0, width: x1 - x0, height: y1 - y0 };
+  }
+  function draw() { frame(last); }
+  resize();
+  return { resize, frame };
+}
+
+// ---------- Page layer (HTML over the canvas) ----------
+let gl = null, vw = innerWidth, vh = innerHeight, A;
+function layout() {
+  vw = innerWidth; vh = innerHeight;
+  const w = clamp(vw * 0.26, 150, 340), h = w * 142 / 120;
+  A = { x: vw - w * 0.9, y: vh / 2 - h / 2 + 24, w, h };
+  if (gl) gl.resize();
+}
+
+function render(p) {
+  const B = gl ? gl.frame(p) : document.getElementById("stillDie").getBoundingClientRect();
+  glow.style.opacity = 1 - seg(p, 0.05, 0.25);
+  if (!gl) $("still").firstElementChild.style.opacity = seg(p, 0.06, 0.24);
+
+  const ht = seg(p, 0.03, 0.18);
+  hero.style.opacity = 1 - ht;
+  hero.style.transform = `translateY(${-70 * ht}px)`;
+  hero.style.visibility = ht >= 1 ? "hidden" : "visible";
+
+  if (p < HANDOFF && B) {
+    const m = ease(seg(p, 0.05, HANDOFF));
+    mark.style.width = lerp(A.w, B.width, m) + "px";
+    mark.style.height = lerp(A.h, B.height, m) + "px";
+    mark.style.transform = `translate(${lerp(A.x, B.left, m)}px, ${lerp(A.y, B.top, m)}px)`;
+    mark.style.opacity = lerp(0.14, 1, seg(p, 0.04, 0.12));
+    markFace.style.opacity = seg(p, 0.12, HANDOFF - 0.01);
+    mark.style.visibility = "visible";
+  } else {
+    mark.style.visibility = "hidden";
+  }
+
+  caps.forEach((c) => {
+    const a = +c.dataset.in, o = +c.dataset.out;
+    const v = Math.min(seg(p, a, a + 0.025), 1 - seg(p, o - 0.025, o));
+    c.style.opacity = v;
+    c.style.transform = `translateY(${(1 - v) * 18}px)`;
+    c.style.visibility = v > 0.01 ? "visible" : "hidden";
+  });
+  const step = p < 0.1 ? 0 : p < 0.19 ? 1 : p < 0.46 ? 2 : p < 0.86 ? 3 : 4;
+  steps.forEach((el, i) => el.classList.toggle("on", i === step));
+  ruler.style.opacity = seg(p, 0.08, 0.16);
+}
+
+// Reduced motion: no scrubbed movement, just three still compositions.
+const still = (p) => (p < 0.12 ? 0 : p < 0.6 ? 0.42 : 0.95);
+
+let target = 0, cur = 0, raf = 0;
+function measure() {
+  const total = stage.offsetHeight - vh;
+  target = clamp(-stage.getBoundingClientRect().top / total);
+  const doc = document.documentElement;
+  chipBar.style.transform = `scaleX(${clamp(scrollY / (doc.scrollHeight - vh))})`;
+  nav.classList.toggle("nav--solid", target >= 1 && scrollY > 60);
+}
+function tick() {
+  cur += (target - cur) * (reduce ? 1 : 0.16);
+  if (Math.abs(target - cur) < 0.0004) cur = target;
+  render(reduce ? still(cur) : cur);
+  raf = cur !== target ? requestAnimationFrame(tick) : 0;
+}
+const kick = () => { measure(); if (!raf) raf = requestAnimationFrame(tick); };
+addEventListener("scroll", kick, { passive: true });
+addEventListener("resize", () => { layout(); measure(); cur = target; render(reduce ? still(cur) : cur); });
+
+const menuBtn = $("menuBtn"), links = $("navLinks");
+menuBtn.addEventListener("click", () => {
+  const open = links.classList.toggle("nav__links--open");
+  menuBtn.setAttribute("aria-expanded", String(open));
+});
+links.addEventListener("click", () => { links.classList.remove("nav__links--open"); menuBtn.setAttribute("aria-expanded", "false"); });
+
+layout();
+measure();
+cur = target;
+render(reduce ? still(cur) : cur);
+
+try {
+  gl = await build3D();
+} catch (err) {
+  // No WebGL (or the library could not load): keep the page, show the still.
+  gl = null;
+  canvas.hidden = true;
+  $("still").classList.add("still--on");
+}
+layout();
+measure();
+cur = target;
+render(reduce ? still(cur) : cur);
+</script>
+</body>
+</html>
