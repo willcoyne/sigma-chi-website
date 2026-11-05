@@ -517,7 +517,7 @@ async function build() {
   // Light: one warm lamp over the table, a cool rim from behind, gold bounce underneath.
   scene.add(new T.HemisphereLight(0x9fb4e0, 0x030a16, 0.25));
   const lamp = new T.SpotLight(0xe8eeff, 1.6, 0, 0.55, 0.8, 0);
-  lamp.position.set(-3, 11, -4.5);
+  lamp.position.set(-8, 11, -2);   // off to the side, so its reflection never lands on the table as the camera cranes
   lamp.target.position.set(0, 0, 0.6);
   lamp.castShadow = true;
   lamp.shadow.mapSize.set(2048, 2048);

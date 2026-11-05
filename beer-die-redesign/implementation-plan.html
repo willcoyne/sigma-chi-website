@@ -134,7 +134,7 @@ td.n { font-family: var(--display); font-weight: 700; font-size: 12pt; color: va
     <p class="eyebrow">Sigma Chi WashU · experiment/beer-die-redesign</p>
     <h1>Beer Die Home Page</h1>
     <div class="rule"></div>
-    <p>How the home page becomes a die table on scroll: what we would build, what we would build it with, and the eleven mockups that explore it, including the revised Glow Toss.</p>
+    <p>How the home page becomes a die table on scroll: what we would build, what we would build it with, and the twelve mockups that explore it, including the revised Glow Toss and its cup-sink ending.</p>
   </div>
   <!-- An isometric die: crest on top, two and three on the sides (1, 2, 3 share a corner on a real die). -->
   <svg class="cover__die" viewBox="0 0 200 220" aria-hidden="true">
@@ -167,7 +167,7 @@ td.n { font-family: var(--display); font-weight: 700; font-size: 12pt; color: va
   <p class="eyebrow">1 · Summary</p>
   <h2>No new framework. A new layer.</h2>
   <div class="rule"></div>
-  <p class="lede">The effect fits the site's current stack. Vite, React 19 and Motion already handle scroll on the live hero; the missing piece is a 3D renderer for the table and die. After the first round of ten mockups, your feedback asked for something more realistic, more modern and glowier, with far less scrolling. Mockup 11 does that, and this plan builds toward it.</p>
+  <p class="lede">The effect fits the site's current stack. Vite, React 19 and Motion already handle scroll on the live hero; the missing piece is a 3D renderer for the table and die. After the first round of ten mockups, your feedback asked for something more realistic, more modern and glowier, with far less scrolling. Mockup 11 does that, mockup 12 is the same build ending in a cup, and this plan builds toward them.</p>
 
   <div class="answer">
     <div><b>Keep</b>Vite 8, React 19, TypeScript, react-router 7 and Motion 13. Motion detects the first scroll and runs the intro clock.</div>
@@ -199,16 +199,22 @@ td.n { font-family: var(--display); font-weight: 700; font-size: 12pt; color: va
 
 <!-- ======================= 2. CONCEPTS ======================= -->
 <section class="section" id="concepts">
-  <p class="eyebrow">2 · Eleven mockups</p>
-  <h2>Ten ways to throw it, then one more</h2>
+  <p class="eyebrow">2 · Twelve mockups</p>
+  <h2>Ten ways to throw it, then two more</h2>
   <div class="rule"></div>
-  <p class="lede">Each mockup is one self-contained page in <code>beer-die-redesign/mockups/</code>, also published as a private artifact. The first ten each test a different reveal and, where useful, a different technology. Number 11 is the revision after your feedback. The large frame is each concept's signature moment; all of them open on today's hero, except 10, which never leaves it.</p>
+  <p class="lede">Each mockup is one self-contained page in <code>beer-die-redesign/mockups/</code>, also published as a private artifact. The first ten each test a different reveal and, where useful, a different technology. Number 11 is the revision after your feedback, and 12 is 11 with the die going into a cup. The large frame is each concept's signature moment; all of them open on today's hero, except 10, which never leaves it.</p>
 
   <div class="concept concept--rev">
     <div class="concept__shots"><img src="screenshots/11-a.jpg" alt=""><img src="screenshots/11-b.jpg" alt=""><img src="screenshots/11-c.jpg" alt=""></div>
     <div><h3><span>11</span>Glow Toss <em class="rev">Revision · recommended</em></h3>
       <p>The direction after your feedback. It has physically based materials, neon gold inlays, glass cups, bloom, and a HUD that reads out the die's height and spin. One small scroll plays the whole toss in about 3.4 seconds with real ballistics, and "Toss again" throws it back the other way.</p>
       <p class="tech"><b>Built with</b> three.js 0.160, bloom post-processing and a custom studio environment map. Triggered by scroll but runs on its own clock; pinned for under one screen.</p></div>
+  </div>
+  <div class="concept concept--rev">
+    <div class="concept__shots"><img src="screenshots/12-a.jpg" alt=""><img src="screenshots/12-b.jpg" alt=""><img src="screenshots/12-c.jpg" alt=""></div>
+    <div><h3><span>12</span>Cup Sink <em class="rev">Variant of 11</em></h3>
+      <p>11 with a different ending. The die clears the rim on a gravity arc, drops in, rattles against the wall and settles crest-up, and the cup answers with a gold flash, a short column of light and sparks. "Toss again" alternates ends and works round all four cups.</p>
+      <p class="tech"><b>Built with</b> the same stack as 11. The cups are drawn 8 in across and the die a little smaller so it fits inside.</p></div>
   </div>
   <div class="concept">
     <div class="concept__shots"><img src="screenshots/01-a.jpg" alt=""><img src="screenshots/01-b.jpg" alt=""><img src="screenshots/01-c.jpg" alt=""></div>
@@ -273,7 +279,7 @@ td.n { font-family: var(--display); font-weight: 700; font-size: 12pt; color: va
 </section>
 
 <!-- ======================= 3. COMPARISON ======================= -->
-<section class="section">
+<section class="section flow">
   <p class="eyebrow">3 · Side by side</p>
   <h2>How the concepts compare</h2>
   <div class="rule"></div>
@@ -282,6 +288,7 @@ td.n { font-family: var(--display); font-weight: 700; font-size: 12pt; color: va
     <thead><tr><th style="width:4%">#</th><th style="width:17%">Concept</th><th style="width:15%">Fits the brief</th><th style="width:14%">Scroll</th><th style="width:19%">Production tech</th><th style="width:9%">Effort</th><th>Phone risk</th></tr></thead>
     <tbody>
       <tr style="background:#f7f2e4"><td class="n">11</td><td><strong>Glow Toss</strong></td><td><span class="tag tag--yes">Strong</span> and realistic</td><td><strong>One flick</strong>; pinned 0.75 screen</td><td>R3F + drei + bloom</td><td>Large</td><td>Medium (bloom, glass)</td></tr>
+      <tr style="background:#f7f2e4"><td class="n">12</td><td><strong>Cup Sink</strong></td><td><span class="tag tag--yes">Strong</span>, ending in a cup</td><td><strong>One flick</strong>; pinned 0.75 screen</td><td>R3F + drei + bloom</td><td>Large</td><td>Medium (bloom, glass)</td></tr>
       <tr><td class="n">01</td><td>Tilt Reveal</td><td><span class="tag tag--yes">Strong</span></td><td>3.6 screens</td><td>R3F, or CSS 3D</td><td>Medium</td><td>Low</td></tr>
       <tr><td class="n">02</td><td>Cross Fold</td><td><span class="tag tag--yes">Strong</span> and the most symbolic</td><td>4.2 screens</td><td>R3F hinged planes</td><td>Medium–large</td><td>Medium</td></tr>
       <tr><td class="n">03</td><td>Overhead Toss</td><td><span class="tag tag--maybe">Partial</span>: the toss reads as a zoom</td><td>3.4 screens</td><td>SVG + Motion</td><td>Small</td><td>Low</td></tr>
@@ -296,7 +303,7 @@ td.n { font-family: var(--display); font-weight: 700; font-size: 12pt; color: va
   </table>
 
   <div class="callout">
-    <p><strong>Recommendation: build 11.</strong> It's the brief, made the way you asked for in the second round: realistic, glowing, and started by one flick of the wheel instead of four screens of scrolling. Two first-round ideas are worth keeping in reserve. 02's cross fold is an alternative crest-to-die moment that ties the die to the White Cross. 10's nav die could carry the theme onto the other pages without a second 3D scene.</p>
+    <p><strong>Recommendation: build 11 or 12.</strong> They're one build with two endings: 11 lands crest-up on the table and 12 sinks the die in a cup. Picking one is a matter of taste, and the code could even ship both, with the ending chosen per toss. Either one is the brief made the way you asked for in the second round: realistic, glowing, and started by one flick of the wheel instead of four screens of scrolling. Two first-round ideas are worth keeping in reserve. 02's cross fold is an alternative crest-to-die moment that ties the die to the White Cross. 10's nav die could carry the theme onto the other pages without a second 3D scene.</p>
   </div>
 
   <h3>Why 11 plays on its own clock</h3>
@@ -417,7 +424,7 @@ npm i -D @types/three @playwright/test</pre>
     <div class="beat" style="left:94.7%;width:5.3%;top:112pt;background:#c9a227;color:#071931">Card</div>
     <span class="tick" style="left:0%">0 s</span><span class="tick" style="left:27.8%">1 s</span><span class="tick" style="left:55.6%">2 s</span><span class="tick" style="left:83.3%">3 s</span>
   </div>
-  <p class="small muted" style="margin-top:16pt">Bounce heights are 0.5 ft and 0.1 ft, so they last 2√(2h/g): 0.35 s and 0.16 s. The settle is a 0.45 s damped wobble onto a whole number of turns, which is what guarantees crest-up. Impacts fire a gold ring on the table and a tiny camera shake.</p>
+  <p class="small muted" style="margin-top:16pt">Bounce heights are 0.5 ft and 0.1 ft, so they last 2√(2h/g): 0.35 s and 0.16 s. The settle is a 0.45 s damped wobble onto a whole number of turns, which is what guarantees crest-up. Impacts fire a gold ring on the table and a tiny camera shake. Mockup 12 shares the intro; its flight (1.1 s) ends just over a cup's rim, followed by a 0.16 s drop inside, a small hop off the bottom and a 0.55 s rattle that settles crest-up.</p>
 
   <h3>The core of it in code</h3>
   <pre><span class="c">// useIntroClock.ts: one scroll plays it, the top of the page rewinds it</span>
@@ -556,7 +563,7 @@ die.position.y = (HALF - ROUND) * (Math.abs(e[1]) + Math.abs(e[5]) + Math.abs(e[
       <table>
         <thead><tr><th>Phase</th><th>Work</th><th>Effort</th></tr></thead>
         <tbody>
-          <tr><td class="n">1</td><td>Confirm 11 as the direction and the die finish; get theme sign-off.</td><td>You</td></tr>
+          <tr><td class="n">1</td><td>Confirm 11 or 12 as the direction and pick the ending; get theme sign-off.</td><td>You</td></tr>
           <tr><td class="n">2</td><td>Stage, intro clock, <code>introPose</code> and <code>tossPhysics</code> with tests, HTML layers, still, reduced-motion path.</td><td>1–2 days</td></tr>
           <tr><td class="n">3</td><td>R3F scene: table, strips, cups, die textures, environment, bloom, crest handoff, HUD.</td><td>3–5 days</td></tr>
           <tr><td class="n">4</td><td>Phone tuning and the performance step-down, Safari pass, Playwright baselines.</td><td>2 days</td></tr>
@@ -566,9 +573,9 @@ die.position.y = (HALF - ROUND) * (Math.abs(e[1]) + Math.abs(e[5]) + Math.abs(e[
       <p class="small muted">These are focused working days with Claude Code doing most of the typing; review and sign-off time is on top.</p>
       <h4>Questions for you</h4>
       <ol>
-        <li>Is 11 the direction, or should a first-round idea (02's cross fold, 06's pull back) be folded into it?</li>
+        <li>Is 11/12 the direction, or should a first-round idea (02's cross fold, 06's pull back) be folded into it?</li>
         <li>How much HUD: the full readout as mocked up, or just the reticle?</li>
-        <li>Should the toss end crest-up on the table, or in a cup?</li>
+        <li>Which ending: crest-up on the table (11) or in a cup (12)?</li>
         <li>Should the glow carry into the rest of the site (the dark glass sections in 11), or stop at the hero?</li>
         <li>Who signs off on the theme before it goes live?</li>
       </ol>
