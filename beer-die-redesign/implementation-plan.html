@@ -134,7 +134,7 @@ td.n { font-family: var(--display); font-weight: 700; font-size: 12pt; color: va
     <p class="eyebrow">Sigma Chi WashU · experiment/beer-die-redesign</p>
     <h1>Beer Die Home Page</h1>
     <div class="rule"></div>
-    <p>How the home page becomes a die table on scroll: what we would build, what we would build it with, and the thirteen mockups that explore it, including the revised Glow Toss, its cup-sink ending and a holographic thrower.</p>
+    <p>How the home page becomes a die table on scroll: what we would build, what we would build it with, and the fourteen mockups that explore it, including the revised Glow Toss, its cup-sink ending and two holographic throwers.</p>
   </div>
   <!-- An isometric die: crest on top, two and three on the sides (1, 2, 3 share a corner on a real die). -->
   <svg class="cover__die" viewBox="0 0 200 220" aria-hidden="true">
@@ -167,7 +167,7 @@ td.n { font-family: var(--display); font-weight: 700; font-size: 12pt; color: va
   <p class="eyebrow">1 · Summary</p>
   <h2>No new framework. A new layer.</h2>
   <div class="rule"></div>
-  <p class="lede">The effect fits the site's current stack. Vite, React 19 and Motion already handle scroll on the live hero; the missing piece is a 3D renderer for the table and die. After the first round of ten mockups, your feedback asked for something more realistic, more modern and glowier, with far less scrolling. Mockup 11 does that, mockup 12 is the same build ending in a cup, 13 adds a holographic player who throws it, and this plan builds toward them.</p>
+  <p class="lede">The effect fits the site's current stack. Vite, React 19 and Motion already handle scroll on the live hero; the missing piece is a 3D renderer for the table and die. After the first round of ten mockups, your feedback asked for something more realistic, more modern and glowier, with far less scrolling. Mockup 11 does that, mockup 12 is the same build ending in a cup, 13 and 14 add a holographic player who throws it (14 with a heavyweight build), and this plan builds toward them.</p>
 
   <div class="answer">
     <div><b>Keep</b>Vite 8, React 19, TypeScript, react-router 7 and Motion 13. Motion detects the first scroll and runs the intro clock.</div>
@@ -199,10 +199,10 @@ td.n { font-family: var(--display); font-weight: 700; font-size: 12pt; color: va
 
 <!-- ======================= 2. CONCEPTS ======================= -->
 <section class="section" id="concepts">
-  <p class="eyebrow">2 · Thirteen mockups</p>
-  <h2>Ten ways to throw it, then three more</h2>
+  <p class="eyebrow">2 · Fourteen mockups</p>
+  <h2>Ten ways to throw it, then four more</h2>
   <div class="rule"></div>
-  <p class="lede">Each mockup is one self-contained page in <code>beer-die-redesign/mockups/</code>, also published as a private artifact. The first ten each test a different reveal and, where useful, a different technology. Number 11 is the revision after your feedback, 12 is 11 with the die going into a cup, and 13 adds a holographic player who throws it. The large frame is each concept's signature moment; all of them open on today's hero, except 10, which never leaves it.</p>
+  <p class="lede">Each mockup is one self-contained page in <code>beer-die-redesign/mockups/</code>, also published as a private artifact. The first ten each test a different reveal and, where useful, a different technology. Number 11 is the revision after your feedback, 12 is 11 with the die going into a cup, 13 adds a holographic player who throws it, and 14 gives him a heavyweight build. The large frame is each concept's signature moment; all of them open on today's hero, except 10, which never leaves it.</p>
 
   <div class="concept concept--rev">
     <div class="concept__shots"><img src="screenshots/11-a.jpg" alt=""><img src="screenshots/11-b.jpg" alt=""><img src="screenshots/11-c.jpg" alt=""></div>
@@ -221,6 +221,12 @@ td.n { font-family: var(--display); font-weight: 700; font-size: 12pt; color: va
     <div><h3><span>13</span>Holo Thrower <em class="rev">12 with a player</em></h3>
       <p>A featureless figure drawn only in blue contour lines prints itself in from the floor at the near end, through falling blue code. It lobs the die underhand, watches it, and pumps a fist when it sinks. The camera ends side-on, so the swing reads in profile and the arc crosses the frame.</p>
       <p class="tech"><b>Built with</b> the same stack as 12. The figure is generated in code, with no model file: lofted rings, a joint hierarchy and leg IK.</p></div>
+  </div>
+  <div class="concept concept--rev">
+    <div class="concept__shots"><img src="screenshots/14-a.jpg" alt=""><img src="screenshots/14-b.jpg" alt=""><img src="screenshots/14-c.jpg" alt=""></div>
+    <div><h3><span>14</span>Jacked Thrower <em class="rev">13, heavyweight</em></h3>
+      <p>13 with a heavyweight build: broad shoulders and lats over a narrow waist, pecs, a six-pack, big delts and arms, quads and diamond calves. Brighter lines trace the muscle borders. The camera ends on a front three-quarter view so the build faces you, and the arc still crosses to the cups.</p>
+      <p class="tech"><b>Built with</b> the same code as 13. Each cross-section is an ellipse swollen by Gaussian muscles, and the proportions are a table of numbers.</p></div>
   </div>
   <div class="concept">
     <div class="concept__shots"><img src="screenshots/01-a.jpg" alt=""><img src="screenshots/01-b.jpg" alt=""><img src="screenshots/01-c.jpg" alt=""></div>
@@ -285,7 +291,7 @@ td.n { font-family: var(--display); font-weight: 700; font-size: 12pt; color: va
 </section>
 
 <!-- ======================= 3. COMPARISON ======================= -->
-<section class="section flow">
+<section class="section">
   <p class="eyebrow">3 · Side by side</p>
   <h2>How the concepts compare</h2>
   <div class="rule"></div>
@@ -296,6 +302,7 @@ td.n { font-family: var(--display); font-weight: 700; font-size: 12pt; color: va
       <tr style="background:#f7f2e4"><td class="n">11</td><td><strong>Glow Toss</strong></td><td><span class="tag tag--yes">Strong</span> and realistic</td><td><strong>One flick</strong>; pinned 0.75 screen</td><td>R3F + drei + bloom</td><td>Large</td><td>Medium (bloom, glass)</td></tr>
       <tr style="background:#f7f2e4"><td class="n">12</td><td><strong>Cup Sink</strong></td><td><span class="tag tag--yes">Strong</span>, ending in a cup</td><td><strong>One flick</strong>; pinned 0.75 screen</td><td>R3F + drei + bloom</td><td>Large</td><td>Medium (bloom, glass)</td></tr>
       <tr style="background:#f7f2e4"><td class="n">13</td><td><strong>Holo Thrower</strong></td><td><span class="tag tag--yes">Strong</span>, with a player</td><td><strong>One flick</strong>; pinned 0.75 screen</td><td>R3F + drei + bloom, plus a rig</td><td>Large+</td><td>Medium (more draw calls)</td></tr>
+      <tr style="background:#f7f2e4"><td class="n">14</td><td><strong>Jacked Thrower</strong></td><td><span class="tag tag--yes">Strong</span>, with a heavyweight player</td><td><strong>One flick</strong>; pinned 0.75 screen</td><td>R3F + drei + bloom, plus a rig</td><td>Large+</td><td>Medium (39 draw calls for the figure)</td></tr>
       <tr><td class="n">01</td><td>Tilt Reveal</td><td><span class="tag tag--yes">Strong</span></td><td>3.6 screens</td><td>R3F, or CSS 3D</td><td>Medium</td><td>Low</td></tr>
       <tr><td class="n">02</td><td>Cross Fold</td><td><span class="tag tag--yes">Strong</span> and the most symbolic</td><td>4.2 screens</td><td>R3F hinged planes</td><td>Medium–large</td><td>Medium</td></tr>
       <tr><td class="n">03</td><td>Overhead Toss</td><td><span class="tag tag--maybe">Partial</span>: the toss reads as a zoom</td><td>3.4 screens</td><td>SVG + Motion</td><td>Small</td><td>Low</td></tr>
@@ -310,7 +317,7 @@ td.n { font-family: var(--display); font-weight: 700; font-size: 12pt; color: va
   </table>
 
   <div class="callout">
-    <p><strong>Recommendation: build 11 or 12.</strong> They're one build with two endings: 11 lands crest-up on the table and 12 sinks the die in a cup. Picking one is a matter of taste, and the code could even ship both, with the ending chosen per toss. Either one is the brief made the way you asked for in the second round: realistic, glowing, and started by one flick of the wheel instead of four screens of scrolling. 13 shows that a thrower can be layered onto either ending with no change to the stack, at the cost of a few more days for the figure. Two first-round ideas are worth keeping in reserve. 02's cross fold is an alternative crest-to-die moment that ties the die to the White Cross. 10's nav die could carry the theme onto the other pages without a second 3D scene.</p>
+    <p><strong>Recommendation: build 11 or 12.</strong> They're one build with two endings: 11 lands crest-up on the table and 12 sinks the die in a cup. Picking one is a matter of taste, and the code could even ship both, with the ending chosen per toss. Either one is the brief made the way you asked for in the second round: realistic, glowing, and started by one flick of the wheel instead of four screens of scrolling. 13 and 14 show that a thrower can be layered onto either ending with no change to the stack; 14's build is the same code with different numbers. Section 8 lists what every effect needs. Two first-round ideas are worth keeping in reserve. 02's cross fold is an alternative crest-to-die moment that ties the die to the White Cross. 10's nav die could carry the theme onto the other pages without a second 3D scene.</p>
   </div>
 
   <h3>Why 11 plays on its own clock</h3>
@@ -494,12 +501,12 @@ die.position.y = (HALF - ROUND) * (Math.abs(e[1]) + Math.abs(e[5]) + Math.abs(e[
         <li>One neutral, slightly cool key spot, placed off-axis, with soft shadows. The warmth comes only from the gold.</li>
         <li>Bloom threshold 0.9, so only the gold glows. Its strength ramps from 0.25 at the hero to 0.75 once the table is revealed.</li>
       </ul>
-      <h4>The thrower (mockup 13)</h4>
+      <h4>The thrower (mockups 13 and 14)</h4>
       <ul>
-        <li>Built in code: each body part is a loft of elliptical rings (the blue contour lines) over a faint rim-lit shell. There's no model file, so the CSP stays as it is.</li>
+        <li>Built in code: each body part is a loft of rings (the blue contour lines) over a faint rim-lit shell. In 14, the rings swell into muscles. There's no model file, so the CSP stays as it is.</li>
         <li>A plain joint hierarchy is posed from keyframes (idle, wind-up, release, follow-through, fist pump). Two-bone IK keeps the feet planted as the hips drop and rise.</li>
         <li>The die rides in the hand until release. The launch velocity is then solved from the release point, so gravity carries it exactly into the cup.</li>
-        <li>For production, the same approach drops into R3F as a component. A rigged model from an artist would also work, but an untextured one keeps the CSP unchanged.</li>
+        <li>Section 8 breaks down every effect, including two ways to build the figure for production.</li>
       </ul>
       <h4>Motion details</h4>
       <ul>
@@ -510,9 +517,79 @@ die.position.y = (HALF - ROUND) * (Math.abs(e[1]) + Math.abs(e[5]) + Math.abs(e[
   </div>
 </section>
 
-<!-- ======================= 8. QUALITY BARS ======================= -->
+<!-- ======================= 8. EFFECTS INVENTORY ======================= -->
+<section class="section">
+  <p class="eyebrow">8 · Effects inventory</p>
+  <h2>What each effect needs</h2>
+  <div class="rule"></div>
+  <p class="lede">Every visual effect in mockups 11 to 14: how it's made, and what it takes to build for production. None of them needs a library beyond those in section 4. Each one is a custom shader, some generated geometry, or a few dozen lines of math.</p>
+
+  <h3>The table, the die and the toss (11–14)</h3>
+  <table>
+    <thead><tr><th style="width:16%">Effect</th><th style="width:40%">How it's made</th><th style="width:26%">What it needs</th><th>Cost</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Glow</strong></td><td>Gold and blue parts render brighter than white, and a bloom pass blurs only what's above a 0.9 threshold. Tone mapping runs last.</td><td><code>Bloom</code> from <code>@react-three/postprocessing</code> with <code>mipmapBlur</code>; a half-float render target</td><td>The biggest GPU cost. Run it at half resolution on phones.</td></tr>
+      <tr><td><strong>Lacquered table</strong></td><td>A canvas-painted navy top with grain and the hero's pinstripes, under a clear-coated physical material. Gloss rises with the camera crane, so the hero view stays matte.</td><td><code>MeshPhysicalMaterial</code>; one 2048 × 1024 canvas</td><td>Low</td></tr>
+      <tr><td><strong>Light-strip inlay</strong></td><td>Thin boxes in HDR gold, scaled along their length on the intro clock so the border and center line trace themselves on.</td><td>10 small meshes (can be merged)</td><td>Low</td></tr>
+      <tr><td><strong>Reflections</strong></td><td>A studio environment built in code: navy void, one softbox, a cool side panel, a gold strip. No HDR download.</td><td>drei <code>Environment</code> with <code>Lightformer</code>s</td><td>One-off at load</td></tr>
+      <tr><td><strong>Engraved, glowing pips</strong></td><td>Three canvases per face: colour, glow (so the pips bloom) and bump (so they read as engraved). The crest is drawn from the <code>ShieldCrest</code> paths.</td><td>drei <code>RoundedBox</code>; 18 small canvases</td><td>Low</td></tr>
+      <tr><td><strong>Glass cups</strong></td><td>Lathe-turned cups in frosted glass, with an HDR gold rim that flashes on a sink and stays lit while the die is inside.</td><td><code>MeshPhysicalMaterial</code> with <code>transmission</code></td><td>Medium: transmission adds a render pass. Use opaque cream on weak devices.</td></tr>
+      <tr><td><strong>Toss physics</strong></td><td>Closed-form: a gravity parabola, energy-losing bounces or a cup drop, then a damped settle onto whole turns, so it always lands crest-up. When the figure throws (13–14), the launch is solved from the release point: v₀ = (P₁ − P₀)/T + ½gT, straight up.</td><td>A pure TypeScript module, unit-tested</td><td>None at runtime</td></tr>
+      <tr><td><strong>Flight trail</strong></td><td>The same path sampled a little in the past, drawn as additive glow points that fade with speed.</td><td><code>Points</code>; one sprite</td><td>Low</td></tr>
+      <tr><td><strong>Impact and sink</strong></td><td>An expanding gold ring on the table and a short camera shake. In a cup: a column of light, gold sparks and a cup wobble.</td><td>A ring, an open cylinder, a 36-point burst</td><td>Low</td></tr>
+      <tr><td><strong>HUD</strong></td><td>HTML over the canvas. The die's eight corners are projected to the screen each frame for the reticle; the readouts come from the physics module.</td><td>React and CSS; <code>Vector3.project</code></td><td>Low</td></tr>
+      <tr><td><strong>Crest hand-off</strong></td><td>The HTML crest moves onto the projected rectangle of the die's top face, then the 3D die takes over in the same spot.</td><td>Motion values and projection</td><td>Low</td></tr>
+      <tr><td><strong>Atmosphere</strong></td><td>Drifting dust, a gold floor grid that fades out, film grain and a vignette.</td><td><code>Points</code>; a canvas; CSS overlays</td><td>Low. Dust is the only thing that moves at rest.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>The holographic thrower (13–14)</h3>
+  <table>
+    <thead><tr><th style="width:16%">Effect</th><th style="width:40%">How it's made</th><th style="width:26%">What it needs</th><th>Cost</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Contour-line body</strong></td><td>Each body part is a loft: rings of a changing cross-section along the part, plus a few long seams, drawn as 1-pixel lines in an additive shader.</td><td>Generated <code>BufferGeometry</code> and <code>LineSegments</code>; a short GLSL shader</td><td>About 5,900 line segments in 14</td></tr>
+      <tr><td><strong>The jacked build (14)</strong></td><td>Each cross-section is an ellipse swollen by smooth Gaussian bulges placed by angle and height: pecs, a six-pack, lats, traps, delts, biceps, triceps, quads and calves. Brighter lines trace the muscle borders (ab grid, pec line, delt V, calf split) so the build reads from the front.</td><td>A table of numbers per body part; no assets</td><td>Tuning time, not runtime</td></tr>
+      <tr><td><strong>Rim-lit volume</strong></td><td>A matching closed surface with a fresnel shader. It glows only at its silhouette, so the lines read as a solid body.</td><td>The same generator; a 10-line shader</td><td>About 8,400 triangles of additive overdraw</td></tr>
+      <tr><td><strong>Print-in and scan</strong></td><td>The shader hides everything above a rising height and brightens the print edge. A soft band travels up the body, with a faint flicker.</td><td>Three uniforms driven by the intro clock</td><td>Negligible</td></tr>
+      <tr><td><strong>The throw</strong></td><td>A joint hierarchy posed from keyframes (idle, wind-up, release, follow-through, fist pump) with eased transitions. Two-bone IK keeps the feet planted as the hips drop and rise, and the head tracks the die.</td><td>About 120 lines of TypeScript</td><td>Negligible at runtime; 1–2 days to feel right</td></tr>
+      <tr><td><strong>Code rain</strong></td><td>About 110 short falling streaks around the thrower, brightest at the leading end, surging while he prints in.</td><td><code>LineSegments</code>; move the fall into a vertex shader for production</td><td>Negligible</td></tr>
+      <tr><td><strong>Pad and blue spill</strong></td><td>A canvas-drawn projector pad under his feet, and a blue point light at his chest so he lights the table.</td><td>One plane; one extra light</td><td>Low, but the light adds work to every lit material</td></tr>
+      <tr><td><strong>Reload</strong></td><td>On "Toss again", the die shrinks out of the cup in blue sparks and grows back in his hand.</td><td>Reuses the spark burst</td><td>Negligible</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Two ways to build the thrower</h3>
+  <div class="cols">
+    <div>
+      <h4>A · Generated in code (what 13 and 14 do)</h4>
+      <ul>
+        <li>No assets, no licences, no 3D software. Every proportion is a number, which is how 14 got jacked: same code, different table.</li>
+        <li>The CSP stays exactly as it is.</li>
+        <li>About 39 draw calls for the figure (lines, borders and shell for each part), because each part moves on its own. That's fine on a laptop. On phones, drop the shell first.</li>
+        <li>The motion is hand-keyed, so it looks stylised rather than motion-captured.</li>
+      </ul>
+    </div>
+    <div>
+      <h4>B · A rigged body with a contour shader</h4>
+      <ul>
+        <li>A muscular base mesh, sculpted or from a CC0 or licensed library, rigged to a standard skeleton. Throw and celebration clips come from motion capture (Mixamo has several; confirm its licence for a public site).</li>
+        <li>No line geometry: a shader draws the contours from world height (<code>fract(y × density)</code>) plus the fresnel rim, so any mesh gets the same look in two draw calls.</li>
+        <li>Load it with drei's <code>useGLTF</code> and <code>useAnimations</code>. An untextured GLB served from the site keeps the CSP unchanged; embedded textures would need <code>blob:</code> in <code>img-src</code>.</li>
+        <li>It needs Blender for retargeting and clean-up: 2–4 extra days, and someone comfortable in it.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout">
+    <p><strong>Recommendation: ship A first.</strong> It already exists, it's easy to tune, and it carries no asset or licence risk. Move to B only if you want lifelike motion or a library of animations, such as different celebrations or idle loops.</p>
+  </div>
+
+  <h3>Line weight</h3>
+  <p>WebGL draws lines 1 device pixel wide everywhere, so on a 3× phone screen the contours are hairlines. That suits a hologram. For bolder lines, three's <code>LineSegments2</code> and <code>LineMaterial</code> draw true screen-space widths at roughly three times the vertex cost; route B's shader controls the width directly.</p>
+</section>
+
+<!-- ======================= 9. QUALITY BARS ======================= -->
 <section class="section flow">
-  <p class="eyebrow">8 · Accessibility, performance, security</p>
+  <p class="eyebrow">9 · Accessibility, performance, security</p>
   <h2>What it has to get right</h2>
   <div class="rule"></div>
   <div class="cols">
@@ -523,6 +600,7 @@ die.position.y = (HALF - ROUND) * (Math.abs(e[1]) + Math.abs(e[5]) + Math.abs(e[
         <li>The sequence runs about 3.4 seconds, under WCAG 2.2.2's five-second limit for moving content. It's skippable ("Skip past the toss"), and the cue is a real button for keyboard users.</li>
         <li><strong>Reduced motion jumps straight to the landed frame.</strong> No crane, no trail, no shake, no drifting dust. The app's <code>MotionConfig reducedMotion="user"</code> doesn't cover a WebGL scene, so <code>DieTableHero</code> checks <code>useReducedMotion()</code> itself.</li>
         <li>The page never locks or hijacks the scrollbar.</li>
+        <li>The thrower follows reduced motion too: he appears fully printed, with no flicker, scan band or code rain, and the page shows the landed state instead of the throw.</li>
       </ul>
       <h4>Security (the site's CSP)</h4>
       <ul>
@@ -540,6 +618,7 @@ die.position.y = (HALF - ROUND) * (Math.abs(e[1]) + Math.abs(e[5]) + Math.abs(e[
           <tr><td>Frame rate</td><td>60 fps on an iPhone 12-class phone; check with Chrome's 4× CPU throttle.</td></tr>
           <tr><td>Rendering</td><td>Only while the stage is on screen. Full rate while the intro or a toss runs; dust motes are the only idle motion, and they stop on low-power devices.</td></tr>
           <tr><td>Scaling down</td><td>drei <code>PerformanceMonitor</code> steps down: device pixel ratio 1.75 → 1.25, then glass cups → opaque, then bloom at half resolution, then shadows off.</td></tr>
+          <tr><td>Thrower (13–14)</td><td>At most 6,000 line segments, 10,000 shell triangles and 40 draw calls. On the weakest phones, drop the shell and the code rain first.</td></tr>
         </tbody>
       </table>
       <h4>Fallbacks</h4>
@@ -555,9 +634,9 @@ die.position.y = (HALF - ROUND) * (Math.abs(e[1]) + Math.abs(e[5]) + Math.abs(e[
   </div>
 </section>
 
-<!-- ======================= 9. PLAN ======================= -->
+<!-- ======================= 10. PLAN ======================= -->
 <section class="section flow">
-  <p class="eyebrow">9 · Delivery</p>
+  <p class="eyebrow">10 · Delivery</p>
   <h2>Testing, rollout and open questions</h2>
   <div class="rule"></div>
   <div class="cols">
@@ -580,6 +659,7 @@ die.position.y = (HALF - ROUND) * (Math.abs(e[1]) + Math.abs(e[5]) + Math.abs(e[
           <tr><td class="n">1</td><td>Confirm 11 or 12 as the direction and pick the ending; get theme sign-off.</td><td>You</td></tr>
           <tr><td class="n">2</td><td>Stage, intro clock, <code>introPose</code> and <code>tossPhysics</code> with tests, HTML layers, still, reduced-motion path.</td><td>1–2 days</td></tr>
           <tr><td class="n">3</td><td>R3F scene: table, strips, cups, die textures, environment, bloom, crest handoff, HUD.</td><td>3–5 days</td></tr>
+          <tr><td class="n">3b</td><td>If you want the thrower: figure generator and muscle table, pose keys and leg IK, contour and rim shaders, print-in, code rain, pad.</td><td>3–5 days</td></tr>
           <tr><td class="n">4</td><td>Phone tuning and the performance step-down, Safari pass, Playwright baselines.</td><td>2 days</td></tr>
           <tr><td class="n">5</td><td>Preview deploy, review, merge to <code>main</code>.</td><td>½ day</td></tr>
         </tbody>
@@ -587,7 +667,7 @@ die.position.y = (HALF - ROUND) * (Math.abs(e[1]) + Math.abs(e[5]) + Math.abs(e[
       <p class="small muted">These are focused working days with Claude Code doing most of the typing; review and sign-off time is on top.</p>
       <h4>Questions for you</h4>
       <ol>
-        <li>Is 11/12 the direction, and do you want 13's thrower in it? Or should a first-round idea (02's cross fold, 06's pull back) be folded in?</li>
+        <li>Is 11/12 the direction, and do you want the thrower in it, slim (13) or jacked (14)? Or should a first-round idea (02's cross fold, 06's pull back) be folded in?</li>
         <li>How much HUD: the full readout as mocked up, or just the reticle?</li>
         <li>Which ending: crest-up on the table (11) or in a cup (12)?</li>
         <li>Should the glow carry into the rest of the site (the dark glass sections in 11), or stop at the hero?</li>
