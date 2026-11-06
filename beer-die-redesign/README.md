@@ -12,6 +12,7 @@ Each mockup is one self-contained HTML file in [`mockups/`](mockups). Open it in
 |---|---------|----------------|----------|
 | **11** | **Glow Toss**: the revision after feedback, and the recommended direction (with 12). One small scroll plays the whole toss (realistic physics, bloom, glass cups, HUD); scrolling back to the top rewinds it. | three.js, bloom, time-based | [open](https://claude.ai/artifact/XMggoyrBKAkVnM4NkTXJo4) |
 | **12** | **Cup Sink**: 11 with a different ending. The die drops into a cup, rattles and settles crest-up while the cup lights up; "Toss again" works round all four cups. | same as 11 | [open](https://claude.ai/artifact/FSWE8HZ4676EeAuU5umyY4) |
+| **13** | **Holo Thrower**: 12 with a player. A featureless figure made of glowing blue contour lines prints itself in at the near end, lobs the die underhand into the cup and pumps a fist. | same as 11, plus a code-built figure | [open](https://claude.ai/artifact/RCcuoT3YJX1CPKiwUWz9iE) |
 | 01 | Tilt Reveal: the hero's navy field tilts back into the table. | CSS 3D | [open](https://claude.ai/artifact/U5kAqHLp7zKvXFXJ4UGfHS) |
 | 02 | Cross Fold: the White Cross lands as the unfolded die and folds up into it. | CSS 3D hinges | [open](https://claude.ai/artifact/TMHkhwYiVWxhn27RV6VaMw) |
 | 03 | Overhead Toss: a top-down table where height reads through scale and shadow. | SVG, 2D transforms | [open](https://claude.ai/artifact/TamcHjkfkrUfpnfmQp8iov) |
@@ -27,7 +28,7 @@ Each mockup is one self-contained HTML file in [`mockups/`](mockups). Open it in
 
 - `implementation-plan.html` is the source of the PDF. After editing it, run `python beer-die-redesign/render-plan.py` (needs Python Playwright and Google Chrome).
 - `plan-assets/` holds the PDF cover background, and `screenshots/` the mockup frames used in the PDF.
-- Mockups 11 and 12 expose `window.__seek(seconds)`, which freezes its clock at a given moment. That's how their frames were captured, and the production build's Playwright checks would use the same idea.
+- Mockups 11, 12 and 13 expose `window.__seek(seconds)`, which freezes the page's clock at a given moment. That's how their frames were captured, and the production build's Playwright checks would use the same idea.
 
 ## Notes
 
