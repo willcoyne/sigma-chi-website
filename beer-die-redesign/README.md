@@ -36,3 +36,4 @@ Each mockup is one self-contained HTML file in [`mockups/`](mockups). Open it in
 - Nothing here is part of the site build. Vite bundles only `index.html` and `src/`.
 - The imagery is deliberately dry: empty cups, no beer or cans, and no on-page copy that says "beer". Get sign-off from the colony's risk manager or expansion coordinator before any of this reaches `main`.
 - The die uses the colony's own shield mark, not the official Sigma Chi coat of arms, matching the site footer's trademark note.
+- Charter status: once it is rechartered, the colony becomes the Tau Tau chapter again. Every mockup says so, and no copy should describe the colony as unconnected to Tau Tau. The same fix to the site's own copy (home page, colony note, History callout, 2026 timeline entry) is commit `7324487` on this branch, which can be cherry-picked to `main` on its own.
