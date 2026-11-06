@@ -97,7 +97,7 @@ export default function History() {
 
       <ScrollWordReveal
         kicker="A New Colony"
-        statement="This is not a revival. No borrowed history, no inherited roster — a founding class starting Sigma Chi at WashU for the first time."
+        statement="A new founding class is building the colony. Once it is rechartered, it will become the Tau Tau chapter again."
         footnote={colony.note}
         tone="cream"
       />

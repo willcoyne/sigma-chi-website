@@ -75,10 +75,10 @@ export default function Home() {
             <MaskedText text="We're Building Something New" />
             <p className="lede">
               In spring 2026, a new class of founding fathers began forming Sigma Chi's colony at
-              WashU — with no connection to the fraternity's former Tau Tau chapter.
+              WashU. Once it is rechartered, the colony will become the Tau Tau chapter again.
             </p>
             <p className="colony-banner__body">
-              This is a clean start, focused, in the words of our expansion coordinator, on
+              The founding class is focused, in the words of our expansion coordinator, on
               &ldquo;community service, more academics, and more philanthropy.&rdquo;
             </p>
             <Magnetic>

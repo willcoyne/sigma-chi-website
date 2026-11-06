@@ -14,7 +14,7 @@ Work was split across specialized agents, matching the requested research → de
 ## What's on the site
 
 - **Home** — hero, Three Great Aims teaser, stat strip, colony status banner, philanthropy teaser.
-- **Our History** — national founding (1855), the seven founders, a full timeline from 1855 through the 1903 Tau Tau charter, its 2022 surrender, and the 2023–2026 return, plus an explicit "new colony, not a revival" callout.
+- **Our History** — national founding (1855), the seven founders, a full timeline from 1855 through the 1903 Tau Tau charter, its 2022 surrender, and the 2023–2026 return, plus a callout that the new colony will become the Tau Tau chapter again once it is rechartered.
 - **Values & Creed** — the Three Great Aims (Friendship, Justice, Learning), the "In Hoc Signo Vinces" motto explained, and the Norman Shield / White Cross / Sweetheart of Sigma Chi symbols.
 - **The Colony Today** — colony-vs-chartered-chapter explainer, IFC good-standing status, a quote from the real expansion coordinator, and the one confirmed founding father named in public reporting.
 - **Philanthropy** — Sigma Chi's national partnership with the Huntsman Cancer Foundation.

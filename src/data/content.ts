@@ -130,8 +130,10 @@ export const colony = {
     "Community service, focus more on academics, and more on philanthropy — the entire goal is to make it better.",
   instagram: "@sigmachiwashu",
   instagramBio: "Men join fraternities, leaders of men join Sigma Chi. Est. 1855.",
+  // Recharter status supplied by the colony: once rechartered, it becomes the
+  // Tau Tau chapter again. Don't describe the colony as unconnected to Tau Tau.
   note:
-    "This is a newly forming colony, not a revival of the former Tau Tau chapter. No previous Tau Tau alumni are part of this founding class, and no chapter size or event calendar is public yet — the colony is still being built.",
+    "This is a newly forming colony. Once it is rechartered, it will become the Tau Tau chapter again. No chapter size or event calendar is public yet — the colony is still being built.",
 };
 
 // Colony officers, supplied directly by the colony (not from public sources).
