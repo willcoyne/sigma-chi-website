@@ -1,0 +1,4 @@
+[d requestfailed] https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Cormorant+SC:wght@600&family=JetBrains+Mono:wght@400;600&family=Source+Sans+3:wght@400;600;700&display=swap
+[d console.error] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT
+sheet: C:\Users\wccoy\AppData\Local\Temp\claude\C--Projects-sigma-chi-website\6bf3cb6c-9ead-4650-a69f-a89411f0a84f\scratchpad\shots\wf15\behavior\base-sheet.png
+exit 0

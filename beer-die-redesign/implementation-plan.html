@@ -134,7 +134,7 @@ td.n { font-family: var(--display); font-weight: 700; font-size: 12pt; color: va
     <p class="eyebrow">Sigma Chi WashU · experiment/beer-die-redesign</p>
     <h1>Beer Die Home Page</h1>
     <div class="rule"></div>
-    <p>How the home page becomes a die table on scroll: what we would build, what we would build it with, and the fourteen mockups that explore it, including the revised Glow Toss, its cup-sink ending and two holographic throwers.</p>
+    <p>How the home page becomes a die table on scroll: what we would build, what we would build it with, and the fifteen mockups that explore it, ending with a sharp, realistic studio version.</p>
   </div>
   <!-- An isometric die: crest on top, two and three on the sides (1, 2, 3 share a corner on a real die). -->
   <svg class="cover__die" viewBox="0 0 200 220" aria-hidden="true">
@@ -167,11 +167,11 @@ td.n { font-family: var(--display); font-weight: 700; font-size: 12pt; color: va
   <p class="eyebrow">1 · Summary</p>
   <h2>No new framework. A new layer.</h2>
   <div class="rule"></div>
-  <p class="lede">The effect fits the site's current stack. Vite, React 19 and Motion already handle scroll on the live hero; the missing piece is a 3D renderer for the table and die. After the first round of ten mockups, your feedback asked for something more realistic, more modern and glowier, with far less scrolling. Mockup 11 does that, mockup 12 is the same build ending in a cup, 13 and 14 add a holographic player who throws it (14 with a heavyweight build), and this plan builds toward them.</p>
+  <p class="lede">The effect fits the site's current stack. Vite, React 19 and Motion already handle scroll on the live hero; the missing piece is a 3D renderer for the table and die. After the first round of ten mockups, your feedback asked for something more realistic, more modern and glowier, with far less scrolling. Mockup 11 does that, 12 is the same build ending in a cup, and 13 and 14 add a holographic player who throws it. 15, the latest, renders the whole scene as a crisp, realistic studio shot without the glow. This plan builds toward 15.</p>
 
   <div class="answer">
     <div><b>Keep</b>Vite 8, React 19, TypeScript, react-router 7 and Motion 13. Motion detects the first scroll and runs the intro clock.</div>
-    <div><b>Add</b><code>three</code> through React Three Fiber 9, drei 10 and <code>@react-three/postprocessing</code> for bloom, lazy-loaded as one chunk on the home page only.</div>
+    <div><b>Add</b><code>three</code> through React Three Fiber 9 and drei 10, lazy-loaded as one chunk on the home page only. <code>@react-three/postprocessing</code> only if you keep the glow of 11–14; 15 needs none.</div>
     <div><b>Skip</b>GSAP, runtime physics engines, Spline and a framework migration. Each one duplicates Motion, needs a CSP change, or adds weight without changing the result.</div>
   </div>
 
@@ -202,14 +202,14 @@ td.n { font-family: var(--display); font-weight: 700; font-size: 12pt; color: va
 
 <!-- ======================= 2. CONCEPTS ======================= -->
 <section class="section flow" id="concepts">
-  <p class="eyebrow">2 · Fourteen mockups</p>
-  <h2>Ten ways to throw it, then four more</h2>
+  <p class="eyebrow">2 · Fifteen mockups</p>
+  <h2>Ten ways to throw it, then five more</h2>
   <div class="rule"></div>
-  <p class="lede">Each mockup is one self-contained page in <code>beer-die-redesign/mockups/</code>, also published as a private artifact. The first ten each test a different reveal and, where useful, a different technology. Number 11 is the revision after your feedback, 12 is 11 with the die going into a cup, 13 adds a holographic player who throws it, and 14 gives him a heavyweight build. The large frame is each concept's signature moment; all of them open on today's hero, except 10, which never leaves it.</p>
+  <p class="lede">Each mockup is one self-contained page in <code>beer-die-redesign/mockups/</code>, also published as a private artifact. The first ten each test a different reveal and, where useful, a different technology. Number 11 is the revision after your feedback, 12 is 11 with the die going into a cup, 13 adds a holographic player who throws it, 14 gives him a heavyweight build, and 15 takes the glow out for a sharp, realistic studio render. The large frame is each concept's signature moment; all of them open on today's hero, except 10, which never leaves it.</p>
 
   <div class="concept concept--rev">
     <div class="concept__shots"><img src="screenshots/11-a.jpg" alt=""><img src="screenshots/11-b.jpg" alt=""><img src="screenshots/11-c.jpg" alt=""></div>
-    <div><h3><span>11</span>Glow Toss <em class="rev">Revision · recommended</em></h3>
+    <div><h3><span>11</span>Glow Toss <em class="rev">First revision</em></h3>
       <p>The direction after your feedback. It has physically based materials, neon gold inlays, glass cups, bloom, and a HUD that reads out the die's height and spin. One small scroll plays the whole toss in about 3.4 seconds with real ballistics, and "Toss again" throws it back the other way.</p>
       <p class="tech"><b>Built with</b> three.js 0.160, bloom post-processing and a custom studio environment map. Triggered by scroll but runs on its own clock; pinned for under one screen.</p></div>
   </div>
@@ -230,6 +230,12 @@ td.n { font-family: var(--display); font-weight: 700; font-size: 12pt; color: va
     <div><h3><span>14</span>Jacked Thrower <em class="rev">13, heavyweight</em></h3>
       <p>13 with a heavyweight build: broad shoulders and lats over a narrow waist, pecs, a six-pack, big delts and arms, quads and diamond calves. Brighter lines trace the muscle borders. The camera ends on a front three-quarter view so the build faces you, and the arc still crosses to the cups.</p>
       <p class="tech"><b>Built with</b> the same code as 13. Each cross-section is an ellipse swollen by Gaussian muscles, and the proportions are a table of numbers.</p></div>
+  </div>
+  <div class="concept concept--rev">
+    <div class="concept__shots"><img src="screenshots/15-a.jpg" alt=""><img src="screenshots/15-b.jpg" alt=""><img src="screenshots/15-c.jpg" alt=""></div>
+    <div><h3><span>15</span>Studio <em class="rev">Latest · recommended</em></h3>
+      <p>The same throw as 14, shot like a product photograph instead of a light show. Every edge is sharp, a softbox studio provides soft shadows, and the materials are physical: lacquered navy, brushed brass, clear glass with gilt rims, and a die with gilded, engraved pips. The thrower is a featureless athlete in polished marble, like a classical statue mid-throw. The page after the scene returns to the live site's clean editorial style.</p>
+      <p class="tech"><b>Built with</b> the same stack as 14, minus the bloom: physical materials, a generated studio environment, an area light and soft shadows. It renders only while something moves and lowers its resolution once if frames run slow.</p></div>
   </div>
   <div class="concept">
     <div class="concept__shots"><img src="screenshots/01-a.jpg" alt=""><img src="screenshots/01-b.jpg" alt=""><img src="screenshots/01-c.jpg" alt=""></div>
@@ -306,6 +312,7 @@ td.n { font-family: var(--display); font-weight: 700; font-size: 12pt; color: va
       <tr style="background:#f7f2e4"><td class="n">12</td><td><strong>Cup Sink</strong></td><td><span class="tag tag--yes">Strong</span>, ending in a cup</td><td><strong>One flick</strong>; pinned 0.75 screen</td><td>R3F + drei + bloom</td><td>Large</td><td>Medium (bloom, glass)</td></tr>
       <tr style="background:#f7f2e4"><td class="n">13</td><td><strong>Holo Thrower</strong></td><td><span class="tag tag--yes">Strong</span>, with a player</td><td><strong>One flick</strong>; pinned 0.75 screen</td><td>R3F + drei + bloom, plus a rig</td><td>Large+</td><td>Medium (more draw calls)</td></tr>
       <tr style="background:#f7f2e4"><td class="n">14</td><td><strong>Jacked Thrower</strong></td><td><span class="tag tag--yes">Strong</span>, with a heavyweight player</td><td><strong>One flick</strong>; pinned 0.75 screen</td><td>R3F + drei + bloom, plus a rig</td><td>Large+</td><td>Medium (39 draw calls for the figure)</td></tr>
+      <tr style="background:#f7f2e4"><td class="n">15</td><td><strong>Studio</strong></td><td><span class="tag tag--yes">Strong</span>, and the most professional</td><td><strong>One flick</strong>; pinned 0.75 screen</td><td>R3F + drei, no post-processing</td><td>Large+</td><td>Medium (glass, soft shadows)</td></tr>
       <tr><td class="n">01</td><td>Tilt Reveal</td><td><span class="tag tag--yes">Strong</span></td><td>3.6 screens</td><td>R3F, or CSS 3D</td><td>Medium</td><td>Low</td></tr>
       <tr><td class="n">02</td><td>Cross Fold</td><td><span class="tag tag--yes">Strong</span> and the most symbolic</td><td>4.2 screens</td><td>R3F hinged planes</td><td>Medium–large</td><td>Medium</td></tr>
       <tr><td class="n">03</td><td>Overhead Toss</td><td><span class="tag tag--maybe">Partial</span>: the toss reads as a zoom</td><td>3.4 screens</td><td>SVG + Motion</td><td>Small</td><td>Low</td></tr>
@@ -320,11 +327,11 @@ td.n { font-family: var(--display); font-weight: 700; font-size: 12pt; color: va
   </table>
 
   <div class="callout">
-    <p><strong>Recommendation: build 11 or 12.</strong> They're one build with two endings: 11 lands crest-up on the table and 12 sinks the die in a cup. Picking one is a matter of taste, and the code could even ship both, with the ending chosen per toss. Either one is the brief made the way you asked for in the second round: realistic, glowing, and started by one flick of the wheel instead of four screens of scrolling. 13 and 14 show that a thrower can be layered onto either ending with no change to the stack; 14's build is the same code with different numbers. Section 8 lists what every effect needs. Two first-round ideas are worth keeping in reserve. 02's cross fold is an alternative crest-to-die moment that ties the die to the White Cross. 10's nav die could carry the theme onto the other pages without a second 3D scene.</p>
+    <p><strong>Recommendation: build 15.</strong> It keeps everything that worked in 11 to 14: one flick plays it, the ballistics are real, the die goes into the cup, and the thrower is there. It drops the glow, which is where your latest feedback was heading. 11's crest-up table landing stays available as an alternative ending, and section 8 shows which parts of 11–14 you'd add back if you wanted some glow. Two first-round ideas are worth keeping in reserve. 02's cross fold is an alternative crest-to-die moment that ties the die to the White Cross. 10's nav die could carry the theme onto the other pages without a second 3D scene.</p>
   </div>
 
-  <h3>Why 11 plays on its own clock</h3>
-  <p>Mockups 01 to 09 scrub: every pixel of scroll moves the scene a little, so the toss lasts as long as the reader keeps scrolling (three to seven screens). That's what made them feel like a lot of mouse work. 11 is scroll-triggered instead. The first downward scroll starts a fixed-length timeline, and the reader can keep scrolling, or not, while it plays. It's also why the toss can look physical: gravity needs real seconds, not scroll pixels. The cost is that the reader no longer controls the speed, so the sequence is kept under five seconds (the WCAG 2.2.2 threshold for moving content), it can be skipped, and reduced motion jumps straight to the landed frame.</p>
+  <h3>Why 11 to 15 play on their own clock</h3>
+  <p>Mockups 01 to 09 scrub: every pixel of scroll moves the scene a little, so the toss lasts as long as the reader keeps scrolling (three to seven screens). That's what made them feel like a lot of mouse work. 11 to 15 are scroll-triggered instead. The first downward scroll starts a fixed-length timeline, and the reader can keep scrolling, or not, while it plays. It's also why the toss can look physical: gravity needs real seconds, not scroll pixels. The cost is that the reader no longer controls the speed, so the sequence is kept under five seconds (the WCAG 2.2.2 threshold for moving content), it can be skipped, and reduced motion jumps straight to the landed frame.</p>
 </section>
 
 <!-- ======================= 4. TECH CHOICES ======================= -->
@@ -659,7 +666,7 @@ die.position.y = (HALF - ROUND) * (Math.abs(e[1]) + Math.abs(e[5]) + Math.abs(e[
       <table>
         <thead><tr><th>Phase</th><th>Work</th><th>Effort</th></tr></thead>
         <tbody>
-          <tr><td class="n">1</td><td>Confirm 11 or 12 as the direction and pick the ending; get theme sign-off.</td><td>You</td></tr>
+          <tr><td class="n">1</td><td>Confirm 15 as the direction (or a glowing variant from 11–14) and the ending; get theme sign-off.</td><td>You</td></tr>
           <tr><td class="n">2</td><td>Stage, intro clock, <code>introPose</code> and <code>tossPhysics</code> with tests, HTML layers, still, reduced-motion path.</td><td>1–2 days</td></tr>
           <tr><td class="n">3</td><td>R3F scene: table, strips, cups, die textures, environment, bloom, crest handoff, HUD.</td><td>3–5 days</td></tr>
           <tr><td class="n">3b</td><td>If you want the thrower: figure generator and muscle table, pose keys and leg IK, contour and rim shaders, print-in, code rain, pad.</td><td>3–5 days</td></tr>
@@ -670,7 +677,7 @@ die.position.y = (HALF - ROUND) * (Math.abs(e[1]) + Math.abs(e[5]) + Math.abs(e[
       <p class="small muted">These are focused working days with Claude Code doing most of the typing; review and sign-off time is on top.</p>
       <h4>Questions for you</h4>
       <ol>
-        <li>Is 11/12 the direction, and do you want the thrower in it, slim (13) or jacked (14)? Or should a first-round idea (02's cross fold, 06's pull back) be folded in?</li>
+        <li>Is 15 the direction, with its marble thrower and cup ending? Or do you prefer the glow of 11–14, a table landing (11), or a first-round idea (02's cross fold, 06's pull back) folded in?</li>
         <li>How much HUD: the full readout as mocked up, or just the reticle?</li>
         <li>Which ending: crest-up on the table (11) or in a cup (12)?</li>
         <li>Should the glow carry into the rest of the site (the dark glass sections in 11), or stop at the hero?</li>

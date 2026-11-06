@@ -2,6 +2,8 @@
 
 Planning for the `experiment/beer-die-redesign` branch. The home page loads looking like today's site; scrolling reveals that the hero's navy background is a die table, and the crest becomes a die that gets thrown.
 
+> **Paused 6 November 2026, partway through mockup 15.** Status, the to-do list and the decisions waiting on you are in [`HANDOFF.md`](HANDOFF.md).
+
 **Start with [`implementation-plan.pdf`](implementation-plan.pdf)** (19 pages). It covers the concepts side by side, the recommended frameworks (no framework change: React Three Fiber, drei and bloom on top of the existing Vite, React and Motion stack), the architecture, the toss timing, what each visual effect needs (section 8), accessibility, performance and CSP, rollout, and the open questions.
 
 ## Mockups

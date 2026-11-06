@@ -1,0 +1,19 @@
+<!doctype html><html><body style="margin:0;background:#888">
+<div id="g" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:10px"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+(async () => {
+  const url = new URLSearchParams(location.search).get("f");
+  const pdf = await pdfjsLib.getDocument(url).promise;
+  document.title = "pages:" + pdf.numPages;
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const vp = page.getViewport({ scale: 0.75 });
+    const c = document.createElement("canvas"); c.width = vp.width; c.height = vp.height; c.style.width = "100%";
+    document.getElementById("g").appendChild(c);
+    await page.render({ canvasContext: c.getContext("2d"), viewport: vp }).promise;
+  }
+  document.body.dataset.done = "1";
+})();
+</script></body></html>

@@ -1,0 +1,136 @@
+{
+ "live-d": {
+  "fontsLoaded": [
+   "Cormorant Garamond 500",
+   "Cormorant Garamond 600",
+   "Cormorant Garamond 700",
+   "Cormorant SC 500",
+   "Cormorant SC 600",
+   "Cormorant SC 700",
+   "Source Sans 3 400",
+   "Source Sans 3 600",
+   "Source Sans 3 700"
+  ],
+  "fontLinks": [
+   "http://127.0.0.1:8765/assets/index-B4Qo1nlJ.css"
+  ],
+  "cardN": null,
+  "cardNText": null,
+  "chip": null,
+  "cue": null,
+  "aimsColor": null,
+  "joinColor": null,
+  "inkVar": "#1a1a1a",
+  "navActive": "rgb(201, 162, 39)",
+  "brandFilter": "none",
+  "heroSub": "rgba(250, 247, 240, 0.86)",
+  "heroRule": "3px",
+  "beerInText": false,
+  "title": "Sigma Chi | Washington University in St. Louis \u2014 Beta Colony",
+  "eyebrow": {
+   "x": 144,
+   "y": 236,
+   "w": 468,
+   "h": 20,
+   "b": 256
+  },
+  "h1": {
+   "x": 144,
+   "y": 280,
+   "w": 702,
+   "h": 180,
+   "b": 461
+  },
+  "sub": {
+   "x": 144,
+   "y": 512,
+   "w": 558,
+   "h": 97,
+   "b": 608
+  },
+  "ctas": {
+   "x": 144,
+   "y": 653,
+   "w": 382,
+   "h": 54,
+   "b": 707
+  },
+  "cueR": null,
+  "chipR": null,
+  "markR": null,
+  "landed": null,
+  "landedOn": null,
+  "landedBtns": [],
+  "vw": 1440,
+  "vh": 900,
+  "docH": 3732,
+  "overflowX": 0
+ },
+ "live-m": {
+  "fontsLoaded": [
+   "Cormorant Garamond 500",
+   "Cormorant Garamond 600",
+   "Cormorant Garamond 700",
+   "Cormorant SC 500",
+   "Cormorant SC 600",
+   "Cormorant SC 700",
+   "Source Sans 3 400",
+   "Source Sans 3 600",
+   "Source Sans 3 700"
+  ],
+  "fontLinks": [
+   "http://127.0.0.1:8765/assets/index-B4Qo1nlJ.css"
+  ],
+  "cardN": null,
+  "cardNText": null,
+  "chip": null,
+  "cue": null,
+  "aimsColor": null,
+  "joinColor": null,
+  "inkVar": "#1a1a1a",
+  "navActive": "rgb(201, 162, 39)",
+  "brandFilter": "none",
+  "heroSub": "rgba(250, 247, 240, 0.86)",
+  "heroRule": "3px",
+  "beerInText": false,
+  "title": "Sigma Chi | Washington University in St. Louis \u2014 Beta Colony",
+  "eyebrow": {
+   "x": 24,
+   "y": 212,
+   "w": 342,
+   "h": 41,
+   "b": 253
+  },
+  "h1": {
+   "x": 24,
+   "y": 277,
+   "w": 342,
+   "h": 94,
+   "b": 371
+  },
+  "sub": {
+   "x": 24,
+   "y": 422,
+   "w": 342,
+   "h": 104,
+   "b": 526
+  },
+  "ctas": {
+   "x": 24,
+   "y": 567,
+   "w": 342,
+   "h": 124,
+   "b": 691
+  },
+  "cueR": null,
+  "chipR": null,
+  "markR": null,
+  "landed": null,
+  "landedOn": null,
+  "landedBtns": [],
+  "vw": 390,
+  "vh": 844,
+  "docH": 4328,
+  "overflowX": 0
+ }
+}
